@@ -1,0 +1,360 @@
+<body>
+    <script>
+        Squarespace.onInitialize(Y, init1)
+
+    
+
+        function init1() {
+            var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"];
+            var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
+            var headshot1 = headshots[randomIndexHeadshots1];
+            var myHeadshot1 = document.getElementById("myHeadshot1");
+            myHeadshot1.src = headshot1;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show1');
+                    } else {
+                        entry.target.classList.remove('show1');
+                    }
+                });
+            });
+
+            const hiddenElements = document.querySelectorAll('.hidden1');
+            hiddenElements.forEach((el) => observer.observe(el));
+
+
+
+            // Array of font classes
+            const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+
+            // Function to change font class for a single span
+            function changeFontRandomly(span) {
+                // Remove previously added font classes
+                fontClasses.forEach(fontClass => {
+                    span.classList.remove(fontClass);
+                });
+
+                const randomIndex = Math.floor(Math.random() * fontClasses.length);
+                span.classList.add(fontClasses[randomIndex]);
+
+                // Randomize the interval duration for the next change (between 300ms and 700ms)
+                const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                setTimeout(() => changeFontRandomly(span), randomInterval);
+            }
+
+            const spans = document.querySelectorAll('.text-block1 .span-class');
+            spans.forEach(span => {
+                changeFontRandomly(span);
+            });
+
+
+
+        }
+
+
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+
+
+
+        .font1 {
+            font-family: Arial, sans-serif;
+        }
+
+        .font2 {
+            font-family: Times New Roman, serif;
+        }
+
+        .font3 {
+            font-family: Courier New, monospace;
+        }
+
+        .font4 {
+            font-family: essay-text, monospace;
+        }
+
+        .font5 {
+            font-family: 'Playfair Display', serif;
+        }
+
+
+
+
+
+        .hidden1 {
+            opacity: 0;
+            filter: blur(5px);
+            transform: translateX(-100%);
+            transition: all 1s;
+            transition-delay: 500ms;
+        }
+
+        .show1 {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+        }
+
+        .image-left1 {
+            margin-right: 10px;
+            display: block;
+            /*         margin-left: 20px; */
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+        }
+
+        .image-left1 img {
+            position: absolute;
+          z-index: 3;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            /*                                                     max-width: 100%; */
+            max-height: 90%;
+        }
+
+        .span-class {
+          z-index: 4;
+        }
+
+        @media only screen and (max-width: 1000px) {
+            .container1 {
+                flex-direction: column;
+              z-index: 2;
+            }
+
+            img {
+                margin-bottom: 20px;
+                border-radius: 10px;
+            }
+        }
+
+        .text-block1 {
+            overflow: hidden;
+            min-font-size: 20px;
+
+            /*             text-align: left; */
+            /*             padding-right: 20px; */
+            /* add padding to the right of the text block */
+        }
+
+        .container1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          z-index: 2;
+            /*             max-width: 800px; */
+        }
+
+
+        .text-block1 h1 {
+            font-size: calc(2.5vw + 10px);
+
+            /*   max-font-size: 36px; */
+            /* Set your desired maximum font size */
+        }
+
+
+
+        .text-block1 {
+
+
+            overflow: hidden;
+            text-align: center;
+            /* Change this line */
+            white-space: nowrap;
+
+        }
+
+
+
+        /*                                                     padding-right: 20px; */
+        /* add padding to the right of the text block */
+        }
+
+        .container1 {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 2000px;
+          z-index: 2;
+        }
+
+        .text-block1 h1 {
+            font-size: calc(2.5vw);
+            /*                                                   max-font-size: 36px; */
+        }
+
+
+
+        @media only screen and (min-width: 1000px) and (max-width: 1499px) {
+            .container1 {
+                position: relative;
+                flex-direction: row;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                max-width: 2000px;
+              z-index: 2;
+
+            }
+
+            .text-block1 {
+                order: -1;
+                white-space: nowrap;
+                padding-right: 350px;
+                text-align: center;
+                max-width: 50%;
+                margin-right: 100px;
+                z-index: 1;
+                font-size: 36pt;
+
+            }
+
+
+            .image-left1 {
+                overflow: hidden;
+                position: relative;
+                width: 100%;
+                height: 600px;
+                border-radius: 20px;
+                margin-left: 20px;
+                z-index: 0;
+                /* Remove the margin-right property */
+                float: right;
+                /* Add this line to align the image to the right */
+            }
+
+            .image-left1 img {
+                position: absolute;
+                top: 50%;
+                /*             left: 50%; */
+                border-radius: 10px;
+                transform: translate(-50%, -50%);
+                /*             max-width: none;
+                                                                    max-height: none; */
+                width: auto;
+                height: auto;
+            }
+        }
+
+        @media only screen and (min-width: 1500px) {
+
+            .container1 {
+                position: relative;
+                flex-direction: row;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                max-width: 2000px;
+              z-index: 2;
+
+            }
+
+            .text-block1 {
+                order: -1;
+                white-space: nowrap;
+                padding-right: 350px;
+                text-align: center;
+                max-width: 50%;
+                margin-right: 150px;
+                z-index: 1;
+                font-size: 36.5px;
+
+            }
+
+            .text-block1 h1 {
+
+                font-size: 36.5px;
+            }
+
+
+
+            .image-left1 {
+                overflow: hidden;
+                position: relative;
+                width: 100%;
+                height: 600px;
+                border-radius: 20px;
+                margin-left: 20px;
+                z-index: -1;
+
+                float: right;
+
+            }
+
+            .image-left1 img {
+                position: absolute;
+                top: 50%;
+
+                border-radius: 10px;
+                transform: translate(-50%, -50%);
+
+                width: auto;
+                height: auto;
+            }
+        }
+    </style>
+
+
+
+
+
+
+
+    <div class="container1 hidden1">
+        <div class="image-left1">
+            <img id="myHeadshot1">
+
+        </div>
+        <br>
+        <br>
+        <div class="text-block1">
+            
+                <h1>
+                    <span class="span-class">C</span>
+                    <span class="span-class">A</span>
+                    <span class="span-class">M</span>
+                    <span class="span-class">E</span>
+                    <span class="span-class">R</span>
+                    <span class="span-class">O</span>
+                    <span class="span-class">N</span>
+                </h1>
+                <br>
+                <h1>
+                    <span class="span-class">J</span>
+                    <span class="span-class">O</span>
+                    <span class="span-class">H</span>
+                    <span class="span-class">N</span>
+                    <span class="span-class">S</span>
+                    <span class="span-class">T</span>
+                    <span class="span-class">O</span>
+                    <span class="span-class">N</span>
+                </h1>
+                <br>
+                 <h1>
+                    <span class="span-class">U</span>
+                    <span class="span-class">S</span>
+                    <span class="span-class">H</span>
+                    <span class="span-class">I</span>
+                    <span class="span-class">J</span>
+                    <span class="span-class">I</span>
+                    <span class="span-class">M</span>
+                    <span class="span-class">A</span>
+                </h1>
+
+            
+        </div>
+
+    </div>
+    <br>
+    <br>
+    <hr class='hidden1'>
+
+</body>
