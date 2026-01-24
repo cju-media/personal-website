@@ -1,15 +1,15 @@
-<div class="hp-mid-wrapper">
+<body>
     <style>
-        /* Scoping styles to the wrapper to prevent affecting other page elements */
-        .hp-mid-wrapper section {
+        section {
             display: block;
+            place-items: center;
+            align-content: center;
             text-align: center;
             min-height: 1vh;
             border-radius: 10px;
         }
 
-        .hp-mid-wrapper .image-container, 
-        .hp-mid-wrapper .video-container {
+        .image-container, .video-container {
             overflow: hidden;
             position: relative;
             width: 100%;
@@ -20,13 +20,11 @@
             margin: 0 auto;
         }
 
-        .hp-mid-wrapper .image-container:hover, 
-        .hp-mid-wrapper .video-container:hover {
+        .image-container:hover, .video-container:hover {
             transform: scale(1.05);
         }
 
-        .hp-mid-wrapper .cropped-image, 
-        .hp-mid-wrapper .cropped-video {
+        .cropped-image, .cropped-video {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -37,10 +35,10 @@
             transition: all 0.5s ease-in-out;
         }
 
-        .hp-mid-wrapper .cropped-image { filter: blur(2px); }
-        .hp-mid-wrapper .cropped-image:hover { filter: blur(0); }
+        .cropped-image { filter: blur(2px); }
+        .cropped-image:hover { filter: blur(0); }
 
-        .hp-mid-wrapper .text-wrapper {
+        .text-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -48,40 +46,41 @@
             z-index: 10;
         }
 
-        .hp-mid-wrapper .text-overlay, 
-        .hp-mid-wrapper .text-overlay1 {
+        .text-overlay, .text-overlay1 {
             padding: 10px;
             display: inline-block;
             border-radius: 10px;
             backdrop-filter: blur(5px);
         }
 
-        .hp-mid-wrapper .text-overlay { background-color: rgba(255, 255, 255, 0.5); color: black; }
-        .hp-mid-wrapper .text-overlay1 { background-color: rgba(100, 100, 100, 0.5); color: white; }
+        .text-overlay { background-color: rgba(255, 255, 255, 0.5); color: black; }
+        .text-overlay1 { background-color: rgba(100, 100, 100, 0.5); color: white; }
 
-        .hp-mid-wrapper .hidden {
+        .bg-image { background-size: cover; background-position: center; }
+
+        .hidden {
             opacity: 0;
             filter: blur(5px);
             transform: translateX(-50px);
             transition: all 0.6s ease-out;
         }
 
-        .hp-mid-wrapper .show {
+        .show {
             opacity: 1;
             filter: blur(0px);
             transform: translateX(0px);
         }
     </style>
 
-    <section class="hidden"><a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section><br><hr class='hidden'><br>
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container"><img id='composer' class='bg-image cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section><br><hr class='hidden'><br>
     
-    <section class="hidden"><a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section><br><hr class='hidden'><br>
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container"><img id='av' class='bg-image cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section><br><hr class='hidden'><br>
     
-    <section class="hidden"><a href="https://www.cameronjohnston.xyz/highlights/max" class="image-container"><img id='mid-sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section><br><hr class='hidden'><br>
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/highlights/max" class="image-container"><img id='sound' class='bg-image cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section><br><hr class='hidden'><br>
 
     <section class="hidden">
         <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container">
-            <video playsinline autoplay muted id='mid-video' class='cropped-video' style="z-index: 1"></video>
+            <video playsinline autoplay muted id='myVideo' class='cropped-video' style="z-index: 1"></video>
             <video playsinline autoplay muted loop class='cropped-video' style="z-index: 0">
                 <source src="https://www.cameronjohnston.xyz/s/noise4.mov">
             </video>
@@ -89,56 +88,108 @@
         </a>
     </section><br><hr class='hidden'><br>
 
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/albums" class="image-container"><img class='bg-image cropped-image' src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac508a299f16299dff71b/1676330252119/producer.png'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section><br><hr class='hidden'><br>
+    
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/programming" class="image-container"><img class='bg-image cropped-image' src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4ee26ee86324adf12e4/1676330223142/programmer.png'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section><br><hr class='hidden'><br>
+
     <section class="hidden">
         <a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="video-container">
-            <video playsinline autoplay muted id='mid-laptop' class='cropped-video' style="z-index: 1"></video>
+            <video playsinline autoplay muted id='myLaptop' class='cropped-video' style="z-index: 1"></video>
             <video playsinline autoplay muted loop class='cropped-video' style="z-index: 0">
                 <source src="https://www.cameronjohnston.xyz/s/noise4.mov">
             </video>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
-    </section>
+    </section><br><hr class='hidden'><br>
+
+    <section class="hidden"><a href="https://www.cameronjohnston.xyz/director/new-music-ensemble" class="image-container"><img class='bg-image cropped-image' src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e1830bb646bc07630e009b/1675723532190/conductor.png'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
 
     <script>
-        (function() {
-            const perfVids = ["https://www.cameronjohnston.xyz/s/performer1.mov", "https://www.cameronjohnston.xyz/s/performer2.mov", "https://www.cameronjohnston.xyz/s/performer3.mov", "https://www.cameronjohnston.xyz/s/performer4.mov", "https://www.cameronjohnston.xyz/s/performer5.mov"];
-            const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov", "https://www.cameronjohnston.xyz/s/Reel-1.mov", "https://www.cameronjohnston.xyz/s/Reel-3.mov", "https://www.cameronjohnston.xyz/s/Reel-2.mov"];
-            const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg'];
-            const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png'];
-            const soundPics = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"];
+        // Data Arrays
+        const performerVideos = [
+            "https://www.cameronjohnston.xyz/s/performer1.mov",
+            "https://www.cameronjohnston.xyz/s/performer2.mov",
+            "https://www.cameronjohnston.xyz/s/performer3.mov",
+            "https://www.cameronjohnston.xyz/s/performer4.mov",
+            "https://www.cameronjohnston.xyz/s/performer5.mov"
+        ];
 
-            function swapVideo() {
-                const v = document.getElementById("mid-video");
-                if (v) { v.src = artVids[Math.floor(Math.random() * artVids.length)]; v.play().catch(()=>{}); }
-            }
+        const videoUrls = [
+            "https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
+            "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
+            "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/visuals2-H264-Proxy-half-size.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/Demon-Visuals-copy-H264-Proxy-half-size.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov",
+            'https://www.cameronjohnston.xyz/s/Reel-1.mov', 
+            'https://www.cameronjohnston.xyz/s/Reel-3.mov', 
+            'https://www.cameronjohnston.xyz/s/Reel-2.mov'
+        ];
+     
+        const avPics = [
+            'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 
+            'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg', 
+            'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/2774845a-6afa-4420-87fb-695c65aa812f/IMG_0582.jpg?content-type=image%2Fjpeg', 
+            "https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/efd645ac-0561-4350-8ab7-1e47c11e2ece/IMG_4052.jpg?content-type=image%2Fjpeg"
+        ];
 
-            function swapLaptop() {
-                const l = document.getElementById("mid-laptop");
-                if (l) { l.src = perfVids[Math.floor(Math.random() * perfVids.length)]; l.play().catch(()=>{}); }
-            }
+        const composers = [
+            'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 
+            'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png', 
+            'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e183048cf4a24371792f9d/1675723524519/composer3.png'
+        ];
 
-            function initMid() {
-                const av = document.getElementById("mid-av"); if(av) av.src = avPics[Math.floor(Math.random() * avPics.length)];
-                const co = document.getElementById("mid-composer"); if(co) co.src = compPics[Math.floor(Math.random() * compPics.length)];
-                const so = document.getElementById("mid-sound"); if(so) so.src = soundPics[Math.floor(Math.random() * soundPics.length)];
+        const sounds = [
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"
+        ];
 
-                const obs = new IntersectionObserver((ents) => {
-                    ents.forEach(e => e.isIntersecting ? e.target.classList.add('show') : e.target.classList.remove('show'));
-                }, { threshold: 0.1 });
-                document.querySelectorAll('.hp-mid-wrapper .hidden').forEach(el => obs.observe(el));
+        function randomPerformance() {
+            const el = document.getElementById("myLaptop");
+            if (!el) return;
+            const src = performerVideos[Math.floor(Math.random() * performerVideos.length)];
+            el.src = src;
+            el.play().catch(() => {}); 
+        }
 
-                const v = document.getElementById("mid-video"); if(v) v.addEventListener('ended', swapVideo);
-                const l = document.getElementById("mid-laptop"); if(l) l.addEventListener('ended', swapLaptop);
+        function randomVideo() {
+            const el = document.getElementById("myVideo");
+            if (!el) return;
+            const src = videoUrls[Math.floor(Math.random() * videoUrls.length)];
+            el.src = src;
+            el.play().catch(() => {});
+        }
 
-                swapVideo(); swapLaptop();
-            }
+        function init1() {
+            // Static Randoms
+            document.getElementById("av").src = avPics[Math.floor(Math.random() * avPics.length)];
+            document.getElementById("composer").src = composers[Math.floor(Math.random() * composers.length)];
+            document.getElementById("sound").src = sounds[Math.floor(Math.random() * sounds.length)];
 
-            // Fire on Squarespace init or manual load
-            if (window.Squarespace) {
-                window.Squarespace.onInitialize(Y, initMid);
-            } else {
-                initMid();
-            }
-        })();
+            // Setup Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    entry.isIntersecting ? entry.target.classList.add('show') : entry.target.classList.remove('show');
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.hidden').forEach(el => observer.observe(el));
+
+            // Setup Videos
+            const vids = [document.getElementById("myVideo"), document.getElementById("myLaptop")];
+            vids.forEach(v => {
+                if(!v) return;
+                v.muted = true;
+                // Add event listeners for looping logic
+                v.addEventListener('ended', v.id === "myVideo" ? randomVideo : randomPerformance);
+            });
+
+            // Initial play
+            randomVideo();
+            randomPerformance();
+        }
+
+        // Squarespace Initialization
+        window.Squarespace?.onInitialize(Y, init1) || window.addEventListener('load', init1);
     </script>
-</div>
+</body>
