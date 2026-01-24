@@ -1,62 +1,62 @@
 <body>
-    <script>
-        Squarespace.onInitialize(Y, init1)
+<script>
+    Squarespace.onInitialize(Y, init1)
 
-        function init1() {
-            var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"];
-            var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
-            var headshot1 = headshots[randomIndexHeadshots1];
-            var myHeadshot1 = document.getElementById("myHeadshot1");
-            myHeadshot1.src = headshot1;
+    function init1() {
+        var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"];
+        var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
+        var headshot1 = headshots[randomIndexHeadshots1];
+        var myHeadshot1 = document.getElementById("myHeadshot1");
+        myHeadshot1.src = headshot1;
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('show1');
-                    } else {
-                        entry.target.classList.remove('show1');
-                    }
-                });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show1');
+                } else {
+                    entry.target.classList.remove('show1');
+                }
             });
+        });
 
-            const hiddenElements = document.querySelectorAll('.hidden1');
-            hiddenElements.forEach((el) => observer.observe(el));
+        const hiddenElements = document.querySelectorAll('.hidden1');
+        hiddenElements.forEach((el) => observer.observe(el));
 
-            const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFD700', '#00FFFF'];
 
-            // Array of font classes
-
-// Array of colors (You can add any hex codes or color names here)
-const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF3', '#FFD700'];
-
-function changeFontRandomly(span) {
-    // 1. Randomize Font
-    fontClasses.forEach(fontClass => {
-        span.classList.remove(fontClass);
-    });
-    const randomFontIndex = Math.floor(Math.random() * fontClasses.length);
-    span.classList.add(fontClasses[randomFontIndex]);
-
-    // 2. Randomize Color
-    const randomColorIndex = Math.floor(Math.random() * colors.length);
-    span.style.color = colors[randomColorIndex];
-
-    // 3. Randomize Interval
-    const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-    setTimeout(() => changeFontRandomly(span), randomInterval);
-}
-
-            const spans = document.querySelectorAll('.text-block1 .span-class');
-            spans.forEach(span => {
-                changeFontRandomly(span);
-            });
+        // FUNCTION 1: Handles Font Changes
+        function changeFontRandomly(span) {
+            fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+            const randomIndex = Math.floor(Math.random() * fontClasses.length);
+            span.classList.add(fontClasses[randomIndex]);
+            
+            // Font change speed: 300ms to 700ms
+            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+            setTimeout(() => changeFontRandomly(span), interval);
         }
-    </script>
+
+        // FUNCTION 2: Handles Color Changes
+        function changeColorRandomly(span) {
+            const randomColorIndex = Math.floor(Math.random() * colors.length);
+            span.style.color = colors[randomColorIndex];
+            
+            // Color change speed: 500ms to 1000ms (Slower than font)
+            const interval = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+            setTimeout(() => changeColorRandomly(span), interval);
+        }
+
+        const spans = document.querySelectorAll('.text-block1 .span-class');
+        spans.forEach(span => {
+            changeFontRandomly(span);
+            changeColorRandomly(span); // Start the second independent loop
+        });
+    }
+</script>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-    /* FONT CLASSES */
     .font1 { font-family: Arial, sans-serif; }
     .font2 { font-family: "Times New Roman", serif; }
     .font3 { font-family: "Courier New", monospace; }
@@ -112,11 +112,12 @@ function changeFontRandomly(span) {
 
     .span-class {
         display: inline-block;
-        width: 1.0em; /* Spaced out letters */
+        width: 1.0em; 
         text-align: center;
         z-index: 4;
         position: relative;
-        transition: color 0.2s ease; /* Smooths the color transition */
+        /* Smooth color transitions */
+        transition: color 0.4s ease-in-out; 
     }
 
     @media only screen and (max-width: 800px) {
