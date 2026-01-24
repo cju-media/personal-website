@@ -56,14 +56,7 @@
 
     </script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-
-    /* FONT CLASSES */
-    .font1 { font-family: Arial, sans-serif; }
-    .font2 { font-family: "Times New Roman", serif; }
-    .font3 { font-family: "Courier New", monospace; }
-    .font4 { font-family: "essay-text", monospace; } 
-    .font5 { font-family: 'Playfair Display', serif; }
+    /* ... your existing font styles ... */
 
     .container1 {
         display: flex;
@@ -71,78 +64,53 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        max-width: 100vw; /* Prevent horizontal overflow */
+        max-width: 100vw;
         margin: 0 auto;
-        padding: 20px; 
-        gap: 3vw; 
-        box-sizing: border-box; /* Ensures padding doesn't add to width */
+        padding: 20px;
+        gap: 3vw;
+        box-sizing: border-box;
         overflow: hidden;
+        
+        /* THE STABILITY FIX */
+        min-height: 400px; /* Adjust this to roughly the height of your image on mobile */
+        contain: layout;   /* Prevents internal changes from affecting outside elements */
     }
 
-    .image-left1 {
-        flex: 0 1 35vw; 
-        max-width: 450px; 
-    }
-
-    .image-left1 img {
-        width: 100%;
-        height: auto;
-        display: block;
-        border-radius: 15px;
-    }
-
+    /* Prevent the text block from changing height when fonts swap */
     .text-block1 {
-        flex: 0 0 auto; 
+        flex: 0 0 auto;
         text-align: center;
-    }
-
-    /* Remove the gap caused by the <br> tags in your HTML */
-    .text-block1 br {
-        display: none;
+        min-height: 1.2em; /* Ensures a baseline height */
     }
 
     .text-block1 h1 {
-        font-size: clamp(18px, 3.8vw, 42px); 
-        margin: 0; 
-        padding: 2px 0; 
-        white-space: nowrap; 
+        font-size: clamp(18px, 3.8vw, 42px);
+        margin: 0;
+        padding: 2px 0;
+        white-space: nowrap;
         line-height: 1.1;
+        /* Keep vertical height consistent regardless of font */
+        display: block; 
     }
 
+    /* THE JIGGLE FIX (unchanged but crucial) */
     .span-class {
         display: inline-block;
-        width: 0.75em; 
+        width: 0.75em;
         text-align: center;
     }
 
-    /* MOBILE: Stacked view */
     @media only screen and (max-width: 800px) {
         .container1 {
             flex-direction: column;
             gap: 15px;
             padding: 40px 10px;
-        }
-        .image-left1 {
-            width: 70vw; /* Image gets slightly larger on mobile */
-            max-width: 300px;
+            /* Adjust min-height for mobile if content is taller stacked */
+            min-height: 600px; 
         }
         .text-block1 h1 {
-            /* Lowered from 9vw to 7vw to prevent dramatic size jump/overflow */
-            font-size: 7vw; 
+            font-size: 7vw;
         }
-    }
-
-    /* ANIMATION CLASSES */
-    .hidden1 {
-        opacity: 0;
-        filter: blur(5px);
-        transform: translateX(-50px);
-        transition: all 1s;
-    }
-    .show1 {
-        opacity: 1;
-        filter: blur(0);
-        transform: translateX(0);
     }
 </style>
 
