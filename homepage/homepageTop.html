@@ -24,15 +24,27 @@
 
             const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
 
-            function changeFontRandomly(span) {
-                fontClasses.forEach(fontClass => {
-                    span.classList.remove(fontClass);
-                });
-                const randomIndex = Math.floor(Math.random() * fontClasses.length);
-                span.classList.add(fontClasses[randomIndex]);
-                const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-                setTimeout(() => changeFontRandomly(span), randomInterval);
-            }
+            // Array of font classes
+
+// Array of colors (You can add any hex codes or color names here)
+const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF3', '#FFD700'];
+
+function changeFontRandomly(span) {
+    // 1. Randomize Font
+    fontClasses.forEach(fontClass => {
+        span.classList.remove(fontClass);
+    });
+    const randomFontIndex = Math.floor(Math.random() * fontClasses.length);
+    span.classList.add(fontClasses[randomFontIndex]);
+
+    // 2. Randomize Color
+    const randomColorIndex = Math.floor(Math.random() * colors.length);
+    span.style.color = colors[randomColorIndex];
+
+    // 3. Randomize Interval
+    const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+    setTimeout(() => changeFontRandomly(span), randomInterval);
+}
 
             const spans = document.querySelectorAll('.text-block1 .span-class');
             spans.forEach(span => {
@@ -41,17 +53,16 @@
         }
     </script>
 
- <style>
+<style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-    /* 1. FONT CLASSES - Restoring your specific choices */
+    /* FONT CLASSES */
     .font1 { font-family: Arial, sans-serif; }
     .font2 { font-family: "Times New Roman", serif; }
     .font3 { font-family: "Courier New", monospace; }
     .font4 { font-family: "essay-text", monospace; } 
     .font5 { font-family: 'Playfair Display', serif; }
 
-    /* 2. MAIN CONTAINER - Centering and stability */
     .container1 {
         display: flex;
         flex-direction: row;
@@ -64,13 +75,10 @@
         gap: 3vw;
         box-sizing: border-box;
         overflow: hidden;
-        
-        /* PREVENTS JIGGLING: Keeps the rest of your page content still */
         min-height: 450px; 
         contain: layout;   
     }
 
-    /* 3. IMAGE STYLING - Maintaining aspect ratio and scaling */
     .image-left1 {
         flex: 0 1 35vw; 
         max-width: 450px;
@@ -83,47 +91,39 @@
         border-radius: 15px;
     }
 
-    /* 4. TEXT BLOCK - Vertical stability */
     .text-block1 {
         flex: 0 0 auto;
         text-align: center;
     }
 
-    /* Safety: Hides the hard-coded <br> tags to prevent extra height gaps */
     .text-block1 br {
         display: none !important;
     }
 
     .text-block1 h1 {
-        /* Adjusted font-size to 3.5vw to allow for the wider letter spacing */
         font-size: clamp(16px, 3.5vw, 40px);
-        margin: 15px 0; /* Vertical space between names */
+        margin: 15px 0; 
         padding: 0;
         white-space: nowrap; 
-        
-        /* LOCKING HEIGHT: Prevents fonts with tall ascenders from shifting the layout */
         line-height: 1.0; 
         height: 1.1em; 
         display: block;
     }
 
-    /* 5. LETTER SLOTS - Spacing out the letters */
     .span-class {
         display: inline-block;
-        /* Increased to 1.0em for much wider spacing as requested */
-        width: 1.0em; 
+        width: 1.0em; /* Spaced out letters */
         text-align: center;
         z-index: 4;
         position: relative;
+        transition: color 0.2s ease; /* Smooths the color transition */
     }
 
-    /* 6. MOBILE STYLES - Stacking and overflow prevention */
     @media only screen and (max-width: 800px) {
         .container1 {
             flex-direction: column;
             gap: 20px;
             padding: 40px 10px;
-            /* Higher min-height for the stacked view to stop jiggling below */
             min-height: 700px; 
         }
         .image-left1 {
@@ -131,13 +131,11 @@
             max-width: 300px;
         }
         .text-block1 h1 {
-            /* 6vw ensures 8 letters at 1em width still fit on a phone screen */
             font-size: 6vw; 
             margin: 8px 0;
         }
     }
 
-    /* 7. SCROLL ANIMATION */
     .hidden1 {
         opacity: 0;
         filter: blur(5px);
