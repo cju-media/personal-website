@@ -23,7 +23,17 @@
         hiddenElements.forEach((el) => observer.observe(el));
 
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
-        const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFD700', '#00FFFF'];
+        c// Sophisticated, high-contrast muted palette
+        const colors = [
+            '#2F4F4F', // Dark Slate Gray
+            '#4B0082', // Indigo
+            '#8B0000', // Dark Red
+            '#000080', // Navy
+            '#556B2F', // Dark Olive Green
+            '#8B4513', // Saddle Brown
+            '#2E0854', // Dark Purple
+            '#191970'  // Midnight Blue
+        ];
 
         // FUNCTION 1: Handles Font Changes
         function changeFontRandomly(span) {
@@ -31,7 +41,6 @@
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
             
-            // Font change speed: 300ms to 700ms
             const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
             setTimeout(() => changeFontRandomly(span), interval);
         }
@@ -41,8 +50,8 @@
             const randomColorIndex = Math.floor(Math.random() * colors.length);
             span.style.color = colors[randomColorIndex];
             
-            // Color change speed: 500ms to 1000ms (Slower than font)
-            const interval = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+            // Slower transition for a calmer effect: 800ms to 1500ms
+            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
             setTimeout(() => changeColorRandomly(span), interval);
         }
 
