@@ -55,91 +55,72 @@
 
 
     </script>
-    <style>
+ <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-    /* BASE STYLES */
+    /* RESTORING YOUR FONT CLASSES */
+    .font1 { font-family: Arial, sans-serif; }
+    .font2 { font-family: "Times New Roman", serif; }
+    .font3 { font-family: "Courier New", monospace; }
+    .font4 { font-family: "essay-text", monospace; } /* Your custom font */
+    .font5 { font-family: 'Playfair Display', serif; }
+
     .container1 {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap; /* Allows stacking on small screens */
         align-items: center;
         justify-content: center;
         width: 100%;
-        max-width: 1200px; /* Limits growth on ultra-wide screens */
-        margin: 0 auto;    /* Centers the whole container */
-        gap: 20px;         /* Space between image and text */
+        margin: 0 auto;
+        gap: 4vw; /* Responsive gap */
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .text-block1 {
+        flex: 0 0 auto; /* Prevents the text block from squishing */
+        text-align: center;
+    }
+
+    .text-block1 h1 {
+        /* This is the magic: text scales exactly with the window width */
+        font-size: 4.5vw; 
+        margin: 10px 0;
+        white-space: nowrap; /* Forces name to stay on one line */
+        line-height: 1;
+    }
+
+    /* THE JIGGLE FIX: Keep width fixed so font swaps don't move the letters */
+    .span-class {
+        display: inline-block;
+        width: 0.85em; 
+        text-align: center;
     }
 
     .image-left1 {
-        flex: 1;
-        min-width: 300px;
-        max-width: 500px;
-        height: auto;
-        aspect-ratio: 4 / 5; /* Keeps image shape consistent */
-        overflow: hidden;
+        flex: 0 1 400px; /* Image shrinks but doesn't exceed 400px */
+        height: 500px;
         border-radius: 20px;
-        position: relative;
+        overflow: hidden;
     }
 
     .image-left1 img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Prevents image distortion */
+        object-fit: cover;
     }
 
-    .text-block1 {
-        flex: 1;
-        min-width: 300px;
-        text-align: center;
-    }
-
-    .text-block1 h1 {
-        font-size: clamp(24px, 5vw, 40px); /* Fluid typography */
-        margin: 0;
-        line-height: 1.2;
-    }
-
-    /* THE JIGGLE FIX */
-    .span-class {
-        display: inline-block;
-        width: 0.8em; /* Fixed slot for each letter */
-        text-align: center;
-    }
-
-    /* FONT CLASSES */
-    .font1 { font-family: Arial, sans-serif; }
-    .font2 { font-family: 'Times New Roman', serif; }
-    .font3 { font-family: 'Courier New', monospace; }
-    .font4 { font-family: monospace; }
-    .font5 { font-family: 'Playfair Display', serif; }
-
-    /* ANIMATIONS */
-    .hidden1 {
-        opacity: 0;
-        filter: blur(5px);
-        transform: translateY(20px); /* Changed to Y for smoother entry */
-        transition: all 1s ease-out;
-    }
-
-    .show1 {
-        opacity: 1;
-        filter: blur(0);
-        transform: translateY(0);
-    }
-
-    /* MOBILE ADJUSTMENTS */
-    @media only screen and (max-width: 768px) {
+    /* MOBILE: When window is thin, stack them and center */
+    @media only screen and (max-width: 800px) {
         .container1 {
-            flex-direction: column; /* Forces stack */
-            text-align: center;
+            flex-direction: column;
         }
-        .text-block1 {
-            order: 2; /* Text moves below image */
+        .text-block1 h1 {
+            font-size: 10vw; /* Larger scale for mobile screens */
         }
         .image-left1 {
-            order: 1;
-            width: 90%; /* Scales down on mobile */
+            width: 80%;
+            height: 350px;
         }
     }
 </style>
