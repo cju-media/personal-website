@@ -1,0 +1,524 @@
+<body>
+
+    <script>
+
+
+
+
+
+
+        Squarespace.onInitialize(Y, init1)
+
+        var performerVideos = [
+            "https://www.cameronjohnston.xyz/s/performer1.mov",
+            "https://www.cameronjohnston.xyz/s/performer2.mov",
+            "https://www.cameronjohnston.xyz/s/performer3.mov",
+            "https://www.cameronjohnston.xyz/s/performer4.mov",
+            "https://www.cameronjohnston.xyz/s/performer5.mov"
+        ]
+
+        var videos = [
+            "https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
+            "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
+            "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/visuals2-H264-Proxy-half-size.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/Demon-Visuals-copy-H264-Proxy-half-size.mov",
+            "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov", 'https://www.cameronjohnston.xyz/s/Reel-1.mov', 'https://www.cameronjohnston.xyz/s/Reel-3.mov', 'https://www.cameronjohnston.xyz/s/Reel-2.mov'
+        ]
+     
+      var avPics = [
+        'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 
+                    'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg', 
+                    'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/2774845a-6afa-4420-87fb-695c65aa812f/IMG_0582.jpg?content-type=image%2Fjpeg', 
+                    "https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/efd645ac-0561-4350-8ab7-1e47c11e2ece/IMG_4052.jpg?content-type=image%2Fjpeg"
+                   ]
+
+        var randomIndexLaptop
+
+        var laptop
+
+        var video
+
+        var randomIndexVideo
+
+        function init1() {
+            var myLaptop = document.getElementById("myLaptop");
+            //myLaptop = document.getElementById("myLaptop");
+
+
+
+
+
+            var myVideo = document.getElementById("myVideo");
+            //myVideo.src = video;
+
+            randomIndexVideo = Math.floor(Math.random() * videos.length);
+            video = videos[randomIndexVideo];
+          randomVideo();
+
+            var myNoise = document.getElementById("noise");
+
+
+            //var laptops = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e18310bc8c077ec9cc3a48/1675723537020/laptop1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e183169697106dcaa763f3/1675723543939/laptop2.png']
+            randomIndexLaptop = Math.floor(Math.random() * performerVideos.length);
+
+            laptop = performerVideos[randomIndexLaptop];
+            randomPerformance();
+
+          
+
+        
+            var randomIndexAV = Math.floor(Math.random() * avPics.length);
+
+            var avChoice = avPics[randomIndexAV];
+
+            var myAV = document.getElementById("av")
+            myAV.src = avChoice;
+
+            var composers = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e183048cf4a24371792f9d/1675723524519/composer3.png']
+
+            
+            var randomIndexComposer = Math.floor(Math.random() * composers.length);
+
+            var composer = composers[randomIndexComposer];
+
+            var myComposer = document.getElementById("composer")
+            myComposer.src = composer;
+
+            var sounds = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"]
+            var randomIndexSound = Math.floor(Math.random() * sounds.length);
+
+            var sound = sounds[randomIndexSound];
+
+            var mySound = document.getElementById("sound")
+            mySound.src = sound;
+
+            // console.log(randomIndex);
+            //console.log(video);
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+
+
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                    } else {
+                        entry.target.classList.remove('show');
+                    }
+
+                });
+
+            });
+
+            const hiddenElements = document.querySelectorAll('.hidden');
+            hiddenElements.forEach((el) => observer.observe(el));
+
+            myVideo.addEventListener("loadedmetadata", function () {
+
+
+                if (myVideo.autoplay) {
+                    myVideo.play();
+                    myVideo.controls = false;
+                } else {
+                    myVideo.controls = true;
+                };
+
+                myVideo.muted = true;
+                myVideo.loop = false;
+
+            });
+            myNoise.addEventListener("loadedmetadata", function () {
+
+
+                if (noise.autoplay) {
+                    noise.play();
+                    noise.controls = false;
+                } else {
+                    noise.controls = true;
+                };
+
+                noise.muted = true;
+                noise.loop = true;
+
+            });
+
+            myLaptop.addEventListener("loadedmetadata", function () {
+
+
+                if (myLaptop.autoplay) {
+                    myLaptop.play();
+                    myLaptop.controls = false;
+                } else {
+                    myLaptop.controls = true;
+                };
+
+                myLaptop.muted = true;
+                myLaptop.loop = false;
+                //randomPerformance();
+            });
+            randomPerformance();
+      var laptopLoop = document.getElementById("myLaptop").addEventListener('ended', randomPerformance, false);
+            randomVideo();
+            var videoLoop = document.getElementById("myVideo").addEventListener('ended', randomVideo, false);
+
+        }
+
+
+
+
+        function randomPerformance() {
+            console.log("Running Random Performance");
+
+            // Add a condition to ensure the previous load operation is complete
+            if (!myLaptop.paused && !myLaptop.ended) {
+                // Pause and reset the current video before changing the source
+                myLaptop.pause();
+                myLaptop.currentTime = 0;
+            }
+
+            randomIndexLaptop = Math.floor(Math.random() * performerVideos.length);
+            laptop = performerVideos[randomIndexLaptop];
+
+            // Update the source only after ensuring the previous load is complete
+            myLaptop.src = laptop;
+
+            // Play the video again
+            myLaptop.play();
+        }
+
+        function randomVideo() {
+            console.log("Running Random Video");
+
+            // Add a condition to ensure the previous load operation is complete
+            if (!myVideo.paused && !myVideo.ended) {
+                // Pause and reset the current video before changing the source
+                myVideo.pause();
+                myVideo.currentTime = 0;
+            }
+
+            randomIndexVideo = Math.floor(Math.random() * videos.length);
+            video = videos[randomIndexVideo];
+
+            // Update the source only after ensuring the previous load is complete
+            myVideo.src = video;
+
+            // Play the video again
+            myVideo.play();
+        }
+
+
+
+    </script>
+    <style>
+        section {
+            display: grid;
+            place-items: center;
+            align-content: center;
+            text-align: center;
+            min-height: 1vh;
+            display: block;
+            border-radius: 10px;
+
+
+        }
+
+
+        .image-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            max-width: 2000px;
+
+            transition: all 0.3s ease-in-out;
+        }
+
+        .image-container:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .video-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 300px;
+            text-align: center;
+            object-fit: contain;
+            margin: 0 auto;
+            max-width: 2000px;
+
+            /*             max-width: 100%; */
+            max-height: 100%;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+
+        }
+
+        .video-container:hover {
+            transform: scale(1.05);
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+
+        }
+
+        .video-container video {
+            object-fit: cover;
+        }
+
+        .cropped-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: blur(2px);
+            transition: all 0.5s ease-in-out;
+
+        }
+
+        .cropped-video {
+            position: absolute;
+            align-content: center;
+            top: 50%;
+            left: 50%;
+            object-fit: cover;
+
+            transition: all 0.5s ease-in-out;
+
+        }
+
+        .cropped-image:hover {
+            filter: blur(0);
+            transition: all 0.5s ease-in-out;
+
+
+            /* remove the blur effect on hover */
+        }
+
+        .text-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-overlay {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            backdrop-filter: blur(5px);
+
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            display: inline-block;
+            border-radius: 10px;
+
+        }
+
+        .text-overlay1 {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+
+
+            background-color: rgba(100, 100, 100, 0.5);
+            padding: 10px;
+            display: inline-block;
+            border-radius: 10px;
+        }
+
+
+        .bg-image {
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hidden {
+            opacity: 0;
+            filter: blur(5px);
+            transform: translateX(-50px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .show {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateX(0px);
+            transform: scale(1.0);
+        }
+    </style>
+
+
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/highlights/music" class="relative image-container">
+
+
+            <img id='composer' class='bg-image cropped-image'>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay "> COMPOSER </h2>
+
+        </a>
+
+
+    </section>
+    <br>
+    <hr class='hidden'>
+    <br>
+
+
+
+
+
+
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/media/avengineering" class="relative image-container">
+
+
+
+
+            <img id = 'av' class='bg-image cropped-image'
+                src='https://images.squarespace-cdn.com/content/v1/5a6fccf8d74cff4818ad90a2/70c7ef76-2c21-406f-980c-572c8e8f8b62/tempImageiCYHHB.jpg?format=1000w'>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay1 "> AUDIO/VIDEO ENGINEER </h2>
+
+        </a>
+
+    </section>
+
+
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/highlights/max" class="relative image-container">
+
+
+            <img id='sound' class='bg-image cropped-image'>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay "> SOUND ARTIST </h2>
+
+        </a>
+
+
+
+    </section>
+
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="relative image-container">
+            <video playsinline autoplay id='myVideo' class='bg-image cropped-image'
+                style="border-radius: 10px; z-index: -1">
+            </video>
+            <video id="noise" playsinline autoplay class='bg-image cropped-image'
+                style="border-radius: 10px; z-index: -2">
+                <source src="https://www.cameronjohnston.xyz/s/noise4.mov">
+            </video>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay1 "> VIDEO ARTIST </h2>
+
+
+        </a>
+    </section>
+
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/albums" class="relative image-container">
+
+
+            <img class='bg-image cropped-image'
+                src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac508a299f16299dff71b/1676330252119/producer.png'>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay1 "> PRODUCER </h2>
+
+        </a>
+
+
+
+    </section>
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class="hidden floating-image">
+
+        <a href="https://www.cameronjohnston.xyz/programming" class="relative image-container">
+
+
+            <img class='bg-image cropped-image'
+                src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4ee26ee86324adf12e4/1676330223142/programmer.png'>
+
+
+            <div class="text-wrapper">
+                <h2 class="text-overlay1 "> PROGRAMMER </h2>
+
+        </a>
+
+
+
+    </section>
+
+
+
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class='hidden floating-image'>
+        <a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="relative image-container">
+            <video playsinline autoplay id='myLaptop' class='bg-image cropped-image'
+                style="border-radius: 10px; z-index: -1">
+            </video>
+            <video id="noise" playsinline autoplay class='bg-image cropped-image'
+                style="border-radius: 10px; z-index: -2">
+                <source src="https://www.cameronjohnston.xyz/s/noise4.mov">
+            </video>
+            <div class="text-wrapper">
+                <h2 class="text-overlay1"> LAPTOP PERFORMER </h2>
+
+        </a>
+    </section>
+
+
+
+    <br>
+    <hr class='hidden'>
+    <br>
+    <section class='hidden floating-image'>
+        <a href="https://www.cameronjohnston.xyz/director/new-music-ensemble" class="relative image-container">
+            <img class='bg-image cropped-image'
+                src='https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e1830bb646bc07630e009b/1675723532190/conductor.png'>
+            <div class="text-wrapper">
+                <h2 class="text-overlay1"> CONDUCTOR </h2>
+            </div>
+        </a>
+    </section>
+
+    <br>
+    <hr class='hidden'>
+    <br>
+
+
+</body>
