@@ -58,7 +58,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
+        .text-block1 .span-class {
+    display: inline-block; /* Required to apply width */
+    width: 1.2em;          /* Fixed width so letters don't 'push' others */
+    text-align: center;    /* Keeps the letter centered in its box */
+    z-index: 4;
+}
 
+/* Ensure the container doesn't shrinkwrap and jump */
+.text-block1 {
+    min-width: 400px;      /* Adjust based on your longest name */
+}
 
         .font1 {
             font-family: Arial, sans-serif;
