@@ -58,7 +58,7 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-    /* RESTORING YOUR FONT CLASSES */
+    /* FONT CLASSES */
     .font1 { font-family: Arial, sans-serif; }
     .font2 { font-family: "Times New Roman", serif; }
     .font3 { font-family: "Courier New", monospace; }
@@ -70,56 +70,63 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        width: 100vw;
-        min-height: 100vh; /* Keeps everything centered in the screen */
+        width: 100%;
+        max-width: 100vw; /* Strict boundary: never wider than screen */
+        min-height: 100vh;
         margin: 0 auto;
-        gap: 5vw; 
+        overflow: hidden; /* Safety net */
+        box-sizing: border-box;
+        padding: 0 2vw; /* Side breathing room */
+        gap: 2vw; 
     }
 
-    /* IMAGE SCALING: No fixed height, scales with window width */
+    /* IMAGE: Flex-shrink allows it to get smaller if text takes up room */
     .image-left1 {
-        width: 35vw; /* Image takes up 35% of the window width */
-        max-width: 600px;
-        line-height: 0; /* Prevents tiny gaps at the bottom */
+        flex: 0 1 40%; /* Starts at 40% width, allowed to shrink (1) but not grow (0) */
+        max-width: 500px;
     }
 
     .image-left1 img {
         width: 100%;
-        height: auto; /* Maintains original aspect ratio perfectly */
+        height: auto;
         display: block;
-        border-radius: 20px;
+        border-radius: 15px;
     }
 
+    /* TEXT: Flex-shrink 0 ensures the text doesn't get "squished" sideways */
     .text-block1 {
-        flex: 0 0 auto;
+        flex: 0 0 auto; 
         text-align: center;
     }
 
     .text-block1 h1 {
-        font-size: 5vw; /* Text scales at the same rate as the image */
-        margin: 0;
+        /* font-size scales, but clamp() keeps it from getting too huge */
+        font-size: clamp(20px, 4vw, 45px); 
+        margin: 5px 0;
         white-space: nowrap; 
-        line-height: 1.1;
+        line-height: 1;
     }
 
-    /* THE JIGGLE FIX */
+    /* JIGGLE FIX */
     .span-class {
         display: inline-block;
-        width: 0.8em; 
+        width: 0.75em; /* Narrower slot to keep name width down */
         text-align: center;
     }
 
-    /* MOBILE: Stacks and centers when window is thin */
-    @media only screen and (max-width: 800px) {
+    /* MOBILE: Switch to vertical BEFORE it overflows */
+    @media only screen and (max-width: 900px) {
         .container1 {
             flex-direction: column;
             gap: 20px;
+            padding-top: 50px;
         }
         .image-left1 {
-            width: 70vw; /* Scales larger on mobile */
+            flex: 0 0 auto;
+            width: 60vw;
         }
         .text-block1 h1 {
-            font-size: 12vw; /* Scales larger for mobile readability */
+            font-size: 8vw; /* Scale up slightly for vertical mobile view */
         }
     }
 </style>
