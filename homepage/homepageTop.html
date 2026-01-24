@@ -3,12 +3,23 @@
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
-        var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"];
+        // 1. Setup Headshots
+        var headshots = [
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", 
+            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"
+        ];
         var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
         var headshot1 = headshots[randomIndexHeadshots1];
         var myHeadshot1 = document.getElementById("myHeadshot1");
-        myHeadshot1.src = headshot1;
+        if(myHeadshot1) myHeadshot1.src = headshot1;
 
+        // 2. Setup Intersection Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -22,8 +33,8 @@
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
 
+        // 3. Setup Animation Classes and Muted Colors
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
-        c// Sophisticated, high-contrast muted palette
         const colors = [
             '#2F4F4F', // Dark Slate Gray
             '#4B0082', // Indigo
@@ -35,30 +46,32 @@
             '#191970'  // Midnight Blue
         ];
 
-        // FUNCTION 1: Handles Font Changes
+        // FUNCTION 1: Font Jitter (Faster)
         function changeFontRandomly(span) {
             fontClasses.forEach(fontClass => span.classList.remove(fontClass));
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
             
+            // Interval between 300ms and 700ms
             const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
             setTimeout(() => changeFontRandomly(span), interval);
         }
 
-        // FUNCTION 2: Handles Color Changes
+        // FUNCTION 2: Color Cycle (Slower)
         function changeColorRandomly(span) {
             const randomColorIndex = Math.floor(Math.random() * colors.length);
             span.style.color = colors[randomColorIndex];
             
-            // Slower transition for a calmer effect: 800ms to 1500ms
+            // Slower interval between 800ms and 1500ms
             const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
             setTimeout(() => changeColorRandomly(span), interval);
         }
 
+        // Initialize both loops for each letter
         const spans = document.querySelectorAll('.text-block1 .span-class');
         spans.forEach(span => {
             changeFontRandomly(span);
-            changeColorRandomly(span); // Start the second independent loop
+            changeColorRandomly(span);
         });
     }
 </script>
