@@ -71,19 +71,15 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        max-width: 100vw; /* Strict boundary: never wider than screen */
-        min-height: 100vh;
+        /* REMOVED min-height: 100vh to stop vertical stretching */
         margin: 0 auto;
-        overflow: hidden; /* Safety net */
-        box-sizing: border-box;
-        padding: 0 2vw; /* Side breathing room */
-        gap: 2vw; 
+        padding: 10px 0; /* Minimal padding just to keep off the edges */
+        gap: 3vw; 
     }
 
-    /* IMAGE: Flex-shrink allows it to get smaller if text takes up room */
     .image-left1 {
-        flex: 0 1 40%; /* Starts at 40% width, allowed to shrink (1) but not grow (0) */
-        max-width: 500px;
+        flex: 0 1 35vw; 
+        max-width: 450px; /* Slightly smaller to keep it tight */
     }
 
     .image-left1 img {
@@ -93,43 +89,58 @@
         border-radius: 15px;
     }
 
-    /* TEXT: Flex-shrink 0 ensures the text doesn't get "squished" sideways */
     .text-block1 {
         flex: 0 0 auto; 
         text-align: center;
     }
 
     .text-block1 h1 {
-        /* font-size scales, but clamp() keeps it from getting too huge */
-        font-size: clamp(20px, 4vw, 45px); 
-        margin: 5px 0;
+        font-size: clamp(18px, 3.8vw, 42px); 
+        margin: 0; /* REMOVED all margins to bring names closer together */
+        padding: 2px 0; /* Micro-adjustment for spacing */
         white-space: nowrap; 
-        line-height: 1;
+        line-height: 1.1;
     }
 
-    /* JIGGLE FIX */
+    /* THE JIGGLE FIX */
     .span-class {
         display: inline-block;
-        width: 0.75em; /* Narrower slot to keep name width down */
+        width: 0.75em; 
         text-align: center;
     }
 
-    /* MOBILE: Switch to vertical BEFORE it overflows */
-    @media only screen and (max-width: 900px) {
+    /* MOBILE: Stacked view */
+    @media only screen and (max-width: 800px) {
         .container1 {
             flex-direction: column;
-            gap: 20px;
-            padding-top: 50px;
+            gap: 15px;
         }
         .image-left1 {
-            flex: 0 0 auto;
             width: 60vw;
         }
         .text-block1 h1 {
-            font-size: 8vw; /* Scale up slightly for vertical mobile view */
+            font-size: 9vw;
         }
     }
 </style>
+
+<div class="container1 hidden1">
+    <div class="image-left1">
+        <img id="myHeadshot1" src="">
+    </div>
+
+    <div class="text-block1">
+        <h1>
+            <span class="span-class">C</span><span class="span-class">A</span><span class="span-class">M</span><span class="span-class">E</span><span class="span-class">R</span><span class="span-class">O</span><span class="span-class">N</span>
+        </h1>
+        <h1>
+            <span class="span-class">J</span><span class="span-class">O</span><span class="span-class">H</span><span class="span-class">N</span><span class="span-class">S</span><span class="span-class">T</span><span class="span-class">O</span><span class="span-class">N</span>
+        </h1>
+        <h1>
+            <span class="span-class">U</span><span class="span-class">S</span><span class="span-class">H</span><span class="span-class">I</span><span class="span-class">J</span><span class="span-class">I</span><span class="span-class">M</span><span class="span-class">A</span>
+        </h1>
+    </div>
+</div>
 
 
 
