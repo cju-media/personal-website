@@ -58,16 +58,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-        .text-block1 .span-class {
-    display: inline-block; /* Required to apply width */
-    width: 1.2em;          /* Fixed width so letters don't 'push' others */
-    text-align: center;    /* Keeps the letter centered in its box */
-    z-index: 4;
-}
-
-/* Ensure the container doesn't shrinkwrap and jump */
+        /* Find these in your 1000px and 1500px media queries */
 .text-block1 {
-    min-width: 400px;      /* Adjust based on your longest name */
+    order: -1;
+    white-space: nowrap;
+    padding-right: 350px;
+    text-align: center;
+    width: 500px; /* Use a fixed width instead of max-width: 50% */
+    z-index: 1;
 }
 
         .font1 {
