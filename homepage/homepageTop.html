@@ -41,103 +41,116 @@
         }
     </script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+ <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-        /* FONT CLASSES */
-        .font1 { font-family: Arial, sans-serif; }
-        .font2 { font-family: "Times New Roman", serif; }
-        .font3 { font-family: "Courier New", monospace; }
-        .font4 { font-family: "essay-text", monospace; } 
-        .font5 { font-family: 'Playfair Display', serif; }
+    /* 1. FONT CLASSES - Restoring your specific choices */
+    .font1 { font-family: Arial, sans-serif; }
+    .font2 { font-family: "Times New Roman", serif; }
+    .font3 { font-family: "Courier New", monospace; }
+    .font4 { font-family: "essay-text", monospace; } 
+    .font5 { font-family: 'Playfair Display', serif; }
 
+    /* 2. MAIN CONTAINER - Centering and stability */
+    .container1 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 100vw;
+        margin: 0 auto;
+        padding: 20px;
+        gap: 3vw;
+        box-sizing: border-box;
+        overflow: hidden;
+        
+        /* PREVENTS JIGGLING: Keeps the rest of your page content still */
+        min-height: 450px; 
+        contain: layout;   
+    }
+
+    /* 3. IMAGE STYLING - Maintaining aspect ratio and scaling */
+    .image-left1 {
+        flex: 0 1 35vw; 
+        max-width: 450px;
+    }
+
+    .image-left1 img {
+        width: 100%;
+        height: auto; 
+        display: block;
+        border-radius: 15px;
+    }
+
+    /* 4. TEXT BLOCK - Vertical stability */
+    .text-block1 {
+        flex: 0 0 auto;
+        text-align: center;
+    }
+
+    /* Safety: Hides the hard-coded <br> tags to prevent extra height gaps */
+    .text-block1 br {
+        display: none !important;
+    }
+
+    .text-block1 h1 {
+        /* Adjusted font-size to 3.5vw to allow for the wider letter spacing */
+        font-size: clamp(16px, 3.5vw, 40px);
+        margin: 15px 0; /* Vertical space between names */
+        padding: 0;
+        white-space: nowrap; 
+        
+        /* LOCKING HEIGHT: Prevents fonts with tall ascenders from shifting the layout */
+        line-height: 1.0; 
+        height: 1.1em; 
+        display: block;
+    }
+
+    /* 5. LETTER SLOTS - Spacing out the letters */
+    .span-class {
+        display: inline-block;
+        /* Increased to 1.0em for much wider spacing as requested */
+        width: 1.0em; 
+        text-align: center;
+        z-index: 4;
+        position: relative;
+    }
+
+    /* 6. MOBILE STYLES - Stacking and overflow prevention */
+    @media only screen and (max-width: 800px) {
         .container1 {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 100vw;
-            margin: 0 auto;
-            padding: 20px;
-            gap: 3vw;
-            box-sizing: border-box;
-            overflow: hidden;
-            
-            /* STABILITY: Keeps the content below still */
-            min-height: 450px; 
-            contain: layout;   
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px 10px;
+            /* Higher min-height for the stacked view to stop jiggling below */
+            min-height: 700px; 
         }
-
         .image-left1 {
-            flex: 0 1 35vw; 
-            max-width: 450px;
+            width: 65vw;
+            max-width: 300px;
         }
-
-        .image-left1 img {
-            width: 100%;
-            height: auto; 
-            display: block;
-            border-radius: 15px;
-        }
-
-        .text-block1 {
-            flex: 0 0 auto;
-            text-align: center;
-        }
-
-        /* Stop the <br> tags from adding extra height */
-        .text-block1 br {
-            display: none !important;
-        }
-
         .text-block1 h1 {
-            font-size: clamp(18px, 3.8vw, 42px);
-            margin: 10px 0; /* Use stable margins instead of <br> */
-            padding: 0;
-            white-space: nowrap; 
-            /* CRITICAL: Uniform line-height stops vertical jiggling */
-            line-height: 1.0; 
-            height: 1.1em; /* Locks the height of the line */
+            /* 6vw ensures 8 letters at 1em width still fit on a phone screen */
+            font-size: 6vw; 
+            margin: 8px 0;
         }
+    }
 
-        .span-class {
-            display: inline-block;
-            width: 0.75em;
-            text-align: center;
-        }
+    /* 7. SCROLL ANIMATION */
+    .hidden1 {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translateX(-30px);
+        transition: all 1s ease-out;
+    }
 
-        @media only screen and (max-width: 800px) {
-            .container1 {
-                flex-direction: column;
-                gap: 20px;
-                padding: 40px 10px;
-                min-height: 700px; /* Ensure this is taller than the content inside */
-            }
-            .image-left1 {
-                width: 65vw;
-                max-width: 300px;
-            }
-            .text-block1 h1 {
-                font-size: 7vw;
-                margin: 5px 0;
-            }
-        }
-
-        /* ANIMATION */
-        .hidden1 {
-            opacity: 0;
-            filter: blur(5px);
-            transform: translateX(-30px);
-            transition: all 1s ease-out;
-        }
-
-        .show1 {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateX(0);
-        }
-    </style>
+    .show1 {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0);
+    }
+</style>
 
     <div class="container1 hidden1">
         <div class="image-left1">
