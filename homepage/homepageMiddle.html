@@ -14,8 +14,8 @@
         text-align: center;
         width: 95%; 
         max-width: 2000px;
-        /* REMOVED margin-bottom to stop double-spacing */
-        margin: 0 auto; 
+        /* Balanced vertical spacing without lines */
+        margin: 0 auto 50px auto; 
         padding: 0 !important;
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -26,20 +26,20 @@
         overflow: hidden;
         position: relative;
         width: 100%; 
-        height: 300px;
+        height: 300px; 
         border-radius: 10px;
         background: #000; 
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
         text-decoration: none;
-        box-shadow: inset 0 0 15px rgba(0,0,0,0.5); 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
     }
 
     .hp-mid-wrapper .image-container:hover, 
     .hp-mid-wrapper .video-container:hover {
-        transform: scale(1.03); 
+        transform: scale(1.02); 
         box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
         z-index: 20; 
     }
@@ -55,7 +55,7 @@
         height: 100% !important;
         object-fit: cover !important;
         filter: blur(6px); 
-        transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s ease;
+        transition: transform 0.8s ease, filter 0.8s ease;
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
@@ -63,30 +63,15 @@
         filter: blur(0px); 
     }
 
-    /* --- THE LINE OBJECT (Spacing Master) --- */
-    .hp-mid-wrapper hr {
-        border: 0;
-        height: 1px;
-        background-color: rgb(85, 82, 82);
-        width: 100%;
-        /* This margin controls the GAP between containers */
-        /* 40px top (from image above) and 40px bottom (to image below) */
-        margin: 40px 0 !important; 
-        opacity: 0.6;
-    }
-
     /* --- MOBILE REFINEMENTS --- */
     @media screen and (max-width: 768px) {
+        .hp-mid-wrapper section { 
+            width: 90% !important; 
+            margin: 0 auto 25px auto !important; /* Tight spacing for mobile view */
+        }
         .hp-mid-wrapper .image-container, 
         .hp-mid-wrapper .video-container { 
             height: 180px !important; 
-        }
-        .hp-mid-wrapper section { 
-            width: 90% !important; 
-        }
-        .hp-mid-wrapper hr {
-            /* Tightens the gap on mobile to 20px */
-            margin: 20px 0 !important; 
         }
         .hp-mid-wrapper .text-overlay, 
         .hp-mid-wrapper .text-overlay1 {
@@ -95,12 +80,12 @@
         }
     }
 
-    /* --- SLIDE ANIMATIONS --- */
+    /* --- SLIDE ANIMATIONS (FROM LEFT) --- */
     .hp-mid-wrapper .hidden-slide {
         opacity: 0;
-        filter: blur(10px);
-        transform: translateX(-50px); /* Reduced distance for smoother feel */
-        transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: blur(8px);
+        transform: translateX(-60px); /* Slides in from left */
+        transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
         will-change: transform, opacity;
     }
 
@@ -110,6 +95,7 @@
         transform: translateX(0px);
     }
 
+    /* --- OVERLAYS --- */
     .hp-mid-wrapper .text-wrapper {
         position: absolute;
         top: 50%;
@@ -119,10 +105,9 @@
         width: 100%;
         pointer-events: none;
     }
-
     .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
         padding: 12px 24px;
-        border-radius: 10px;
+        border-radius: 8px;
         backdrop-filter: blur(8px);
         display: inline-block;
         letter-spacing: 2px;
@@ -133,70 +118,17 @@
     .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
 </style>
 
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container">
-            <img id='mid-av' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div>
-        </a>
-        <hr>
-    </section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/highlights/max" class="image-container"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="video-container"><video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video><div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container"><video playsinline autoplay muted id='mid-video' class='cropped-video'></video><div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="https://www.cameronjohnston.xyz/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
 
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container">
-            <img id='mid-composer' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/highlights/max" class="image-container">
-            <img id='sound' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="video-container">
-            <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
-            <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container">
-            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
-            <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/programming" class="image-container">
-            <img id='mid-programmer' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/albums" class="image-container">
-            <img id='mid-producer' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div>
-        </a>
-        <hr>
-    </section>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/director/new-music-ensemble" class="image-container">
-            <img id='mid-conductor' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div>
-        </a>
-    </section> <script>
+    <script>
         (function() {
-            // Arrays remain the same
             const perfVids = ["https://www.cameronjohnston.xyz/s/performer1.mov", "https://www.cameronjohnston.xyz/s/performer2.mov", "https://www.cameronjohnston.xyz/s/performer3.mov", "https://www.cameronjohnston.xyz/s/performer4.mov", "https://www.cameronjohnston.xyz/s/performer5.mov"];
             const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov"];
             const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg'];
