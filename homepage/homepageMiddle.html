@@ -1,11 +1,26 @@
 <div class="hp-mid-wrapper">
     <style>
+        /* Container and Spacing */
         .hp-mid-wrapper section {
             display: block;
             text-align: center;
-            margin-bottom: 30px;
             width: 100%;
-            min-height: 50px; /* Ensures space exists even before load */
+            margin: 0 auto;
+        }
+
+        /* The horizontal line between sections */
+        .hp-mid-wrapper hr.section-divider {
+            border: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2); /* Subtle white line */
+            width: 60%;
+            margin: 40px auto;
+        }
+
+        /* Adjustable spacer div */
+        .hp-mid-wrapper .extra-spacer {
+            height: 60px; /* Adjust this value for more/less space */
+            width: 100%;
         }
 
         .hp-mid-wrapper .image-container, 
@@ -15,7 +30,7 @@
             width: 100%;
             height: 300px;
             border-radius: 10px;
-            background: #1a1a1a; /* Dark placeholder so it's not invisible */
+            background: #111; 
             margin: 0 auto;
             display: block;
         }
@@ -35,19 +50,22 @@
             width: 100%;
             height: 100%;
             display: block;
+            transition: transform 0.5s ease;
         }
 
-        .hp-mid-wrapper .hidden {
+        /* --- SLIDE IN ANIMATION --- */
+        .hp-mid-wrapper .hidden-slide {
             opacity: 0;
-            filter: blur(5px);
-            transform: translateY(20px); /* Changed to Y for better mobile scrolling feel */
-            transition: all 0.8s ease-out;
+            filter: blur(8px);
+            transform: translateX(-60px); /* Start shifted to the left */
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform, opacity;
         }
 
-        .hp-mid-wrapper .show {
+        .hp-mid-wrapper .show-slide {
             opacity: 1;
             filter: blur(0px);
-            transform: translateY(0px);
+            transform: translateX(0px);
         }
 
         .hp-mid-wrapper .text-wrapper {
@@ -60,39 +78,49 @@
         }
 
         .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 10px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             display: inline-block;
+            letter-spacing: 2px;
+            font-weight: bold;
         }
-        .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.6); color: black; }
-        .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.5); color: white; }
+        .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
+        .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
     </style>
 
-    <section class="hidden">
+    <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container">
             <img id='mid-composer' class='cropped-image'>
             <div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div>
         </a>
     </section>
 
-    <section class="hidden">
+    <hr class="section-divider">
+
+    <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container">
             <img id='mid-av' class='cropped-image'>
             <div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div>
         </a>
     </section>
 
-    <section class="hidden">
+    <hr class="section-divider">
+
+    <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container">
-            <video playsinline autoplay muted id='mid-video' class='cropped-video' style="z-index: 2"></video>
+            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
-    <section class="hidden">
+    <div class="extra-spacer"></div>
+
+    <hr class="section-divider">
+
+    <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="video-container">
-            <video playsinline autoplay muted id='mid-laptop' class='cropped-video' style="z-index: 2"></video>
+            <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
     </section>
@@ -100,68 +128,56 @@
     <script>
         (function() {
             const perfVids = ["https://www.cameronjohnston.xyz/s/performer1.mov", "https://www.cameronjohnston.xyz/s/performer2.mov", "https://www.cameronjohnston.xyz/s/performer3.mov", "https://www.cameronjohnston.xyz/s/performer4.mov", "https://www.cameronjohnston.xyz/s/performer5.mov"];
-            const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov", "https://www.cameronjohnston.xyz/s/Reel-1.mov", "https://www.cameronjohnston.xyz/s/Reel-3.mov", "https://www.cameronjohnston.xyz/s/Reel-2.mov"];
+            const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov"];
             const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg'];
             const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png'];
 
             function swapVideo() {
                 const v = document.getElementById("mid-video");
-                if (v) { 
-                    v.src = artVids[Math.floor(Math.random() * artVids.length)];
-                    v.load(); // Required for some mobile browsers to register the src change
-                    v.play().catch(()=>{}); 
-                }
+                if (v) { v.src = artVids[Math.floor(Math.random() * artVids.length)]; v.load(); v.play().catch(()=>{}); }
             }
 
             function swapLaptop() {
                 const l = document.getElementById("mid-laptop");
-                if (l) { 
-                    l.src = perfVids[Math.floor(Math.random() * perfVids.length)];
-                    l.load();
-                    l.play().catch(()=>{}); 
-                }
+                if (l) { l.src = perfVids[Math.floor(Math.random() * perfVids.length)]; l.load(); l.play().catch(()=>{}); }
             }
 
             function initEverything() {
-                console.log("Initializing Middle Content...");
-                
-                // Set Images
+                // Assign Images
                 const av = document.getElementById("mid-av");
                 const co = document.getElementById("mid-composer");
                 if(av) av.src = avPics[Math.floor(Math.random() * avPics.length)];
                 if(co) co.src = compPics[Math.floor(Math.random() * compPics.length)];
 
-                // Video Listeners
+                // Video End Events
                 const v = document.getElementById("mid-video");
                 const l = document.getElementById("mid-laptop");
                 if(v) v.onended = swapVideo;
                 if(l) l.onended = swapLaptop;
 
-                // Intersection Observer
+                // Intersection Observer for Slide-in
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting) entry.target.classList.add('show');
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show-slide');
+                        }
                     });
                 }, { threshold: 0.1 });
 
-                document.querySelectorAll('.hp-mid-wrapper .hidden').forEach(el => observer.observe(el));
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => observer.observe(el));
 
-                // Kickstart videos
                 swapVideo();
                 swapLaptop();
             }
 
-            // This is the "Magic" part for the Loader: 
-            // It tries to run immediately, but waits for the elements to exist.
-            const attemptInit = setInterval(() => {
+            // Ensure content is loaded before firing
+            const checkLoad = setInterval(() => {
                 if (document.getElementById('mid-composer')) {
                     initEverything();
-                    clearInterval(attemptInit);
+                    clearInterval(checkLoad);
                 }
             }, 100);
-
-            // Timeout after 5 seconds so it doesn't run forever if something fails
-            setTimeout(() => clearInterval(attemptInit), 5000);
+            setTimeout(() => clearInterval(checkLoad), 5000);
         })();
     </script>
 </div>
