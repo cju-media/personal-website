@@ -1,6 +1,5 @@
 <div class="hp-mid-wrapper">
     <style>
-        /* 1. SQUARESPACE CONTAINER OVERRIDES */
         .hp-mid-wrapper {
             width: 100%;
             margin: 0 auto !important;
@@ -12,73 +11,76 @@
         .hp-mid-wrapper section {
             display: block;
             text-align: center;
-            width: 100%;
-            margin: 0 auto;
+            width: 95%; 
+            max-width: 2000px;
+            margin: 0 auto 50px auto; 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* 2. THE CONTAINER (CENTERS CONTENT) */
+        /* --- THE CONTAINER --- */
         .hp-mid-wrapper .image-container, 
         .hp-mid-wrapper .video-container {
             overflow: hidden;
             position: relative;
-            width: 95%; /* Small buffer helps center in the SQSP grid */
-            max-width: 2000px;
+            width: 100%; 
             height: 300px;
             border-radius: 10px;
             background: #000; 
-            margin: 0 auto !important; 
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
             text-decoration: none;
             box-shadow: inset 0 0 15px rgba(0,0,0,0.5); 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
+        }
+
+        /* --- CONTAINER GROWS ON HOVER --- */
+        .hp-mid-wrapper .image-container:hover, 
+        .hp-mid-wrapper .video-container:hover {
+            transform: scale(1.03); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            z-index: 20; 
+        }
+
+        /* --- ASSETS (CENTERED & BLURRED) --- */
+        .hp-mid-wrapper .cropped-image, 
+        .hp-mid-wrapper .cropped-video {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.15) !important;
+            margin: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            filter: blur(6px); 
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s ease;
+        }
+
+        /* --- UNBLUR ON HOVER --- */
+        .hp-mid-wrapper .image-container:hover .cropped-image,
+        .hp-mid-wrapper .video-container:hover .cropped-video {
+            filter: blur(0px); 
+            transform: translate(-50%, -50%) scale(1.15) !important;
+        }
+
+        /* --- THE LINE OBJECT --- */
+        .hp-mid-wrapper hr {
+            border: 0;
+            height: 1px;
+            background-color: rgb(85, 82, 82);
+            width: 100%;
+            margin: 50px 0 0 0; 
+            opacity: 1;
         }
 
         @media screen and (max-width: 768px) {
             .hp-mid-wrapper .image-container, 
-            .hp-mid-wrapper .video-container { height: 220px; width: 90%; }
+            .hp-mid-wrapper .video-container { height: 220px; }
+            .hp-mid-wrapper section { width: 90%; }
         }
 
-        /* 3. THE ASSETS (CENTERED & BLURRED) */
-        .hp-mid-wrapper .cropped-image, 
-        .hp-mid-wrapper .cropped-video {
-            /* Forced Centering */
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            /* Start scaled up to hide blurry edges */
-            transform: translate(-50%, -50%) scale(1.15) !important;
-            
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            min-width: 100% !important;
-            min-height: 100% !important;
-            max-width: none !important; 
-            object-fit: cover !important;
-            display: block !important;
-            
-            filter: blur(15px); 
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
-                        filter 0.8s ease;
-        }
-
-        /* 4. HOVER INTERACTION */
-        .hp-mid-wrapper .image-container:hover .cropped-image,
-        .hp-mid-wrapper .video-container:hover .cropped-video {
-            transform: translate(-50%, -50%) scale(1.05) !important;
-            filter: blur(0px); 
-        }
-
-        .hp-mid-wrapper .image-container:hover .text-overlay,
-        .hp-mid-wrapper .video-container:hover .text-overlay1 {
-            background: rgba(255, 255, 255, 0.95);
-            color: #000;
-            transform: scale(1.05);
-        }
-
-        /* 5. SLIDE IN/OUT ANIMATIONS */
+        /* --- SLIDE ANIMATIONS --- */
         .hp-mid-wrapper .hidden-slide {
             opacity: 0;
             filter: blur(10px);
@@ -93,7 +95,7 @@
             transform: translateX(0px) scale(1);
         }
 
-        /* 6. OVERLAYS & DIVIDERS */
+        /* --- TEXT OVERLAYS --- */
         .hp-mid-wrapper .text-wrapper {
             position: absolute;
             top: 50%;
@@ -112,53 +114,73 @@
             letter-spacing: 2px;
             font-weight: bold;
             text-transform: uppercase;
-            transition: all 0.4s ease;
         }
         .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
         .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
-
-        .hp-mid-wrapper hr.section-divider {
-            border: 0;
-            height: 1px;
-            background: #000000; 
-            width: 95%;
-            max-width: 2000px;
-            margin: 50px auto;
-        }
     </style>
-
-    <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container">
-            <img id='mid-composer' class='cropped-image'>
-            <div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div>
-        </a>
-    </section>
-
-    <hr class="section-divider hidden-slide">
 
     <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/media/avengineering" class="image-container">
             <img id='mid-av' class='cropped-image'>
             <div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div>
         </a>
+        <hr>
     </section>
-
-    <hr class="section-divider hidden-slide">
 
     <section class="hidden-slide">
-        <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container">
-            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
-            <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
+        <a href="https://www.cameronjohnston.xyz/highlights/music" class="image-container">
+            <img id='mid-composer' class='cropped-image'>
+            <div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div>
         </a>
+        <hr>
     </section>
 
-    <hr class="section-divider hidden-slide">
+    <section class="hidden-slide">
+        <a href="https://www.cameronjohnston.xyz/highlights/max" class="image-container">
+            <img id='sound' class='cropped-image'>
+            <div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div>
+        </a>
+        <hr>
+    </section>
 
     <section class="hidden-slide">
         <a href="https://www.cameronjohnston.xyz/director/laptop-ensemble" class="video-container">
             <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
+        <hr>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="https://www.cameronjohnston.xyz/highlights/videoart" class="video-container">
+            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
+            <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
+        </a>
+        <hr>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="https://www.cameronjohnston.xyz/programming" class="image-container">
+            <img id='mid-programmer' class='cropped-image'>
+            <div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div>
+        </a>
+        <hr>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="https://www.cameronjohnston.xyz/albums" class="image-container">
+            <img id='mid-producer' class='cropped-image'>
+            <div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div>
+        </a>
+        <hr>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="https://www.cameronjohnston.xyz/director/new-music-ensemble" class="image-container">
+            <img id='mid-conductor' class='cropped-image'>
+            <div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div>
+        </a>
+        <hr>
     </section>
 
     <script>
@@ -167,6 +189,10 @@
             const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov"];
             const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg?content-type=image%2Fjpeg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg?content-type=image%2Fjpeg'];
             const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png'];
+            const prodPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac508a299f16299dff71b/1676330252119/producer.png'];
+            const progPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4ee26ee86324adf12e4/1676330223142/programmer.png'];
+            const soundPics = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"];
+            const condPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e1830bb646bc07630e009b/1675723532190/conductor.png'];
 
             function swapVideo() {
                 const v = document.getElementById("mid-video");
@@ -181,8 +207,17 @@
             function initEverything() {
                 const av = document.getElementById("mid-av");
                 const co = document.getElementById("mid-composer");
+                const pr = document.getElementById("mid-producer");
+                const pg = document.getElementById("mid-programmer");
+                const sd = document.getElementById("sound");
+                const cd = document.getElementById("mid-conductor");
+                
                 if(av) av.src = avPics[Math.floor(Math.random() * avPics.length)];
                 if(co) co.src = compPics[Math.floor(Math.random() * compPics.length)];
+                if(pr) pr.src = prodPics[Math.floor(Math.random() * prodPics.length)];
+                if(pg) pg.src = progPics[Math.floor(Math.random() * progPics.length)];
+                if(sd) sd.src = soundPics[Math.floor(Math.random() * soundPics.length)];
+                if(cd) cd.src = condPics[Math.floor(Math.random() * condPics.length)];
 
                 const v = document.getElementById("mid-video");
                 const l = document.getElementById("mid-laptop");
@@ -204,7 +239,7 @@
             }
 
             const checkLoad = setInterval(() => {
-                if (document.getElementById('mid-composer')) { initEverything(); clearInterval(checkLoad); }
+                if (document.getElementById('mid-composer') || document.getElementById('mid-av')) { initEverything(); clearInterval(checkLoad); }
             }, 100);
             setTimeout(() => clearInterval(checkLoad), 5000);
         })();
