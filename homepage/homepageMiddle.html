@@ -1,20 +1,12 @@
 <div class="hp-mid-wrapper">
 <style>
-    /* Prevent the site from scrolling sideways during the animation */
-    html, body {
-        overflow-x: hidden !important;
-        width: 100%;
-        position: relative;
-    }
-
     .hp-mid-wrapper {
         width: 100%;
         margin: 0 auto !important;
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* Ensures the container itself doesn't clip the flying images */
-        overflow: visible !important; 
+        overflow-x: hidden;
     }
 
     .hp-mid-wrapper section {
@@ -22,10 +14,10 @@
         text-align: center;
         width: 95%; 
         max-width: 2000px;
+        /* Balanced vertical spacing without lines */
         margin: 0 auto 50px auto; 
         padding: 0 !important;
-        /* Using a slightly slower, more cinematic speed for the long distance */
-        transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* --- THE CONTAINER --- */
@@ -42,53 +34,68 @@
         align-items: center !important;
         text-decoration: none;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
     }
 
-    /* --- THE "SCREEN EDGE" ANIMATION --- */
-    .hp-mid-wrapper .hidden-slide {
-        opacity: 0;
-        filter: blur(15px);
-        /* This pushes it way past the edge of the Squarespace container */
-        /* It calculates the distance to the left edge of the screen */
-        transform: translateX(-150vw); 
-        will-change: transform, opacity;
+    .hp-mid-wrapper .image-container:hover, 
+    .hp-mid-wrapper .video-container:hover {
+        transform: scale(1.02); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        z-index: 20; 
     }
 
-    .hp-mid-wrapper .show-slide {
-        opacity: 1 !important;
-        filter: blur(0px);
-        transform: translateX(0);
-    }
-
-    /* --- MOBILE REFINEMENTS --- */
-    @media screen and (max-width: 768px) {
-        .hp-mid-wrapper section { 
-            width: 90% !important; 
-            margin: 0 auto 25px auto !important; 
-        }
-        .hp-mid-wrapper .image-container, 
-        .hp-mid-wrapper .video-container { 
-            height: 360px !important; 
-        }
-        .hp-mid-wrapper .hidden-slide {
-            /* Mobile screens are smaller, so we don't need to push quite as far */
-            transform: translateX(-120vw);
-        }
-    }
-
-    /* --- ASSET STYLING --- */
     .hp-mid-wrapper .cropped-image, 
     .hp-mid-wrapper .cropped-video {
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) scale(1.15) !important;
+        margin: 0 !important;
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
         filter: blur(6px); 
+        transition: transform 0.8s ease, filter 0.8s ease;
     }
 
+    .hp-mid-wrapper .image-container:hover .cropped-image,
+    .hp-mid-wrapper .video-container:hover .cropped-video {
+        filter: blur(0px); 
+    }
+
+    /* --- MOBILE REFINEMENTS --- */
+    @media screen and (max-width: 768px) {
+        .hp-mid-wrapper section { 
+            width: 90% !important; 
+            margin: 0 auto 25px auto !important; /* Tight spacing for mobile view */
+        }
+        .hp-mid-wrapper .image-container, 
+        .hp-mid-wrapper .video-container { 
+            height: 360px !important; 
+        }
+        .hp-mid-wrapper .text-overlay, 
+        .hp-mid-wrapper .text-overlay1 {
+            padding: 8px 16px !important;
+            font-size: 0.85rem !important;
+        }
+    }
+
+    /* --- SLIDE ANIMATIONS (FROM LEFT) --- */
+    .hp-mid-wrapper .hidden-slide {
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateX(-5000px); /* Slides in from left */
+        transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+        will-change: transform, opacity;
+    }
+
+    .hp-mid-wrapper .show-slide {
+        opacity: 1 !important;
+        filter: blur(0px);
+        transform: translateX(0px);
+    }
+
+    /* --- OVERLAYS --- */
     .hp-mid-wrapper .text-wrapper {
         position: absolute;
         top: 50%;
