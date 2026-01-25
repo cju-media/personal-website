@@ -1,6 +1,5 @@
 <div class="hp-mid-wrapper">
     <style>
-        /* Base Section Layout */
         .hp-mid-wrapper section {
             display: block;
             text-align: center;
@@ -8,39 +7,24 @@
             margin: 0 auto;
         }
 
-        /* Solid Black Dividers - Matches container width */
-        .hp-mid-wrapper hr.section-divider {
-            border: 0;
-            height: 1px;
-            background: #000000; 
-            width: 100%;
-            max-width: 2000px;
-            margin: 40px auto;
-            opacity: 1;
-        }
-
-        /* Spacing Div */
-        .hp-mid-wrapper .extra-spacer {
-            height: 60px;
-            width: 100%;
-        }
-
-        /* --- CONTAINERS --- */
+        /* --- THE CONTAINER --- */
         .hp-mid-wrapper .image-container, 
         .hp-mid-wrapper .video-container {
-            overflow: hidden; /* Clips the blurry edges */
+            overflow: hidden;
             position: relative;
             width: 100%;
             height: 300px;
             border-radius: 10px;
             background: #000; 
             margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            
+            /* FORCE FLEX CENTERING */
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            
             text-decoration: none;
-            /* Inset shadow helps mask any remaining edge bleed */
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5); 
         }
 
         @media screen and (max-width: 768px) {
@@ -48,47 +32,45 @@
             .hp-mid-wrapper .video-container { height: 220px; }
         }
 
-        /* --- ASSETS (Image/Video) --- */
+        /* --- THE ASSETS (Image/Video) --- */
         .hp-mid-wrapper .cropped-image, 
         .hp-mid-wrapper .cropped-video {
+            /* Reset any Squarespace defaults */
+            margin: 0 !important;
+            padding: 0 !important;
+            max-width: none !important; /* Prevents SQSP from shrinking the image */
+            
             position: absolute;
             top: 50%;
             left: 50%;
-            /* scale(1.1) pushes the "nasty" blurry edges outside the container clip */
+            /* translate(-50%, -50%) is the math for perfect centering */
             transform: translate(-50%, -50%) scale(1.1); 
+            
             object-fit: cover;
-            width: 100.5%; /* Slight extra width to prevent sub-pixel gaps */
-            height: 100.5%;
+            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
             display: block;
             
-            /* Initial State: Blurred */
-            filter: blur(6px); 
+            filter: blur(12px); 
             transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
                         filter 0.8s ease;
         }
 
-        /* --- HOVER INTERACTIONS --- */
+        /* --- HOVER --- */
         .hp-mid-wrapper .image-container:hover .cropped-image,
         .hp-mid-wrapper .video-container:hover .cropped-video {
-            /* Focus scale: zooms slightly in or stabilizes depending on preference */
             transform: translate(-50%, -50%) scale(1.05);
             filter: blur(0px); 
         }
 
-        .hp-mid-wrapper .image-container:hover .text-overlay,
-        .hp-mid-wrapper .video-container:hover .text-overlay1 {
-            background: rgba(255, 255, 255, 0.95);
-            color: #000;
-            transform: scale(1.05);
-        }
-
-        /* --- SLIDE-IN ANIMATION --- */
+        /* --- ANIMATIONS & TEXT --- */
         .hp-mid-wrapper .hidden-slide {
             opacity: 0;
             filter: blur(10px);
             transform: translateX(-60px); 
             transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform, opacity;
         }
 
         .hp-mid-wrapper .show-slide {
@@ -97,16 +79,6 @@
             transform: translateX(0px);
         }
 
-        /* Mobile specific: Remove blur automatically when visible */
-        @media (max-width: 768px) {
-            .hp-mid-wrapper .show-slide .cropped-image,
-            .hp-mid-wrapper .show-slide .cropped-video {
-                filter: blur(0px);
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        /* --- TEXT OVERLAYS --- */
         .hp-mid-wrapper .text-wrapper {
             position: absolute;
             top: 50%;
@@ -125,10 +97,18 @@
             letter-spacing: 2px;
             font-weight: bold;
             text-transform: uppercase;
-            transition: all 0.4s ease;
         }
         .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
         .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
+
+        .hp-mid-wrapper hr.section-divider {
+            border: 0;
+            height: 1px;
+            background: #000000; 
+            width: 100%;
+            max-width: 2000px;
+            margin: 40px auto;
+        }
     </style>
 
     <section class="hidden-slide">
@@ -156,7 +136,6 @@
         </a>
     </section>
 
-    <div class="extra-spacer"></div>
     <hr class="section-divider hidden-slide">
 
     <section class="hidden-slide">
@@ -196,23 +175,16 @@
 
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('show-slide');
-                        }
+                        if (entry.isIntersecting) entry.target.classList.add('show-slide');
                     });
                 }, { threshold: 0.05 });
 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => observer.observe(el));
-
-                swapVideo();
-                swapLaptop();
+                swapVideo(); swapLaptop();
             }
 
             const checkLoad = setInterval(() => {
-                if (document.getElementById('mid-composer')) {
-                    initEverything();
-                    clearInterval(checkLoad);
-                }
+                if (document.getElementById('mid-composer')) { initEverything(); clearInterval(checkLoad); }
             }, 100);
             setTimeout(() => clearInterval(checkLoad), 5000);
         })();
