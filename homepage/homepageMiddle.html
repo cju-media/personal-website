@@ -1,12 +1,12 @@
 <div class="hp-mid-wrapper">
-    <style>
+<style>
     .hp-mid-wrapper {
         width: 100%;
         margin: 0 auto !important;
         display: flex;
         flex-direction: column;
         align-items: center;
-        overflow-x: hidden; /* Prevents side-scrolling during scale-up */
+        overflow-x: hidden;
     }
 
     .hp-mid-wrapper section {
@@ -35,7 +35,6 @@
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
     }
 
-    /* --- CONTAINER GROWS ON HOVER --- */
     .hp-mid-wrapper .image-container:hover, 
     .hp-mid-wrapper .video-container:hover {
         transform: scale(1.03); 
@@ -43,7 +42,6 @@
         z-index: 20; 
     }
 
-    /* --- ASSETS (CENTERED & BLURRED) --- */
     .hp-mid-wrapper .cropped-image, 
     .hp-mid-wrapper .cropped-video {
         position: absolute !important;
@@ -58,7 +56,6 @@
         transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s ease;
     }
 
-    /* --- UNBLUR ON HOVER --- */
     .hp-mid-wrapper .image-container:hover .cropped-image,
     .hp-mid-wrapper .video-container:hover .cropped-video {
         filter: blur(0px); 
@@ -75,18 +72,23 @@
         opacity: 1;
     }
 
-    /* --- MOBILE REFINEMENTS --- */
+    /* --- AGRESSIVE MOBILE SPACING REFINEMENTS --- */
     @media screen and (max-width: 768px) {
         .hp-mid-wrapper .image-container, 
         .hp-mid-wrapper .video-container { 
-            height: 220px; 
+            height: 180px !important; /* Smaller containers for mobile */
         }
         .hp-mid-wrapper section { 
-            width: 90%; 
-            margin-bottom: 25px; /* Cut the gap between sections in half */
+            width: 92% !important; 
+            margin: 0 auto 15px auto !important; /* Very small gap between items */
         }
         .hp-mid-wrapper hr {
-            margin-top: 25px; /* Bring the line closer to the image above it */
+            margin: 15px 0 0 0 !important; /* Line sits much closer to the image */
+        }
+        .hp-mid-wrapper .text-overlay, 
+        .hp-mid-wrapper .text-overlay1 {
+            padding: 8px 16px !important;
+            font-size: 0.9rem !important; /* Smaller text for better fit */
         }
     }
 
@@ -105,7 +107,6 @@
         transform: translateX(0px) scale(1);
     }
 
-    /* --- TEXT OVERLAYS --- */
     .hp-mid-wrapper .text-wrapper {
         position: absolute;
         top: 50%;
