@@ -1,8 +1,9 @@
 <div class="hp-mid-wrapper">
 <style>
+    /* Targeting the wrapper AND common Squarespace block padding */
     .hp-mid-wrapper {
         width: 100%;
-        margin: -50px auto 0 auto !important; /* Pulls the entire block UP */
+        margin: 0 auto !important;
         padding: 0 !important;
         display: flex;
         flex-direction: column;
@@ -10,17 +11,22 @@
         overflow: hidden;
     }
 
+    /* Target the very first section to kill the top gap specifically */
+    .hp-mid-wrapper section:first-of-type {
+        margin-top: -60px !important; /* Pulls only the first item up */
+    }
+
     .hp-mid-wrapper section {
         display: block;
         text-align: center;
         width: 95%; 
         max-width: 2000px;
-        margin: 0 auto 40px auto; 
+        margin: 0 auto 60px auto; /* Restored healthy gap for desktop */
         padding: 0 !important;
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* --- THE CONTAINER --- */
+    /* Centering the Container */
     .hp-mid-wrapper .image-container, 
     .hp-mid-wrapper .video-container {
         overflow: hidden;
@@ -32,11 +38,11 @@
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
+        margin: 0 auto !important; /* Forces horizontal centering */
         text-decoration: none;
-        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: transform 0.6s ease;
     }
 
-    /* --- ASSETS --- */
     .hp-mid-wrapper .cropped-image, 
     .hp-mid-wrapper .cropped-video {
         position: absolute !important;
@@ -50,40 +56,41 @@
         transition: transform 0.8s ease, filter 0.8s ease;
     }
 
-    /* --- THE LINE --- */
     .hp-mid-wrapper hr {
         border: 0;
         height: 1px;
-        background-color: rgba(85, 82, 82, 0.5);
+        background-color: rgba(85, 82, 82, 0.4);
         width: 100%;
-        margin: 40px 0 0 0 !important; 
+        margin: 60px auto 0 auto !important; 
     }
 
-    /* --- THE FIX FOR MOBILE --- */
+    /* --- MOBILE REFINEMENT --- */
     @media screen and (max-width: 768px) {
-        .hp-mid-wrapper {
-            margin-top: -20px !important; /* Adjust if it hits the header */
+        /* This kills the gap Squarespace often puts above the code block */
+        .hp-mid-wrapper section:first-of-type {
+            margin-top: -80px !important; 
         }
+
         .hp-mid-wrapper section { 
-            width: 100% !important; /* Full width on mobile */
-            margin: 0 0 5px 0 !important; /* Almost NO gap between sections */
-            padding: 0 !important;
+            width: 90% !important; /* Kept at 90% so it stays centered and not flush to edges */
+            margin: 0 auto 40px auto !important; /* Clean spacing between items */
         }
+
         .hp-mid-wrapper .image-container, 
         .hp-mid-wrapper .video-container { 
-            height: 160px !important; /* Very slim for mobile */
-            border-radius: 0px; /* Looks cleaner when stacked tight */
+            height: 200px !important; 
+            border-radius: 8px;
         }
+
         .hp-mid-wrapper hr {
-            margin: 5px 0 5px 0 !important; /* Brings the line tight to the image */
-            width: 80%; /* Makes the line a subtle separator */
-            display: block !important;
+            margin: 40px auto 0 auto !important;
+            width: 60%; /* Shorter lines look cleaner on mobile */
         }
+
         .hp-mid-wrapper .text-overlay, 
         .hp-mid-wrapper .text-overlay1 {
-            padding: 6px 12px !important;
-            font-size: 0.8rem !important;
-            letter-spacing: 1px !important;
+            padding: 8px 16px !important;
+            font-size: 0.85rem !important;
         }
     }
 
@@ -91,7 +98,7 @@
     .hp-mid-wrapper .hidden-slide {
         opacity: 0;
         filter: blur(10px);
-        transform: translateX(-40px); 
+        transform: translateX(-30px); 
         transition: all 0.8s ease;
     }
 
@@ -114,10 +121,11 @@
     .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
     .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
     .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
-        border-radius: 5px;
+        border-radius: 6px;
         font-weight: bold;
         text-transform: uppercase;
         display: inline-block;
+        letter-spacing: 1.5px;
     }
 </style>
 
