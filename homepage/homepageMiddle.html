@@ -45,7 +45,6 @@
     }
 
     /* 3. VIDEO STACKING (The Layers) */
-    /* Layer 1: Static Background (Solid) */
     .hp-mid-wrapper .noise-bg {
         position: absolute !important;
         top: 0 !important; left: 0 !important;
@@ -55,7 +54,6 @@
         opacity: 1 !important;
     }
 
-    /* Layer 2: Main Content (Solid) */
     .hp-mid-wrapper .cropped-image, 
     .hp-mid-wrapper .cropped-video {
         position: absolute !important;
@@ -66,9 +64,10 @@
         height: 100% !important;
         object-fit: cover !important;
         z-index: 2;
-        opacity: 1; /* Fully opaque to hide noise when playing */
+        opacity: 1; 
         filter: blur(6px); 
-        transition: transform 0s ease, filter 0s ease, opacity 0s ease !important;
+        /* REMOVED opacity from transition to allow HARD CUT */
+        transition: transform 0.8s ease, filter 0.8s ease;
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
@@ -76,7 +75,7 @@
         filter: blur(0px); 
     }
 
-    /* 4. TEXT OVERLAYS (Layer 3) */
+    /* 4. TEXT OVERLAYS */
     .hp-mid-wrapper .text-wrapper {
         position: absolute;
         top: 50%; left: 50%;
@@ -103,7 +102,7 @@
     .hp-mid-wrapper .hidden-slide {
         opacity: 0;
         filter: blur(8px);
-        transform: translateX(0px);
+        transform: translateX(-300px); /* Restored Slide distance */
         transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
         will-change: transform, opacity;
     }
@@ -162,10 +161,9 @@
                 const v = document.getElementById(elementId);
                 if (!v) return;
 
-                // Clear any pending 10s watchdog
                 if(timeouts[elementId]) clearTimeout(timeouts[elementId]);
 
-                // Hide content (reveals solid noise-bg)
+                // 1. HARD CUT TO STATIC: No transition delay on opacity
                 v.style.opacity = "0";
 
                 const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
@@ -179,7 +177,8 @@
 
                 Promise.all([timerPromise, videoReadyPromise]).then(() => {
                     v.play().catch(() => {});
-                    v.style.opacity = "1"; // Cover noise with solid video
+                    // 2. HARD CUT TO VIDEO: Appears instantly
+                    v.style.opacity = "1"; 
                     startWatchdog(elementId, videoList);
                 });
             }
@@ -187,7 +186,7 @@
             function startWatchdog(elementId, videoList) {
                 timeouts[elementId] = setTimeout(() => {
                     swapWithDelay(elementId, videoList);
-                }, 10000); // 10s cycle
+                }, 10000);
             }
 
             function initEverything() {
