@@ -1,5 +1,6 @@
 <div class="hp-mid-wrapper">
 <style>
+    /* 1. WRAPPER & LAYOUT */
     .hp-mid-wrapper {
         width: 100%;
         margin: 0 auto !important;
@@ -19,7 +20,7 @@
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* --- THE CONTAINER --- */
+    /* 2. THE CONTAINER */
     .hp-mid-wrapper .image-container, 
     .hp-mid-wrapper .video-container {
         overflow: hidden;
@@ -36,29 +37,38 @@
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
     }
 
-    /* Background Noise Layer */
-    .hp-mid-wrapper .noise-bg {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        object-fit: cover;
-        z-index: 1;
-        opacity: 0.5; /* Subtle static */
+    .hp-mid-wrapper .image-container:hover, 
+    .hp-mid-wrapper .video-container:hover {
+        transform: scale(1.02); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        z-index: 20; 
     }
 
+    /* 3. VIDEO STACKING (The Layers) */
+    /* Layer 1: Static Background (Solid) */
+    .hp-mid-wrapper .noise-bg {
+        position: absolute !important;
+        top: 0 !important; left: 0 !important;
+        width: 100% !important; height: 100% !important;
+        object-fit: cover !important;
+        z-index: 1;
+        opacity: 1 !important;
+    }
+
+    /* Layer 2: Main Content (Solid) */
     .hp-mid-wrapper .cropped-image, 
     .hp-mid-wrapper .cropped-video {
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) scale(1.15) !important;
-        margin: 0 !important;
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
+        z-index: 2;
+        opacity: 1; /* Fully opaque to hide noise when playing */
         filter: blur(6px); 
-        z-index: 2; /* Sits above noise */
-        transition: transform 0.8s ease, filter 0.8s ease, opacity 0.3s ease;
+        transition: transform 0s ease, filter 0s ease, opacity 0s ease !important;
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
@@ -66,11 +76,34 @@
         filter: blur(0px); 
     }
 
-    /* --- SLIDE ANIMATIONS (FROM LEFT EDGE) --- */
+    /* 4. TEXT OVERLAYS (Layer 3) */
+    .hp-mid-wrapper .text-wrapper {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        width: 100%;
+        pointer-events: none;
+    }
+    
+    .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
+        padding: 12px 24px;
+        border-radius: 8px;
+        backdrop-filter: blur(8px);
+        display: inline-block;
+        letter-spacing: 2px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
+    .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
+
+    /* 5. SLIDE ANIMATIONS */
     .hp-mid-wrapper .hidden-slide {
         opacity: 0;
         filter: blur(8px);
-        transform: translateX(-100vw); /* Slides in from actual screen edge */
+        transform: translateX(0px);
         transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
         will-change: transform, opacity;
     }
@@ -81,100 +114,101 @@
         transform: translateX(0px);
     }
 
-    /* --- MOBILE REFINEMENTS --- */
     @media screen and (max-width: 768px) {
         .hp-mid-wrapper section { width: 90% !important; margin: 0 auto 25px auto !important; }
         .hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container { height: 360px !important; }
     }
-
-    /* --- OVERLAYS --- */
-    .hp-mid-wrapper .text-wrapper {
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        width: 100%;
-        pointer-events: none;
-    }
-    .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
-        padding: 12px 24px;
-        border-radius: 8px;
-        backdrop-filter: blur(8px);
-        display: inline-block;
-        letter-spacing: 2px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-    .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
-    .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
 </style>
 
-    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/laptop-ensemble" class="video-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video><div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/videoart" class="video-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><video playsinline autoplay muted id='mid-video' class='cropped-video'></video><div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div></a></section>
-    <section class="hidden-slide"><a href="/programming" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/albums" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><video class="noise-bg" playsinline autoplay muted loop src="https://www.cameronjohnston.xyz/s/noise4.mov"></video><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+
+    <section class="hidden-slide">
+        <a href="/director/laptop-ensemble" class="video-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
+            <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
+        </a>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="/highlights/videoart" class="video-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
+            <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
+        </a>
+    </section>
+
+    <section class="hidden-slide"><a href="/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
 
     <script>
         (function() {
             const perfVids = ["https://www.cameronjohnston.xyz/s/performer1.mov", "https://www.cameronjohnston.xyz/s/performer2.mov", "https://www.cameronjohnston.xyz/s/performer3.mov", "https://www.cameronjohnston.xyz/s/performer4.mov", "https://www.cameronjohnston.xyz/s/performer5.mov"];
             const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov"];
             
-            // Image assets (using the same logic as your working version)
             const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg'];
-            const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png'];
+            const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png'];
             const prodPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac508a299f16299dff71b/1676330252119/producer.png'];
             const progPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4ee26ee86324adf12e4/1676330223142/programmer.png'];
-            const soundPics = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png"];
+            const soundPics = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"];
             const condPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e1830bb646bc07630e009b/1675723532190/conductor.png'];
 
-            function swapWithStatic(videoId, videoList) {
-                const v = document.getElementById(videoId);
+            let timeouts = {};
+
+            function swapWithDelay(elementId, videoList) {
+                const v = document.getElementById(elementId);
                 if (!v) return;
 
-                // 1. Hide the video (revealing static underneath)
+                // Clear any pending 10s watchdog
+                if(timeouts[elementId]) clearTimeout(timeouts[elementId]);
+
+                // Hide content (reveals solid noise-bg)
                 v.style.opacity = "0";
 
-                // 2. Change source in the dark
-                setTimeout(() => {
-                    v.src = videoList[Math.floor(Math.random() * videoList.length)];
-                    v.load();
-                    v.onloadeddata = () => {
-                        v.play().catch(()=>{});
-                        // 3. Reveal again
-                        v.style.opacity = "1";
-                    };
-                }, 400); // How long the "Static flash" lasts
+                const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
+
+                v.src = videoList[Math.floor(Math.random() * videoList.length)];
+                v.load();
+
+                const videoReadyPromise = new Promise(resolve => {
+                    v.oncanplaythrough = resolve;
+                });
+
+                Promise.all([timerPromise, videoReadyPromise]).then(() => {
+                    v.play().catch(() => {});
+                    v.style.opacity = "1"; // Cover noise with solid video
+                    startWatchdog(elementId, videoList);
+                });
+            }
+
+            function startWatchdog(elementId, videoList) {
+                timeouts[elementId] = setTimeout(() => {
+                    swapWithDelay(elementId, videoList);
+                }, 10000); // 10s cycle
             }
 
             function initEverything() {
-                const av = document.getElementById("mid-av");
-                const co = document.getElementById("mid-composer");
-                const pr = document.getElementById("mid-producer");
-                const pg = document.getElementById("mid-programmer");
-                const sd = document.getElementById("sound");
-                const cd = document.getElementById("mid-conductor");
-                
-                if(av) av.src = avPics[Math.floor(Math.random() * avPics.length)];
-                if(co) co.src = compPics[Math.floor(Math.random() * compPics.length)];
-                if(pr) pr.src = prodPics[Math.floor(Math.random() * prodPics.length)];
-                if(pg) pg.src = progPics[Math.floor(Math.random() * progPics.length)];
-                if(sd) sd.src = soundPics[Math.floor(Math.random() * soundPics.length)];
-                if(cd) cd.src = condPics[Math.floor(Math.random() * condPics.length)];
+                const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics};
+                for (let id in pics) {
+                    const el = document.getElementById(id);
+                    if(el) el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
+                }
 
                 const v = document.getElementById("mid-video");
                 const l = document.getElementById("mid-laptop");
-                
-                if(v) {
-                    v.src = artVids[0];
-                    v.onended = () => swapWithStatic("mid-video", artVids);
+
+                if(v) { 
+                    v.src = artVids[0]; 
+                    v.onended = () => swapWithDelay("mid-video", artVids); 
+                    startWatchdog("mid-video", artVids);
                 }
-                if(l) {
-                    l.src = perfVids[0];
-                    l.onended = () => swapWithStatic("mid-laptop", perfVids);
+                if(l) { 
+                    l.src = perfVids[0]; 
+                    l.onended = () => swapWithDelay("mid-laptop", perfVids); 
+                    startWatchdog("mid-laptop", perfVids);
                 }
 
                 const observer = new IntersectionObserver((entries) => {
