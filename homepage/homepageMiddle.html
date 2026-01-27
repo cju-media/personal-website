@@ -7,7 +7,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        overflow-x: hidden;
+        overflow: visible; 
     }
 
     .hp-mid-wrapper section {
@@ -17,7 +17,6 @@
         max-width: 2000px;
         margin: 0 auto 50px auto; 
         padding: 0 !important;
-        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* 2. THE CONTAINER */
@@ -44,7 +43,7 @@
         z-index: 20; 
     }
 
-    /* 3. VIDEO STACKING (The Layers) */
+    /* 3. VIDEO STACKING */
     .hp-mid-wrapper .noise-bg {
         position: absolute !important;
         top: 0 !important; left: 0 !important;
@@ -66,7 +65,6 @@
         z-index: 2;
         opacity: 1; 
         filter: blur(6px); 
-        /* REMOVED opacity from transition to allow HARD CUT */
         transition: transform 0.8s ease, filter 0.8s ease;
     }
 
@@ -98,22 +96,28 @@
     .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
     .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
 
-    /* 5. SLIDE ANIMATIONS */
+    /* 5. RANDOM FLY-IN ANIMATIONS */
     .hp-mid-wrapper .hidden-slide {
         opacity: 0;
-        filter: blur(8px);
-        transform: translateX(-300px); /* Restored Slide distance */
-        transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+        filter: blur(5px);
+        
+        /* CHANGED: Increased time to 2.5s */
+        transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
+        
+        /* CHANGED: Added 0.5s delay */
+        transition-delay: 0.1s;
+        
         will-change: transform, opacity;
     }
 
     .hp-mid-wrapper .show-slide {
         opacity: 1 !important;
         filter: blur(0px);
-        transform: translateX(0px);
+        transform: translate(0, 0) rotate(0deg) !important;
     }
 
     @media screen and (max-width: 768px) {
+        .hp-mid-wrapper { overflow-x: hidden; } 
         .hp-mid-wrapper section { width: 90% !important; margin: 0 auto 25px auto !important; }
         .hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container { height: 360px !important; }
     }
@@ -163,7 +167,6 @@
 
                 if(timeouts[elementId]) clearTimeout(timeouts[elementId]);
 
-                // 1. HARD CUT TO STATIC: No transition delay on opacity
                 v.style.opacity = "0";
 
                 const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
@@ -177,7 +180,6 @@
 
                 Promise.all([timerPromise, videoReadyPromise]).then(() => {
                     v.play().catch(() => {});
-                    // 2. HARD CUT TO VIDEO: Appears instantly
                     v.style.opacity = "1"; 
                     startWatchdog(elementId, videoList);
                 });
@@ -190,12 +192,14 @@
             }
 
             function initEverything() {
+                // 1. SETUP IMAGES
                 const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics};
                 for (let id in pics) {
                     const el = document.getElementById(id);
                     if(el) el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
                 }
 
+                // 2. SETUP VIDEOS
                 const v = document.getElementById("mid-video");
                 const l = document.getElementById("mid-laptop");
 
@@ -210,10 +214,21 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
+                // 3. SETUP RANDOM FLY-IN
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
+                    const randomX = (Math.random() - 0.5) * 1600; 
+                    const randomY = (Math.random() - 0.5) * 1000;
+                    const randomRotate = (Math.random() - 0.5) * 40; 
+                    el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                });
+
+                // 4. OBSERVER (ONE WAY)
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting) entry.target.classList.add('show-slide');
-                        else entry.target.classList.remove('show-slide');
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show-slide');
+                            observer.unobserve(entry.target);
+                        } 
                     });
                 }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
 
