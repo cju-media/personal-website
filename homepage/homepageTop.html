@@ -61,21 +61,21 @@
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
 
-        // 4. Animation Loops (Fonts, Colors, and Japanese Characters)
+        // 4. Animation Loops
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
         const colors = [
             '#2F4F4F', '#4B0082', '#8B0000', '#000080', 
             '#556B2F', '#8B4513', '#2E0854', '#191970'
         ];
         
-        // Japanese Katakana characters
-        const japaneseChars = [
-            'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 
-            'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト', 
-            'ナ', 'ニ', 'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ', 
-            'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 
-            'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン'
-        ];
+        // MAPPING: English Letter -> Approximate Katakana Sound/Shape
+        const katakanaMap = {
+            'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+            'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+            'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+            'U': 'ウ', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+        };
 
         function changeFontRandomly(span) {
             // A. Store the original English letter if we haven't yet
@@ -88,10 +88,13 @@
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
 
-            // C. 5% Chance to switch to Japanese
+            // C. 5% Chance to switch to Specific Katakana
             if (Math.random() < 0.05) {
-                const randomJapIndex = Math.floor(Math.random() * japaneseChars.length);
-                span.innerText = japaneseChars[randomJapIndex];
+                const originalChar = span.dataset.original.toUpperCase();
+                // Check if we have a mapping, otherwise keep original
+                if (katakanaMap[originalChar]) {
+                    span.innerText = katakanaMap[originalChar];
+                }
             } else {
                 // Otherwise, revert to original letter
                 span.innerText = span.dataset.original;
