@@ -74,10 +74,10 @@
         
         const katakanaMap = {
             'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ', 
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ', // Default J is now 'Ji'
             'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
             'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ' // U is 'Cow'
         };
 
         function changeFontRandomly(span) {
@@ -100,7 +100,7 @@
                 if (wordIndex === 2 && originalChar === 'J') {
                      span.innerText = '島'; // Use Island Kanji
                 } 
-                // OTHERWISE: Use the standard map
+                // OTHERWISE: Use the standard map (where J = 'Ji')
                 else if (katakanaMap[originalChar]) {
                     span.innerText = katakanaMap[originalChar];
                 }
@@ -193,18 +193,19 @@
         width: auto;
     }
 
+    /* --- STABILITY FIX --- */
     .span-class {
-        /* THIS IS THE FIX FOR THE JITTER */
-        display: inline-block;
+        /* Use Flexbox centering to kill baseline jitter */
+        display: flex; 
+        justify-content: center;
+        align-items: center;
         
-        /* 1. Force a fixed box size regardless of letter width */
-        width: 1.3em; 
-        height: 1.3em;
-        line-height: 1.3em; /* Vertical centering logic */
+        /* Rigid Dimensions */
+        width: 1.4em; 
+        height: 1.4em;
         
-        /* 2. Ensure alignment */
-        text-align: center;
-        vertical-align: middle; 
+        /* Important: Clip anything that exceeds the box */
+        overflow: hidden; 
 
         /* Standard animation stuff */
         z-index: 4;
