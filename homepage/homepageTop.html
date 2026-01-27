@@ -91,19 +91,16 @@
     .container1 {
         display: flex;
         flex-direction: row;
-        align-items: center;      /* Vertically centers items */
-        justify-content: center;  /* Horizontally centers items */
+        align-items: center;      
+        justify-content: center;  
         width: 100%;
         max-width: 100vw;
         margin: 0 auto;
-        
-        /* REDUCED PADDING AND HEIGHT */
         padding: 20px; 
-        min-height: 350px; /* Reduced from 550px to remove headroom */
-        
+        min-height: 350px; 
         gap: 3vw;
         box-sizing: border-box;
-        overflow: visible; /* Allows letters to fly in from outside */
+        overflow: visible; 
         contain: layout;   
     }
 
@@ -119,35 +116,47 @@
         border-radius: 15px;
     }
 
+    /* --- LAYOUT CHANGE: VERTICAL WORDS --- */
     .text-block1 {
         flex: 0 0 auto;
-        text-align: center;
+        /* Make the block hold the 3 words side-by-side */
+        display: flex; 
+        flex-direction: row; 
+        justify-content: center;
+        /* Gap between the vertical columns */
+        gap: 40px; 
         perspective: 1000px;
-        /* Ensures the block itself is centered if flex fails */
         margin: auto; 
     }
 
     .text-block1 br { display: none !important; }
 
     .text-block1 h1 {
+        /* Make the letters within each word stack vertically */
+        display: flex;
+        flex-direction: column; 
+        align-items: center; /* Centers narrow letters like 'I' under 'M' */
+        
         font-size: clamp(16px, 3.5vw, 40px);
-        margin: 15px 0; 
+        margin: 0; 
         padding: 0;
-        white-space: nowrap; 
-        line-height: 1.0; 
-        height: 1.1em; 
-        display: block;
+        line-height: 1.1; /* Slightly looser to separate stacked letters */
+        height: auto; 
+        width: auto;
     }
 
     /* --- THE FLIGHT LOGIC --- */
     .span-class {
         display: inline-block;
-        width: 1.0em; 
+        /* No fixed width here, let flex handle alignment */
         text-align: center;
         z-index: 4;
         position: relative;
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+        
+        /* Add a tiny bottom margin so letters don't touch */
+        margin-bottom: 5px; 
     }
 
     /* --- STAGGERED DELAYS --- */
@@ -165,16 +174,18 @@
             flex-direction: column;
             gap: 20px;
             padding: 40px 10px;
-            min-height: 500px; /* Slightly taller on mobile for stacking */
+            min-height: 600px; /* Taller to accommodate vertical text columns */
             overflow: hidden; 
         }
         .image-left1 {
             width: 65vw;
             max-width: 300px;
         }
+        .text-block1 {
+            gap: 20px; /* Smaller gap between columns on mobile */
+        }
         .text-block1 h1 {
             font-size: 6vw; 
-            margin: 8px 0;
         }
     }
 
