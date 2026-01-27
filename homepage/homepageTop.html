@@ -3,6 +3,12 @@
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
+        // --- SETTINGS ---------------------------------------
+        // Change this single number to speed up or slow down the stagger
+        // 0.1 = fast waterfall, 0.5 = slow waterfall
+        const staggerTime = 0.15; 
+        // ----------------------------------------------------
+
         // 1. Setup Headshots (Unchanged)
         var headshots = [
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
@@ -19,16 +25,23 @@
         var myHeadshot1 = document.getElementById("myHeadshot1");
         if(myHeadshot1) myHeadshot1.src = headshot1;
 
-        // 2. Setup Letters for Flight
-        const spans = document.querySelectorAll('.text-block1 .span-class');
+        // 2. Setup Letters for Flight & Apply Stagger Variable
+        const columns = document.querySelectorAll('.text-block1 h1');
         
-        spans.forEach(span => {
-            const randomX = (Math.random() - 0.5) * 2400; 
-            const randomY = (Math.random() - 0.5) * 2400;
-            const randomRotate = (Math.random() - 0.5) * 360; 
-            
-            span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-            span.style.opacity = "0"; 
+        columns.forEach(col => {
+            const letters = col.querySelectorAll('.span-class');
+            letters.forEach((span, index) => {
+                // MATH: Random Position
+                const randomX = (Math.random() - 0.5) * 2400; 
+                const randomY = (Math.random() - 0.5) * 2400;
+                const randomRotate = (Math.random() - 0.5) * 360; 
+                
+                span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                span.style.opacity = "0"; 
+
+                // MATH: Apply the variable delay based on row index (0, 1, 2...)
+                span.style.transitionDelay = `${index * staggerTime}s`;
+            });
         });
 
         // 3. Setup Intersection Observer
@@ -72,7 +85,9 @@
             setTimeout(() => changeColorRandomly(span), interval);
         }
 
-        spans.forEach(span => {
+        // Initialize loops
+        const allSpans = document.querySelectorAll('.text-block1 .span-class');
+        allSpans.forEach(span => {
             changeFontRandomly(span);
             changeColorRandomly(span);
         });
@@ -121,6 +136,7 @@
         display: flex; 
         flex-direction: row; 
         justify-content: center;
+        align-items: center; /* Keeps short columns centered vertically */
         gap: 40px; 
         perspective: 1000px;
         margin: auto; 
@@ -147,39 +163,14 @@
         z-index: 4;
         position: relative;
         will-change: transform, opacity;
+        
+        /* Note: transition-delay is now handled in JS */
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+        
         margin-bottom: 5px; 
     }
 
-    /* --- VERTICAL STAGGERED DELAYS (TOP TO BOTTOM) --- */
-    
-    /* Row 1 (C, J, U) */
-    .text-block1 h1 .span-class:nth-child(1) { transition-delay: 0.0s; }
-    
-    /* Row 2 */
-    .text-block1 h1 .span-class:nth-child(2) { transition-delay: 0.5s; }
-    
-    /* Row 3 */
-    .text-block1 h1 .span-class:nth-child(3) { transition-delay: 1.s; }
-    
-    /* Row 4 */
-    .text-block1 h1 .span-class:nth-child(4) { transition-delay: 1.5s; }
-    
-    /* Row 5 */
-    .text-block1 h1 .span-class:nth-child(5) { transition-delay: 2.s; }
-
-    /* Row 6 */
-    .text-block1 h1 .span-class:nth-child(6) { transition-delay: 2.5s; }
-
-    /* Row 7 */
-    .text-block1 h1 .span-class:nth-child(7) { transition-delay: 3.0s; }
-
-    /* Row 8 */
-    .text-block1 h1 .span-class:nth-child(8) { transition-delay: 3.5s; }
-
-    /* Row 9 */
-    .text-block1 h1 .span-class:nth-child(9) { transition-delay: 4.0s; }
-
+    /* CSS DELAYS REMOVED - Handled by JS variable 'staggerTime' */
 
     .span-class.landed {
         transform: translate(0, 0) rotate(0deg) !important;
