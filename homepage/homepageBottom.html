@@ -1,48 +1,134 @@
-function init1() {
-    // Specific URLs based on your repo structure
-    const bioUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/bio.txt';
-    const headshotListUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/headshots.txt';
+<div class="container hidden" style="display: flex; align-items: center; justify-content: center;">
+    <img id="myHeadshot" class="image-left" alt="Cameron Johnston-Ushijima">
 
-    // 1. Fetch and set the Bio Text
-    fetch(bioUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
-        .then(data => {
-            document.getElementById("bio-text").innerText = data;
-        })
-        .catch(err => console.error("Bio fetch error:", err));
+    <div class="text-block">
+        <p id="bio-text">Loading...</p>
+    </div>
+</div>
 
-    // 2. Fetch the Image List and pick a random one
-    fetch(headshotListUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
-        .then(data => {
-            // Splits by line break and removes empty lines
-            const headshots = data.split(/\r?\n/).filter(Boolean);
-            
-            if (headshots.length > 0) {
-                const randomIndex = Math.floor(Math.random() * headshots.length);
+<style>
+    section {
+        display: grid;
+        place-items: center;
+        min-height: 50vh;
+    }
+
+    .hidden {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translateX(-100%);
+        transition: all 1s;
+        transition-delay: 500ms;
+    }
+
+    .show {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0);
+    }
+
+    .image-left {
+        width: 100%;
+        height: 90%;
+        max-width: 435.5px;
+        max-height: 652.92px;
+        float: left;
+        margin-right: 20px;
+        display: block;
+        border-radius: 10px;
+        /* Ensure image doesn't collapse while loading */
+        min-height: 300px;
+        background: #f0f0f0; 
+    }
+
+    .text-block {
+        overflow: hidden;
+        text-align: left;
+    }
+
+    @media only screen and (max-width: 1000px) {
+        .container {
+            flex-direction: column;
+        }
+
+        img {
+            margin-bottom: 20px;
+        }
+
+        .text-block {
+            text-align: center;
+        }
+
+        .image-left {
+            width: 50%;
+            height: auto;
+            float: none;
+            margin-right: 0;
+        }
+    }
+</style>
+
+<script>
+    // Squarespace specific initialization
+    Squarespace.onInitialize(Y, init1);
+
+    function init1() {
+        const bioUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/bio.txt';
+        const headshotListUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/headshots.txt';
+
+        // 1. Fetch Bio Text from GitHub
+        fetch(bioUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Bio not found');
+                return response.text();
+            })
+            .then(data => {
+                const bioElement = document.getElementById("bio-text");
+                if (bioElement) {
+                    // Use innerHTML if you have <br> or <b> tags in your .txt file, 
+                    // otherwise innerText is safer.
+                    bioElement.innerText = data;
+                }
+            })
+            .catch(err => {
+                console.error("Bio error:", err);
+                document.getElementById("bio-text").innerText = "Unable to load bio at this time.";
+            });
+
+        // 2. Fetch Headshot List and Pick Random
+        fetch(headshotListUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Headshot list not found');
+                return response.text();
+            })
+            .then(data => {
+                const headshots = data.split(/\r?\n/).filter(Boolean);
                 const myHeadshot = document.getElementById("myHeadshot");
-                myHeadshot.src = headshots[randomIndex];
-            }
-        })
-        .catch(err => console.error("Image list fetch error:", err));
+                
+                if (headshots.length > 0 && myHeadshot) {
+                    const randomIndex = Math.floor(Math.random() * headshots.length);
+                    myHeadshot.src = headshots[randomIndex].trim();
+                }
+            })
+            .catch(err => console.error("Image error:", err));
 
-    // --- YOUR EXISTING OBSERVER LOGIC ---
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('show');
-            } else {
-                entry.target.classList.remove('show');
-            }
+        // 3. Intersection Observer for Scroll Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                } else {
+                    entry.target.classList.remove('show');
+                }
+            });
         });
-    });
 
-    const hiddenElements = document.querySelectorAll('.hidden');
-    hiddenElements.forEach((el) => observer.observe(el));
-}
+        const hiddenElements = document.querySelectorAll('.hidden');
+        hiddenElements.forEach((el) => observer.observe(el));
+    }
+
+    // Run once on load for safety in case onInitialize has already fired
+    if (document.readyState === 'complete') {
+        init1();
+    }
+</script>
