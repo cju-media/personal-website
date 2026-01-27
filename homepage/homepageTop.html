@@ -3,7 +3,7 @@
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
-        // 1. Setup Headshots
+        // 1. Setup Headshots (Unchanged)
         var headshots = [
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", 
@@ -19,56 +19,67 @@
         var myHeadshot1 = document.getElementById("myHeadshot1");
         if(myHeadshot1) myHeadshot1.src = headshot1;
 
-        // 2. Setup Intersection Observer
+        // 2. Setup Letters for Flight (NEW LOGIC)
+        const spans = document.querySelectorAll('.text-block1 .span-class');
+        
+        spans.forEach(span => {
+            // Calculate random positions between -1000px and +1000px
+            const randomX = (Math.random() - 0.5) * 2000; 
+            const randomY = (Math.random() - 0.5) * 2000;
+            const randomRotate = (Math.random() - 0.5) * 360; // Optional: Adds rotation
+            
+            // Apply the random position immediately
+            span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+            span.style.opacity = "0"; // Start invisible
+        });
+
+        // 3. Setup Intersection Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
+                    // When container is seen, find all letters inside and land them
+                    const letters = entry.target.querySelectorAll('.span-class');
+                    letters.forEach((letter) => {
+                        letter.classList.add('landed');
+                    });
+                    
+                    // Also fade in the container logic if needed
                     entry.target.classList.add('show1');
-                } else {
-                    entry.target.classList.remove('show1');
-                }
+                } 
             });
-        });
+        }, { threshold: 0.1 }); // Trigger when 10% visible
 
+        // Observe the text block itself
+        const textBlock = document.querySelector('.text-block1');
+        if(textBlock) observer.observe(textBlock);
+        
+        // Also observe the image container (original logic)
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
 
-        // 3. Setup Animation Classes and Muted Colors
+        // 4. Setup Animation Classes and Muted Colors (Unchanged)
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
         const colors = [
-            '#2F4F4F', // Dark Slate Gray
-            '#4B0082', // Indigo
-            '#8B0000', // Dark Red
-            '#000080', // Navy
-            '#556B2F', // Dark Olive Green
-            '#8B4513', // Saddle Brown
-            '#2E0854', // Dark Purple
-            '#191970'  // Midnight Blue
+            '#2F4F4F', '#4B0082', '#8B0000', '#000080', 
+            '#556B2F', '#8B4513', '#2E0854', '#191970'
         ];
 
-        // FUNCTION 1: Font Jitter (Faster)
         function changeFontRandomly(span) {
             fontClasses.forEach(fontClass => span.classList.remove(fontClass));
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
-            
-            // Interval between 300ms and 700ms
             const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
             setTimeout(() => changeFontRandomly(span), interval);
         }
 
-        // FUNCTION 2: Color Cycle (Slower)
         function changeColorRandomly(span) {
             const randomColorIndex = Math.floor(Math.random() * colors.length);
             span.style.color = colors[randomColorIndex];
-            
-            // Slower interval between 800ms and 1500ms
             const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
             setTimeout(() => changeColorRandomly(span), interval);
         }
 
-        // Initialize both loops for each letter
-        const spans = document.querySelectorAll('.text-block1 .span-class');
+        // Initialize loops
         spans.forEach(span => {
             changeFontRandomly(span);
             changeColorRandomly(span);
@@ -96,7 +107,8 @@
         padding: 20px;
         gap: 3vw;
         box-sizing: border-box;
-        overflow: hidden;
+        /* CHANGED: overflow needs to be visible for flying letters to be seen coming in */
+        overflow: visible; 
         min-height: 450px; 
         contain: layout;   
     }
@@ -116,11 +128,10 @@
     .text-block1 {
         flex: 0 0 auto;
         text-align: center;
+        perspective: 1000px; /* Adds depth to the 3d fly in */
     }
 
-    .text-block1 br {
-        display: none !important;
-    }
+    .text-block1 br { display: none !important; }
 
     .text-block1 h1 {
         font-size: clamp(16px, 3.5vw, 40px);
@@ -132,14 +143,24 @@
         display: block;
     }
 
+    /* --- THE FLIGHT LOGIC --- */
     .span-class {
         display: inline-block;
         width: 1.0em; 
         text-align: center;
         z-index: 4;
         position: relative;
-        /* Smooth color transitions */
-        /* transition: color 0.4s ease-in-out; */
+        will-change: transform, opacity;
+        
+        /* The Speed of the fly-in: 1.2s */
+        /* cubic-bezier creates a nice 'brake' effect at the end */
+        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease-out;
+    }
+
+    /* This class is added by JS when visible */
+    .span-class.landed {
+        transform: translate(0, 0) rotate(0deg) !important;
+        opacity: 1 !important;
     }
 
     @media only screen and (max-width: 800px) {
@@ -148,6 +169,7 @@
             gap: 20px;
             padding: 40px 10px;
             min-height: 700px; 
+            overflow: hidden; /* Keep hidden on mobile to prevent scrollbar issues */
         }
         .image-left1 {
             width: 65vw;
@@ -159,25 +181,20 @@
         }
     }
 
+    /* Keep generic fade in for Image */
     .hidden1 {
         opacity: 0;
         filter: blur(5px);
-        transform: translateX(-30px);
         transition: all 1s ease-out;
     }
 
     .show1 {
         opacity: 1;
         filter: blur(0);
-        transform: translateX(0);
     }
 </style>
 
-    <div class="container1 hidden1">
-        <div class="image-left1">
-            <img id="myHeadshot1">
-        </div>
-        
+    <div class="container1">
         <div class="text-block1">
             <h1>
                 <span class="span-class">C</span><span class="span-class">A</span><span class="span-class">M</span><span class="span-class">E</span><span class="span-class">R</span><span class="span-class">O</span><span class="span-class">N</span>
@@ -193,7 +210,4 @@
         </div>
     </div>
 
-    <br>
-    <br>
-    <!-- <hr class='hidden1'> -->
 </body>
