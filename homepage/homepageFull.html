@@ -5,29 +5,51 @@
         var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
         var Y = null;
     }
+    // Shared Media Loader
+    window.loadMediaPromise = null;
+    function loadMedia() {
+        if (window.loadMediaPromise) return window.loadMediaPromise;
+
+        // Cache buster to ensure newest version
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/media.json?t=" + Date.now();
+
+        window.loadMediaPromise = fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .catch(error => {
+                console.error("Failed to fetch media.json:", error);
+                return null; // Return null so downstream can handle gracefullly
+            });
+        return window.loadMediaPromise;
+    }
+
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
-        // --- SETTINGS ---------------------------------------
-        const staggerTime = 0.8;
-        // ----------------------------------------------------
+        loadMedia().then(mediaData => {
+            if (!mediaData) return;
 
-        // 1. Setup Headshots
-        var headshots = [
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG",
-            "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"
-        ];
-        var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
-        var headshot1 = headshots[randomIndexHeadshots1];
-        var myHeadshot1 = document.getElementById("myHeadshot1");
-        if(myHeadshot1) myHeadshot1.src = headshot1;
+            // --- SETTINGS ---------------------------------------
+            const staggerTime = 0.8;
+            // ----------------------------------------------------
 
+            // 1. Setup Headshots
+            var headshots = mediaData.headshots || [];
+            if (headshots.length > 0) {
+                var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
+                var headshot1 = headshots[randomIndexHeadshots1];
+                var myHeadshot1 = document.getElementById("myHeadshot1");
+                if(myHeadshot1) myHeadshot1.src = headshot1;
+            }
+
+            // Continue with letters setup...
+            setupLetters(staggerTime);
+        });
+    }
+
+    function setupLetters(staggerTime) {
         // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
 
@@ -402,17 +424,26 @@
 
     <script>
         (function() {
-            const perfVids = ["https://www.cameronjohnston.xyz/s/performer1.mov", "https://www.cameronjohnston.xyz/s/performer2.mov", "https://www.cameronjohnston.xyz/s/performer3.mov", "https://www.cameronjohnston.xyz/s/performer4.mov", "https://www.cameronjohnston.xyz/s/performer5.mov"];
-            const artVids = ["https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov", "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov"];
+            // Wait for media loading
+            loadMedia().then(mediaData => {
+                if(mediaData) initMidSection(mediaData);
+            });
 
-            const avPics = ['https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/b2eed1d5-c15c-4e2d-9001-4a047b76e57e/IMG_2197.jpg', 'https://images.squarespace-cdn.com/content/5a6fccf8d74cff4818ad90a2/6896b182-d731-4893-8676-9a12495868bd/IMG_0660.jpg'];
-            const compPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182f98cf4a24371792881/1675723513560/composer1.png', 'https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e182ff0d578b703b2ed5da/1675723519731/composer2.png'];
-            const prodPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac508a299f16299dff71b/1676330252119/producer.png'];
-            const progPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4ee26ee86324adf12e4/1676330223142/programmer.png'];
-            const soundPics = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4d4ce5623181979fd5f/1676330197349/sound1.png", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63eac4df39daf40fc36ae73f/1676330208773/sound2.png"];
-            const condPics = ['https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/63e1830bb646bc07630e009b/1675723532190/conductor.png'];
+            function initMidSection(mediaData) {
+                const perfVids = mediaData.perfVids || [];
+                const artVids = mediaData.artVids || [];
+                const avPics = mediaData.avPics || [];
+                const compPics = mediaData.compPics || [];
+                const prodPics = mediaData.prodPics || [];
+                const progPics = mediaData.progPics || [];
+                const soundPics = mediaData.soundPics || [];
+                const condPics = mediaData.condPics || [];
 
-            // --- GLITCH EFFECT SETTINGS ---
+                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+            }
+
+            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
+                // --- GLITCH EFFECT SETTINGS ---
             const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
             const katakanaMap = {
                 'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
@@ -525,24 +556,26 @@
                 }, 10000);
             }
 
-            function initEverything() {
+            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
                 // 1. SETUP IMAGES
                 const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics};
                 for (let id in pics) {
                     const el = document.getElementById(id);
-                    if(el) el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
+                    if(el && pics[id] && pics[id].length > 0) {
+                        el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
+                    }
                 }
 
                 // 2. SETUP VIDEOS
                 const v = document.getElementById("mid-video");
                 const l = document.getElementById("mid-laptop");
 
-                if(v) {
+                if(v && artVids.length > 0) {
                     v.src = artVids[0];
                     v.onended = () => swapWithDelay("mid-video", artVids);
                     startWatchdog("mid-video", artVids);
                 }
-                if(l) {
+                if(l && perfVids.length > 0) {
                     l.src = perfVids[0];
                     l.onended = () => swapWithDelay("mid-laptop", perfVids);
                     startWatchdog("mid-laptop", perfVids);
@@ -592,9 +625,13 @@
             }
 
             const checkLoad = setInterval(() => {
-                if (document.getElementById('mid-composer') || document.getElementById('mid-av')) { initEverything(); clearInterval(checkLoad); }
+                if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
+                    initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+                    clearInterval(checkLoad);
+                }
             }, 100);
             setTimeout(() => clearInterval(checkLoad), 5000);
+            } // End startGlitchAndObserver
         })();
     </script>
 </div>
@@ -603,14 +640,22 @@
         Squarespace.onInitialize(Y, initBio)
 
         function initBio() {
+            loadMedia().then(mediaData => {
+                if(!mediaData) return;
 
-            var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"]
-            var randomIndexHeadshots = Math.floor(Math.random() * headshots.length);
-            var headshot = headshots[randomIndexHeadshots];
-            var myHeadshot = document.getElementById("myHeadshot");
-            if (myHeadshot) myHeadshot.src = headshot;
+                var headshots = mediaData.headshots || [];
+                if (headshots.length > 0) {
+                    var randomIndexHeadshots = Math.floor(Math.random() * headshots.length);
+                    var headshot = headshots[randomIndexHeadshots];
+                    var myHeadshot = document.getElementById("myHeadshot");
+                    if (myHeadshot) myHeadshot.src = headshot;
+                }
 
+                startBioObserver();
+            });
+        }
 
+        function startBioObserver() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
 
