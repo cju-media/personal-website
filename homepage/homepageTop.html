@@ -116,14 +116,11 @@
         border-radius: 15px;
     }
 
-    /* --- LAYOUT CHANGE: VERTICAL WORDS --- */
     .text-block1 {
         flex: 0 0 auto;
-        /* Make the block hold the 3 words side-by-side */
         display: flex; 
         flex-direction: row; 
         justify-content: center;
-        /* Gap between the vertical columns */
         gap: 40px; 
         perspective: 1000px;
         margin: auto; 
@@ -132,15 +129,13 @@
     .text-block1 br { display: none !important; }
 
     .text-block1 h1 {
-        /* Make the letters within each word stack vertically */
         display: flex;
         flex-direction: column; 
-        align-items: center; /* Centers narrow letters like 'I' under 'M' */
-        
+        align-items: center; 
         font-size: clamp(16px, 3.5vw, 40px);
         margin: 0; 
         padding: 0;
-        line-height: 1.1; /* Slightly looser to separate stacked letters */
+        line-height: 1.1; 
         height: auto; 
         width: auto;
     }
@@ -148,21 +143,43 @@
     /* --- THE FLIGHT LOGIC --- */
     .span-class {
         display: inline-block;
-        /* No fixed width here, let flex handle alignment */
         text-align: center;
         z-index: 4;
         position: relative;
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
-        
-        /* Add a tiny bottom margin so letters don't touch */
         margin-bottom: 5px; 
     }
 
-    /* --- STAGGERED DELAYS --- */
-    .text-block1 h1:nth-of-type(1) .span-class { transition-delay: 0s; }
-    .text-block1 h1:nth-of-type(2) .span-class { transition-delay: 0.2s; }
-    .text-block1 h1:nth-of-type(3) .span-class { transition-delay: 0.4s; }
+    /* --- VERTICAL STAGGERED DELAYS (TOP TO BOTTOM) --- */
+    
+    /* Row 1 (C, J, U) */
+    .text-block1 h1 .span-class:nth-child(1) { transition-delay: 0.0s; }
+    
+    /* Row 2 */
+    .text-block1 h1 .span-class:nth-child(2) { transition-delay: 0.1s; }
+    
+    /* Row 3 */
+    .text-block1 h1 .span-class:nth-child(3) { transition-delay: 0.2s; }
+    
+    /* Row 4 */
+    .text-block1 h1 .span-class:nth-child(4) { transition-delay: 0.3s; }
+    
+    /* Row 5 */
+    .text-block1 h1 .span-class:nth-child(5) { transition-delay: 0.4s; }
+
+    /* Row 6 */
+    .text-block1 h1 .span-class:nth-child(6) { transition-delay: 0.5s; }
+
+    /* Row 7 */
+    .text-block1 h1 .span-class:nth-child(7) { transition-delay: 0.6s; }
+
+    /* Row 8 */
+    .text-block1 h1 .span-class:nth-child(8) { transition-delay: 0.7s; }
+
+    /* Row 9 */
+    .text-block1 h1 .span-class:nth-child(9) { transition-delay: 0.8s; }
+
 
     .span-class.landed {
         transform: translate(0, 0) rotate(0deg) !important;
@@ -174,7 +191,7 @@
             flex-direction: column;
             gap: 20px;
             padding: 40px 10px;
-            min-height: 600px; /* Taller to accommodate vertical text columns */
+            min-height: 600px; 
             overflow: hidden; 
         }
         .image-left1 {
@@ -182,7 +199,7 @@
             max-width: 300px;
         }
         .text-block1 {
-            gap: 20px; /* Smaller gap between columns on mobile */
+            gap: 20px; 
         }
         .text-block1 h1 {
             font-size: 6vw; 
