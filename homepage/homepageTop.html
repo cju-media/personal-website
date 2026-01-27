@@ -4,12 +4,11 @@
 
     function init1() {
         // --- SETTINGS ---------------------------------------
-        // Change this to speed up or slow down the stagger
         // 0.1 = fast waterfall, 0.5 = slow waterfall
         const staggerTime = 0.8; 
         // ----------------------------------------------------
 
-        // 1. Setup Headshots
+        // 1. Setup Headshots (Unchanged)
         var headshots = [
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", 
@@ -36,8 +35,6 @@
                 const randomRotate = (Math.random() - 0.5) * 360; 
                 
                 span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                // NOTE: We don't strictly need to set opacity to 0 here anymore since CSS does it, 
-                // but keeping it ensures the logic is sound.
                 span.style.opacity = "0"; 
 
                 // Use the variable for delay
@@ -64,17 +61,42 @@
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
 
-        // 4. Animation Loops
+        // 4. Animation Loops (Fonts, Colors, and Japanese Characters)
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
         const colors = [
             '#2F4F4F', '#4B0082', '#8B0000', '#000080', 
             '#556B2F', '#8B4513', '#2E0854', '#191970'
         ];
+        
+        // Japanese Katakana characters
+        const japaneseChars = [
+            'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 
+            'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト', 
+            'ナ', 'ニ', 'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ', 
+            'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 
+            'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン'
+        ];
 
         function changeFontRandomly(span) {
+            // A. Store the original English letter if we haven't yet
+            if (!span.dataset.original) {
+                span.dataset.original = span.innerText;
+            }
+
+            // B. Change Font Family
             fontClasses.forEach(fontClass => span.classList.remove(fontClass));
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
+
+            // C. 5% Chance to switch to Japanese
+            if (Math.random() < 0.05) {
+                const randomJapIndex = Math.floor(Math.random() * japaneseChars.length);
+                span.innerText = japaneseChars[randomJapIndex];
+            } else {
+                // Otherwise, revert to original letter
+                span.innerText = span.dataset.original;
+            }
+
             const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
             setTimeout(() => changeFontRandomly(span), interval);
         }
@@ -164,8 +186,6 @@
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
         margin-bottom: 5px;
-        
-        /* THIS IS THE FIX: Start hidden by default */
         opacity: 0; 
     }
 

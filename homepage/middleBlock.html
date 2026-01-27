@@ -1,4 +1,4 @@
-<div data-github-loader="middle">Syncing latest version from GitHub...</div>
+<div data-github-loader="middle"></div>
 
 <script>
   (function() {
@@ -6,18 +6,18 @@
     const config = {
       owner: 'cju-media',
       repo: 'personal-website',
+      branch: 'main', // Ensure this matches your branch (e.g., 'main' or 'master')
       path: 'homepage/homepageMiddle.html',
       // This matches the data-attribute above
       targetSelector: '[data-github-loader="middle"]' 
     };
     
-    const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`;
+    // Switch to Raw Content URL to avoid API rate limits
+    const url = `https://raw.githubusercontent.com/${config.owner}/${config.repo}/${config.branch}/${config.path}`;
 
-    fetch(url, {
-      headers: { 'Accept': 'application/vnd.github.v3.raw' }
-    })
+    fetch(url)
       .then(response => {
-        if (!response.ok) throw new Error('GitHub API error');
+        if (!response.ok) throw new Error('GitHub Raw connection failed');
         return response.text();
       })
       .then(data => {
@@ -41,7 +41,8 @@
       .catch(err => {
         console.error('Fetch Error:', err);
         const container = document.querySelector(config.targetSelector);
-        if (container) container.innerHTML = 'Updating...';
+        // Clean fail: clear text so user sees nothing instead of an error message
+        if (container) container.innerHTML = ''; 
       });
   })();
 </script>

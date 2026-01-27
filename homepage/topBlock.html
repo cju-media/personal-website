@@ -1,27 +1,27 @@
-<div id="github-loader-target">Syncing latest version from GitHub...</div>
+<div id="github-loader-target"></div>
 
 <script>
   (function() {
-    // 1. Point directly to the GitHub API for your index.html
+    // 1. Point to the Raw Content Domain (No Rate Limits)
     const owner = 'cju-media';
     const repo = 'personal-website';
     const path = 'homepage/homepageTop.html';
+    const branch = 'main'; // Ensure this matches your branch name (e.g., 'main' or 'master')
     
-    // The 'Accept' header tells GitHub to send the raw file content instead of JSON metadata
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    // Switch from api.github.com to raw.githubusercontent.com
+    const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
 
-    fetch(url, {
-      headers: { 'Accept': 'application/vnd.github.v3.raw' }
-    })
+    // 2. Fetch without special headers
+    fetch(url)
       .then(response => {
-        if (!response.ok) throw new Error('GitHub API delay');
+        if (!response.ok) throw new Error('GitHub Raw connection failed');
         return response.text();
       })
       .then(data => {
         const container = document.getElementById('github-loader-target');
         container.innerHTML = data;
         
-        // 2. Execute scripts inside the fetched HTML
+        // 3. Execute scripts inside the fetched HTML
         const scripts = container.querySelectorAll('script');
         scripts.forEach(oldScript => {
           const newScript = document.createElement("script");
@@ -32,7 +32,8 @@
       })
       .catch(err => {
         console.error('Fetch Error:', err);
-        document.getElementById('github-loader-target').innerHTML = 'Updating... (Refresh in 5 seconds)';
+        // Clean fail state: Hide the loader text so the error isn't visible to users
+        document.getElementById('github-loader-target').innerHTML = ''; 
       });
   })();
 </script>
