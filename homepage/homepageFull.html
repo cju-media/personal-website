@@ -426,6 +426,15 @@
                 if (!span.dataset.original) {
                     span.dataset.original = span.innerText;
                 }
+
+                // CHECK ACTIVE FLAG
+                if (span.dataset.active !== "true") {
+                    // Reset to clean state
+                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                    span.innerText = span.dataset.original;
+                    return;
+                }
+
                 fontClasses.forEach(fontClass => span.classList.remove(fontClass));
                 const randomIndex = Math.floor(Math.random() * fontClasses.length);
                 span.classList.add(fontClasses[randomIndex]);
@@ -461,8 +470,8 @@
                         }
                         el.appendChild(span);
                         
-                        // Start effects
-                        changeFontRandomly(span);
+                        // DO NOT Start effects immediately
+                        // changeFontRandomly(span);
                     }
                 });
             }
@@ -544,6 +553,23 @@
 
                 // 5. APPLY GLITCH EFFECT
                 applyGlitchToElements('.hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1');
+
+                // 6. SETUP HOVER TRIGGERS
+                document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
+                    container.addEventListener('mouseenter', () => {
+                        const spans = container.querySelectorAll('.glitch-char');
+                        spans.forEach(span => {
+                            span.dataset.active = "true";
+                            changeFontRandomly(span);
+                        });
+                    });
+                    container.addEventListener('mouseleave', () => {
+                        const spans = container.querySelectorAll('.glitch-char');
+                        spans.forEach(span => {
+                            span.dataset.active = "false";
+                        });
+                    });
+                });
             }
 
             const checkLoad = setInterval(() => {
