@@ -6,10 +6,10 @@
         // --- SETTINGS ---------------------------------------
         // Change this to speed up or slow down the stagger
         // 0.1 = fast waterfall, 0.5 = slow waterfall
-        const staggerTime = 0.15; 
+        const staggerTime = 0.8; 
         // ----------------------------------------------------
 
-        // 1. Setup Headshots (Unchanged)
+        // 1. Setup Headshots
         var headshots = [
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", 
@@ -36,6 +36,8 @@
                 const randomRotate = (Math.random() - 0.5) * 360; 
                 
                 span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                // NOTE: We don't strictly need to set opacity to 0 here anymore since CSS does it, 
+                // but keeping it ensures the logic is sound.
                 span.style.opacity = "0"; 
 
                 // Use the variable for delay
@@ -134,10 +136,7 @@
         display: flex; 
         flex-direction: row; 
         justify-content: center;
-        
-        /* CHANGED: Removed 'align-items: center' so they align to the top */
         align-items: flex-start; 
-        
         gap: 40px; 
         perspective: 1000px;
         margin: auto; 
@@ -164,7 +163,10 @@
         position: relative;
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
-        margin-bottom: 5px; 
+        margin-bottom: 5px;
+        
+        /* THIS IS THE FIX: Start hidden by default */
+        opacity: 0; 
     }
 
     .span-class.landed {
