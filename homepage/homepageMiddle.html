@@ -7,8 +7,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* Reverted to visible to allow fly-in effect */
-        overflow: visible; 
+        
+        /* THE FIX: changing this back to hidden prevents the layout thrashing */
+        overflow: hidden !important; 
+        
+        /* Ensure it doesn't bleed out horizontally */
+        max-width: 100vw; 
+        box-sizing: border-box;
     }
 
     .hp-mid-wrapper section {
@@ -18,6 +23,10 @@
         max-width: 2000px;
         margin: 0 auto 50px auto; 
         padding: 0 !important;
+        
+        /* Ensure sections don't overlap weirdly during animation */
+        position: relative;
+        z-index: 1;
     }
 
     /* 2. THE CONTAINER */
@@ -36,15 +45,16 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         
         /* GPU Optimization */
-        will-change: transform, box-shadow;
+        will-change: transform;
         transform: translateZ(0); 
         
-        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
     }
 
     .hp-mid-wrapper .image-container:hover, 
     .hp-mid-wrapper .video-container:hover {
-        transform: scale(1.02) translateZ(0); 
+        /* Reduced scale slightly to reduce repaint cost */
+        transform: scale(1.01) translateZ(0); 
         box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
         z-index: 20; 
     }
@@ -225,11 +235,12 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP RANDOM FLY-IN
+                // 3. SETUP RANDOM FLY-IN (Reduced distance to prevent getting hidden)
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    const randomX = (Math.random() - 0.5) * 1200; 
-                    const randomY = (Math.random() - 0.5) * 1000;
-                    const randomRotate = (Math.random() - 0.5) * 40; 
+                    // Reduced spread since wrapper is now hidden overflow
+                    const randomX = (Math.random() - 0.5) * 600; 
+                    const randomY = (Math.random() - 0.5) * 600;
+                    const randomRotate = (Math.random() - 0.5) * 20; 
                     el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 });
 
