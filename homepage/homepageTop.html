@@ -24,13 +24,12 @@
         var myHeadshot1 = document.getElementById("myHeadshot1");
         if(myHeadshot1) myHeadshot1.src = headshot1;
 
-        // 2. Setup Letters for Flight & Apply Stagger Variable
+        // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
         
         columns.forEach((col, colIndex) => {
             const letters = col.querySelectorAll('.span-class');
             letters.forEach((span, index) => {
-                // TAGGING: Save which word this letter belongs to (0, 1, or 2)
                 span.dataset.wordIndex = colIndex;
                 
                 const randomX = (Math.random() - 0.5) * 2400; 
@@ -39,8 +38,6 @@
                 
                 span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 span.style.opacity = "0"; 
-
-                // Use the variable for delay
                 span.style.transitionDelay = `${index * staggerTime}s`;
             });
         });
@@ -66,41 +63,30 @@
 
         // 4. Animation Loops
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
-        
-        const colors = [
-            '#2F4F4F', '#4B0082', '#8B0000', '#000080', 
-            '#556B2F', '#8B4513', '#2E0854', '#191970'
-        ];
-        
+        const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
         const katakanaMap = {
             'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ', // Default J is now 'Ji'
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ', 
             'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
             'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ' // U is 'Cow'
+            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
         };
 
         function changeFontRandomly(span) {
-            // A. Store the original English letter if we haven't yet
             if (!span.dataset.original) {
                 span.dataset.original = span.innerText;
             }
-
-            // B. Change Font Family
             fontClasses.forEach(fontClass => span.classList.remove(fontClass));
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
 
-            // C. 5% Chance to switch to Japanese
             if (Math.random() < 0.05) {
                 const originalChar = span.dataset.original.toUpperCase();
-                const wordIndex = parseInt(span.dataset.wordIndex); // Retrieve Tag
+                const wordIndex = parseInt(span.dataset.wordIndex); 
 
-                // CHECK: Is this "J" inside "Ushijima" (Index 2)?
                 if (wordIndex === 2 && originalChar === 'J') {
-                     span.innerText = '島'; // Use Island Kanji
+                     span.innerText = '島'; 
                 } 
-                // OTHERWISE: Use the standard map (where J = 'Ji')
                 else if (katakanaMap[originalChar]) {
                     span.innerText = katakanaMap[originalChar];
                 }
@@ -130,9 +116,6 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
-    /* --- THE CRITICAL FIX --- */
-    /* This prevents the entire page from jittering when 
-       items fly outside the visible area */
     html, body {
         overflow-x: hidden !important;
         max-width: 100vw !important;
@@ -143,25 +126,21 @@
     .font3 { font-family: "Courier New", monospace; }
     .font4 { font-family: "essay-text", monospace; } 
     .font5 { font-family: 'Playfair Display', serif; }
-    .font6 { 
-        font-family: 'VT323', monospace; 
-        font-size: 1.1em; 
-    }
+    .font6 { font-family: 'VT323', monospace; font-size: 1.1em; }
 
     .container1 {
-        display: flex;
-        flex-direction: row;
-        align-items: center;      
-        justify-content: center;  
+        /* FIXED HEIGHT SECTION: This prevents the section from growing/shrinking */
+        position: relative;
         width: 100%;
         max-width: 100vw;
         margin: 0 auto;
-        padding: 20px; 
-        min-height: 350px; 
-        gap: 3vw;
-        box-sizing: border-box;
+        
+        /* Rigid height logic */
+        height: 600px; 
+        min-height: 600px;
+        
         overflow: visible; 
-        contain: layout;   
+        contain: strict; /* Strict containment tells browser size won't change */
     }
 
     .image-left1 {
@@ -169,22 +148,21 @@
         max-width: 450px;
     }
 
-    .image-left1 img {
-        width: 100%;
-        height: auto; 
-        display: block;
-        border-radius: 15px;
-    }
-
     .text-block1 {
-        flex: 0 0 auto;
+        /* ABSOLUTE POSITIONING: Removing text from the document flow */
+        /* This ensures that no matter how much the text shakes, it cannot push the footer */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
         display: flex; 
         flex-direction: row; 
         justify-content: center;
         align-items: flex-start; 
         gap: 40px; 
         perspective: 1000px;
-        margin: auto; 
+        width: 100%; /* Ensures it stays centered properly */
     }
 
     .text-block1 br { display: none !important; }
@@ -201,21 +179,13 @@
         width: auto;
     }
 
-    /* --- STABILITY FIX --- */
     .span-class {
-        /* Use Flexbox centering to kill baseline jitter */
         display: flex; 
         justify-content: center;
         align-items: center;
-        
-        /* Rigid Dimensions */
         width: 1.4em; 
         height: 1.4em;
-        
-        /* Important: Clip anything that exceeds the box */
         overflow: hidden; 
-
-        /* Standard animation stuff */
         z-index: 4;
         position: relative;
         will-change: transform, opacity;
@@ -231,15 +201,9 @@
 
     @media only screen and (max-width: 800px) {
         .container1 {
-            flex-direction: column;
-            gap: 20px;
-            padding: 40px 10px;
-            min-height: 600px; 
-            overflow: hidden; 
-        }
-        .image-left1 {
-            width: 65vw;
-            max-width: 300px;
+            /* Mobile might need more height if letters stack */
+            height: 700px; 
+            min-height: 700px;
         }
         .text-block1 {
             gap: 20px; 
