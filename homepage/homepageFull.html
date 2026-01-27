@@ -553,4 +553,155 @@
         })();
     </script>
 </div>
+
+    <script>
+        Squarespace.onInitialize(Y, initBio)
+
+        function initBio() {
+
+            var headshots = ["https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518c04c9c92954c7c3ec91/1683065866184/CameronJohnston_0253.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e71bcdeba02523343a0/1683066486022/CameronJohnston_0412.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518e941c027e3b22aad8fd/1683066520574/CameronJohnston_0041.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518be13b03f710fc3a0c71/1683065829787/CameronJohnston_0204.JPG", "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/64518bf0b57fdd1b3e56e07e/1683065845110/CameronJohnston_0217.JPG"]
+            var randomIndexHeadshots = Math.floor(Math.random() * headshots.length);
+            var headshot = headshots[randomIndexHeadshots];
+            var myHeadshot = document.getElementById("myHeadshot");
+            if (myHeadshot) myHeadshot.src = headshot;
+
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+
+
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('bio-show');
+                    } else {
+                        entry.target.classList.remove('bio-show');
+                    }
+
+                });
+
+            });
+
+
+            const hiddenElements = document.querySelectorAll('.bio-hidden');
+            hiddenElements.forEach((el) => observer.observe(el));
+        }
+    </script>
+
+    <style>
+        /*
+        section {
+            display: grid;
+            place-items: center;
+             min-height: 50vh;
+        }
+        */
+
+        .bio-hidden {
+            opacity: 0;
+            filter: blur(5px);
+            transform:
+                translateX(-100%);
+            transition: all 1s;
+            transition-delay: 500ms;
+
+        }
+
+        .bio-show {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+        }
+
+        .image-left {
+          width: 100%;
+            height: 90%;
+
+        max-width: 435.5px;
+            max-height: 652.92px;
+            float: left;
+            /* floats the image to the left */
+            margin-right: 20px;
+            /* adds a margin to the right of the image */
+            display: block;
+          border-radius: 10px;
+            /* set the image as block element */
+
+
+        }
+
+        @media only screen and (max-width: 1000px) {
+            .bio-container {
+                flex-direction: column;
+            }
+
+            .bio-container img {
+                margin-bottom: 20px;
+            }
+          .text-block {
+            overflow: hidden;
+            /* clears the float */
+            text-align: center;
+
+        }
+          .image-left{
+            width: 50%;
+            height: 50%;
+
+
+          }
+        }
+           .text-block {
+            overflow: hidden;
+            /* clears the float */
+            text-align: left;
+
+        }
+
+
+
+    </style>
+
+    <div class="bio-container bio-hidden" style="display: flex; align-items: center; justify-content: center;">
+        <img id="myHeadshot" class="image-left">
+
+        <div class="text-block">
+            <p>Cameron Johnston-Ushijima is a composer, sound artist, producer, and programmer. He describes himself as “media
+                agnostic” producing works in any medium that fits that particular project. Music and sound has been a
+                part
+                of his life since he was eight years old when he joined the school band. He started on trumpet,
+                eventually
+                switched to tuba for his primary instrument. Cameron started composing in high school where he made
+                arrangements as well as original works for chamber ensembles and wind band.
+
+                Cameron earned his bachelor’s degree in Music Composition from California State University, Long Beach.
+                Here
+                he wrote music for a number of collaborative projects: film, dance, video games, and theatre.
+                Additionally,
+                he gained skills in music production, recording, and mixing. Cameron developed a practice in
+                experimental
+                performance and electronics due to his time in New Music Ensemble and Laptop Ensemble. He values
+                collaborating with other artists, which lead him to his senior project: King George VI. This opera was
+                the
+                culmination of the collaborative work Cameron had developed during his time at CSULB. He has performed
+                original works in a variety of venues in the Los Angeles Area and in New York.
+
+                Cameron is earned his Master’s in Music Composition with Interactive Media from Cal State Long Beach in
+                2022. He graduated with an award in Distinguished Achievement in Creative Activity. He directed the New
+                Music Ensemble where he harbored an environment of creativity and collaboration, allowing the students
+                to
+                compose the bulk of the pieces for performances. He manages the live stream for the ensemble’s recent
+                concerts and mixes the ensemble for those performances. Diving deep into the virtual performance space,
+                Cameron has taken advantage of their all digital concerts by adding audio and visual effects to enhance
+                the
+                performance. He also was the graduate assistant for the university offered Max course and the
+                Logic/Garageband class. He premiered the first two acts of his opera _j0bs at First Congregational
+                Church of
+                Los Angeles.
+
+                Currently Cameron works as an Audio Visual Technician in the Anthropology Department at USC. He also
+                works
+                at First Congregational Church of Los Angeles as an Audio Visual and Live Stream Technician. Cameron
+                works
+                as a freelance AV and live stream tech in the Los Angeles area.</p>
+        </div>
+    </div>
 </body>
