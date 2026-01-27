@@ -8,7 +8,7 @@
         const staggerTime = 0.8; 
         // ----------------------------------------------------
 
-        // 1. Setup Headshots (Unchanged)
+        // 1. Setup Headshots
         var headshots = [
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644efda7500cc0360cc27deb/1682898347204/CameronJohnston_0284.JPG", 
             "https://static1.squarespace.com/static/5a6fccf8d74cff4818ad90a2/t/644f01e333e0c877df609476/1682899430658/CameronJohnston_0336.JPG", 
@@ -62,13 +62,15 @@
         hiddenElements.forEach((el) => observer.observe(el));
 
         // 4. Animation Loops
-        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+        
+        // ADDED 'font6' to the list
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+        
         const colors = [
             '#2F4F4F', '#4B0082', '#8B0000', '#000080', 
             '#556B2F', '#8B4513', '#2E0854', '#191970'
         ];
         
-        // MAPPING: English Letter -> Approximate Katakana Sound/Shape
         const katakanaMap = {
             'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
             'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
@@ -91,12 +93,10 @@
             // C. 5% Chance to switch to Specific Katakana
             if (Math.random() < 0.05) {
                 const originalChar = span.dataset.original.toUpperCase();
-                // Check if we have a mapping, otherwise keep original
                 if (katakanaMap[originalChar]) {
                     span.innerText = katakanaMap[originalChar];
                 }
             } else {
-                // Otherwise, revert to original letter
                 span.innerText = span.dataset.original;
             }
 
@@ -120,13 +120,20 @@
 </script>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+    /* UPDATED IMPORT: Added 'VT323' */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
     .font1 { font-family: Arial, sans-serif; }
     .font2 { font-family: "Times New Roman", serif; }
     .font3 { font-family: "Courier New", monospace; }
     .font4 { font-family: "essay-text", monospace; } 
     .font5 { font-family: 'Playfair Display', serif; }
+    
+    /* NEW FONT CLASS */
+    .font6 { 
+        font-family: 'VT323', monospace; 
+        font-size: 1.1em; /* Slight bump as pixel fonts can look small */
+    }
 
     .container1 {
         display: flex;
