@@ -7,13 +7,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        
-        /* THE FIX: changing this back to hidden prevents the layout thrashing */
-        overflow: hidden !important; 
-        
-        /* Ensure it doesn't bleed out horizontally */
-        max-width: 100vw; 
-        box-sizing: border-box;
+        overflow: visible; 
     }
 
     .hp-mid-wrapper section {
@@ -23,10 +17,6 @@
         max-width: 2000px;
         margin: 0 auto 50px auto; 
         padding: 0 !important;
-        
-        /* Ensure sections don't overlap weirdly during animation */
-        position: relative;
-        z-index: 1;
     }
 
     /* 2. THE CONTAINER */
@@ -43,18 +33,12 @@
         align-items: center !important;
         text-decoration: none;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        
-        /* GPU Optimization */
-        will-change: transform;
-        transform: translateZ(0); 
-        
-        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
     }
 
     .hp-mid-wrapper .image-container:hover, 
     .hp-mid-wrapper .video-container:hover {
-        /* Reduced scale slightly to reduce repaint cost */
-        transform: scale(1.01) translateZ(0); 
+        transform: scale(1.02); 
         box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
         z-index: 20; 
     }
@@ -67,7 +51,6 @@
         object-fit: cover !important;
         z-index: 1;
         opacity: 1 !important;
-        pointer-events: none;
     }
 
     .hp-mid-wrapper .cropped-image, 
@@ -75,25 +58,19 @@
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
-        transform: translate3d(-50%, -50%, 0) scale(1.15) !important;
+        transform: translate(-50%, -50%) scale(1.15) !important;
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
         z-index: 2;
         opacity: 1; 
         filter: blur(6px); 
-        
-        will-change: transform, filter;
-        backface-visibility: hidden;
-        
         transition: transform 0.8s ease, filter 0.8s ease;
-        pointer-events: none;
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
     .hp-mid-wrapper .video-container:hover .cropped-video {
         filter: blur(0px); 
-        transform: translate3d(-50%, -50%, 0) scale(1.15) !important;
     }
 
     /* 4. TEXT OVERLAYS */
@@ -114,7 +91,6 @@
         letter-spacing: 2px;
         font-weight: bold;
         text-transform: uppercase;
-        user-select: none; 
     }
 
     .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
@@ -125,8 +101,11 @@
         opacity: 0;
         filter: blur(5px);
         
+        /* CHANGED: Increased time to 2.5s */
         transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
-        transition-delay: 0.5s;
+        
+        /* CHANGED: Added 0.5s delay */
+        transition-delay: 0.1s;
         
         will-change: transform, opacity;
     }
@@ -134,7 +113,7 @@
     .hp-mid-wrapper .show-slide {
         opacity: 1 !important;
         filter: blur(0px);
-        transform: translate3d(0, 0, 0) rotate(0deg) !important;
+        transform: translate(0, 0) rotate(0deg) !important;
     }
 
     @media screen and (max-width: 768px) {
@@ -235,12 +214,11 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP RANDOM FLY-IN (Reduced distance to prevent getting hidden)
+                // 3. SETUP RANDOM FLY-IN
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    // Reduced spread since wrapper is now hidden overflow
-                    const randomX = (Math.random() - 0.5) * 600; 
-                    const randomY = (Math.random() - 0.5) * 600;
-                    const randomRotate = (Math.random() - 0.5) * 20; 
+                    const randomX = (Math.random() - 0.5) * 1600; 
+                    const randomY = (Math.random() - 0.5) * 1000;
+                    const randomRotate = (Math.random() - 0.5) * 40; 
                     el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 });
 
@@ -249,7 +227,6 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('show-slide');
-                            // STOP WATCHING so it doesn't fly out again when scrolling up/down
                             observer.unobserve(entry.target);
                         } 
                     });
