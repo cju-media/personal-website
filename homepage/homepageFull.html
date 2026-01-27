@@ -435,6 +435,21 @@
                     return;
                 }
 
+                // SLOW BUILD UP LOGIC
+                const now = Date.now();
+                const start = parseInt(span.dataset.hoverStart || 0);
+                const elapsed = now - start;
+                const rampDuration = 600; // Matches CSS transition
+                const rampFactor = Math.min(elapsed / rampDuration, 1);
+
+                if (Math.random() > rampFactor) {
+                    // Build-up phase: keep default and retry quickly
+                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                    span.innerText = span.dataset.original;
+                    setTimeout(() => changeFontRandomly(span), 50);
+                    return;
+                }
+
                 fontClasses.forEach(fontClass => span.classList.remove(fontClass));
                 const randomIndex = Math.floor(Math.random() * fontClasses.length);
                 span.classList.add(fontClasses[randomIndex]);
@@ -448,7 +463,9 @@
                     span.innerText = span.dataset.original;
                 }
 
-                const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                // SLOWED DOWN TOP SPEED
+                // Previous: 300-700ms. New: 600-1200ms
+                const interval = Math.floor(Math.random() * (1200 - 600 + 1)) + 600;
                 setTimeout(() => changeFontRandomly(span), interval);
             }
 
@@ -558,8 +575,10 @@
                 document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
                     container.addEventListener('mouseenter', () => {
                         const spans = container.querySelectorAll('.glitch-char');
+                        const now = Date.now();
                         spans.forEach(span => {
                             span.dataset.active = "true";
+                            span.dataset.hoverStart = now;
                             changeFontRandomly(span);
                         });
                     });
