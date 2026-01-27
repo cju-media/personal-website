@@ -4,7 +4,7 @@
 
     function init1() {
         // --- SETTINGS ---------------------------------------
-        // Change this single number to speed up or slow down the stagger
+        // Change this to speed up or slow down the stagger
         // 0.1 = fast waterfall, 0.5 = slow waterfall
         const staggerTime = 0.15; 
         // ----------------------------------------------------
@@ -31,7 +31,6 @@
         columns.forEach(col => {
             const letters = col.querySelectorAll('.span-class');
             letters.forEach((span, index) => {
-                // MATH: Random Position
                 const randomX = (Math.random() - 0.5) * 2400; 
                 const randomY = (Math.random() - 0.5) * 2400;
                 const randomRotate = (Math.random() - 0.5) * 360; 
@@ -39,7 +38,7 @@
                 span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 span.style.opacity = "0"; 
 
-                // MATH: Apply the variable delay based on row index (0, 1, 2...)
+                // Use the variable for delay
                 span.style.transitionDelay = `${index * staggerTime}s`;
             });
         });
@@ -85,7 +84,6 @@
             setTimeout(() => changeColorRandomly(span), interval);
         }
 
-        // Initialize loops
         const allSpans = document.querySelectorAll('.text-block1 .span-class');
         allSpans.forEach(span => {
             changeFontRandomly(span);
@@ -136,7 +134,10 @@
         display: flex; 
         flex-direction: row; 
         justify-content: center;
-        align-items: center; /* Keeps short columns centered vertically */
+        
+        /* CHANGED: Removed 'align-items: center' so they align to the top */
+        align-items: flex-start; 
+        
         gap: 40px; 
         perspective: 1000px;
         margin: auto; 
@@ -156,21 +157,15 @@
         width: auto;
     }
 
-    /* --- THE FLIGHT LOGIC --- */
     .span-class {
         display: inline-block;
         text-align: center;
         z-index: 4;
         position: relative;
         will-change: transform, opacity;
-        
-        /* Note: transition-delay is now handled in JS */
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
-        
         margin-bottom: 5px; 
     }
-
-    /* CSS DELAYS REMOVED - Handled by JS variable 'staggerTime' */
 
     .span-class.landed {
         transform: translate(0, 0) rotate(0deg) !important;
