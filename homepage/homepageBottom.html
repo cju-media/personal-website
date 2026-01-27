@@ -1,0 +1,48 @@
+function init1() {
+    // Specific URLs based on your repo structure
+    const bioUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/bio.txt';
+    const headshotListUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/assets/headshots.txt';
+
+    // 1. Fetch and set the Bio Text
+    fetch(bioUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(data => {
+            document.getElementById("bio-text").innerText = data;
+        })
+        .catch(err => console.error("Bio fetch error:", err));
+
+    // 2. Fetch the Image List and pick a random one
+    fetch(headshotListUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(data => {
+            // Splits by line break and removes empty lines
+            const headshots = data.split(/\r?\n/).filter(Boolean);
+            
+            if (headshots.length > 0) {
+                const randomIndex = Math.floor(Math.random() * headshots.length);
+                const myHeadshot = document.getElementById("myHeadshot");
+                myHeadshot.src = headshots[randomIndex];
+            }
+        })
+        .catch(err => console.error("Image list fetch error:", err));
+
+    // --- YOUR EXISTING OBSERVER LOGIC ---
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            } else {
+                entry.target.classList.remove('show');
+            }
+        });
+    });
+
+    const hiddenElements = document.querySelectorAll('.hidden');
+    hiddenElements.forEach((el) => observer.observe(el));
+}

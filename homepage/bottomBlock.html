@@ -1,0 +1,39 @@
+<div id="github-loader-target"></div>
+
+<script>
+  (function() {
+    // 1. Point to the Raw Content Domain (No Rate Limits)
+    const owner = 'cju-media';
+    const repo = 'personal-website';
+    const path = 'homepage/homepageBottom.html';
+    const branch = 'main'; // Ensure this matches your branch name (e.g., 'main' or 'master')
+    
+    // Switch from api.github.com to raw.githubusercontent.com
+    const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+
+    // 2. Fetch without special headers
+    fetch(url)
+      .then(response => {
+        if (!response.ok) throw new Error('GitHub Raw connection failed');
+        return response.text();
+      })
+      .then(data => {
+        const container = document.getElementById('github-loader-target');
+        container.innerHTML = data;
+        
+        // 3. Execute scripts inside the fetched HTML
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+      })
+      .catch(err => {
+        console.error('Fetch Error:', err);
+        // Clean fail state: Hide the loader text so the error isn't visible to users
+        document.getElementById('github-loader-target').innerHTML = ''; 
+      });
+  })();
+</script>
