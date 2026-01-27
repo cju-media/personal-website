@@ -1,5 +1,13 @@
 <div class="hp-mid-wrapper">
 <style>
+    /* --- THE CRITICAL FIX --- */
+    /* This prevents the browser from expanding the page width */
+    /* when elements fly in from off-screen */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+
     /* 1. WRAPPER & LAYOUT */
     .hp-mid-wrapper {
         width: 100%;
@@ -7,6 +15,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        /* Kept visible so elements can be seen entering from edges */
         overflow: visible; 
     }
 
@@ -101,11 +110,11 @@
         opacity: 0;
         filter: blur(5px);
         
-        /* CHANGED: Increased time to 2.5s */
+        /* Slowed down to 2.5s */
         transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
         
-        /* CHANGED: Added 0.5s delay */
-        transition-delay: 0.1s;
+        /* 0.5s Delay */
+        transition-delay: 0.5s;
         
         will-change: transform, opacity;
     }
@@ -117,7 +126,6 @@
     }
 
     @media screen and (max-width: 768px) {
-        .hp-mid-wrapper { overflow-x: hidden; } 
         .hp-mid-wrapper section { width: 90% !important; margin: 0 auto 25px auto !important; }
         .hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container { height: 360px !important; }
     }
@@ -216,7 +224,8 @@
 
                 // 3. SETUP RANDOM FLY-IN
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    const randomX = (Math.random() - 0.5) * 1600; 
+                    // Slightly tighter spread (1200 instead of 1600) to ensure they are on screen sooner
+                    const randomX = (Math.random() - 0.5) * 1200; 
                     const randomY = (Math.random() - 0.5) * 1000;
                     const randomRotate = (Math.random() - 0.5) * 40; 
                     el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
@@ -227,6 +236,7 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('show-slide');
+                            // STOP WATCHING so it doesn't fly out again when scrolling up/down
                             observer.unobserve(entry.target);
                         } 
                     });
