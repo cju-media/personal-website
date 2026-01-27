@@ -130,6 +130,14 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
+    /* --- THE CRITICAL FIX --- */
+    /* This prevents the entire page from jittering when 
+       items fly outside the visible area */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+
     .font1 { font-family: Arial, sans-serif; }
     .font2 { font-family: "Times New Roman", serif; }
     .font3 { font-family: "Courier New", monospace; }
