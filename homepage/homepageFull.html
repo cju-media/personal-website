@@ -11,7 +11,7 @@
         if (window.loadMediaPromise) return window.loadMediaPromise;
 
         // Cache buster to ensure newest version
-        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.json";
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.jsonx";
 
         window.loadMediaPromise = fetch(url)
             .then(response => {
@@ -32,7 +32,7 @@
             if (!mediaData) return;
 
             // --- SETTINGS ---------------------------------------
-            const staggerTime = 0.3;
+            const staggerTime = 0.8;
             // ----------------------------------------------------
 
             // 1. Setup Headshots
@@ -220,7 +220,7 @@
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
         margin-bottom: 5px;
-        opacity: 0;
+        opacity: 1;
     }
 
     .span-class.landed {
