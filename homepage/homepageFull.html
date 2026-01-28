@@ -11,7 +11,9 @@
         if (window.loadMediaPromise) return window.loadMediaPromise;
 
         // Cache buster to ensure newest version
-        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.jsonx";
+
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.json";
+
 
         window.loadMediaPromise = fetch(url)
             .then(response => {
