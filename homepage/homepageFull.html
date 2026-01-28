@@ -11,9 +11,7 @@
         if (window.loadMediaPromise) return window.loadMediaPromise;
 
         // Cache buster to ensure newest version
-
-        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.json";
-
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/media.json?t=" + Date.now();
 
         window.loadMediaPromise = fetch(url)
             .then(response => {
@@ -34,8 +32,16 @@
             if (!mediaData) return;
 
             // --- SETTINGS ---------------------------------------
-            const staggerTime = 0.8;
+            let staggerTime = 0.05;
             // ----------------------------------------------------
+
+            // CHECK SESSION STORAGE
+            const visited = sessionStorage.getItem('visited');
+            if (visited) {
+                staggerTime = 0;
+            } else {
+                sessionStorage.setItem('visited', 'true');
+            }
 
             // 1. Setup Headshots
             var headshots = mediaData.headshots || [];
@@ -47,11 +53,11 @@
             }
 
             // Continue with letters setup...
-            setupLetters(staggerTime);
+            setupLetters(staggerTime, visited);
         });
     }
 
-    function setupLetters(staggerTime) {
+    function setupLetters(staggerTime, visited) {
         // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
 
@@ -60,14 +66,22 @@
             letters.forEach((span, index) => {
                 span.dataset.wordIndex = colIndex;
 
-                // Keep the wide fly-in range
-                const randomX = (Math.random() - 0.5) * 2400;
-                const randomY = (Math.random() - 0.5) * 2400;
-                const randomRotate = (Math.random() - 0.5) * 360;
+                if (visited) {
+                    // Immediate show
+                    span.style.transform = "translate(0, 0) rotate(0deg)";
+                    span.style.opacity = "1";
+                    span.style.transitionDelay = "0s";
+                    span.classList.add('landed');
+                } else {
+                    // Keep the wide fly-in range
+                    const randomX = (Math.random() - 0.5) * 2400;
+                    const randomY = (Math.random() - 0.5) * 2400;
+                    const randomRotate = (Math.random() - 0.5) * 360;
 
-                span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                span.style.opacity = "0";
-                span.style.transitionDelay = `${index * staggerTime}s`;
+                    span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                    span.style.opacity = "0";
+                    span.style.transitionDelay = `${index * staggerTime}s`;
+                }
             });
         });
 
@@ -583,12 +597,22 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP RANDOM FLY-IN
+                // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
+                const visited = sessionStorage.getItem('visited');
+                
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    const randomX = (Math.random() - 0.5) * 1600;
-                    const randomY = (Math.random() - 0.5) * 1000;
-                    const randomRotate = (Math.random() - 0.5) * 40;
-                    el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                    if (visited) {
+                         el.classList.add('show-slide');
+                         el.style.transform = "none";
+                         el.style.transition = "none";
+                         el.style.opacity = "1";
+                         el.style.filter = "blur(0)";
+                    } else {
+                        const randomX = (Math.random() - 0.5) * 1600;
+                        const randomY = (Math.random() - 0.5) * 1000;
+                        const randomRotate = (Math.random() - 0.5) * 40;
+                        el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                    }
                 });
 
                 // 4. OBSERVER (ONE WAY)
@@ -658,22 +682,32 @@
         }
 
         function startBioObserver() {
+            const visited = sessionStorage.getItem('visited');
+            const hiddenElements = document.querySelectorAll('.bio-hidden');
+
+            if (visited) {
+                 hiddenElements.forEach(el => {
+                     // Force style overrides directly to ensure specificity
+                     el.style.opacity = "1";
+                     el.style.filter = "blur(0)";
+                     el.style.transform = "translateX(0)";
+                     el.style.transition = "none";
+                     
+                     el.classList.remove('bio-hidden');
+                     el.classList.add('bio-show');
+                 });
+            }
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-
-
                     if (entry.isIntersecting) {
                         entry.target.classList.add('bio-show');
                     } else {
                         entry.target.classList.remove('bio-show');
                     }
-
                 });
-
             });
 
-
-            const hiddenElements = document.querySelectorAll('.bio-hidden');
             hiddenElements.forEach((el) => observer.observe(el));
         }
     </script>
