@@ -11,7 +11,9 @@
         if (window.loadMediaPromise) return window.loadMediaPromise;
 
         // Cache buster to ensure newest version
-        const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/media.json?t=" + Date.now();
+
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/refs/heads/main/assets/media.json";
+
 
         window.loadMediaPromise = fetch(url)
             .then(response => {
@@ -32,7 +34,7 @@
             if (!mediaData) return;
 
             // --- SETTINGS ---------------------------------------
-            const staggerTime = 0.05;
+            const staggerTime = 0.8;
             // ----------------------------------------------------
 
             // 1. Setup Headshots
