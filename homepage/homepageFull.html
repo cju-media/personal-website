@@ -11,7 +11,7 @@
         if (window.loadMediaPromise) return window.loadMediaPromise;
 
         // Cache buster to ensure newest version
-        const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/media.json?t=" + Date.now();
+        const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/media.json?t=" + Date.now();
 
         window.loadMediaPromise = fetch(url)
             .then(response => {
@@ -220,7 +220,7 @@
         will-change: transform, opacity;
         transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
         margin-bottom: 5px;
-        opacity: 0;
+        opacity: 1;
     }
 
     .span-class.landed {
