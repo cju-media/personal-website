@@ -597,22 +597,10 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
-                const visited = sessionStorage.getItem('visited');
-                
+                // 3. SETUP SLIDE-IN FROM LEFT
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    if (visited) {
-                         el.classList.add('show-slide');
-                         el.style.transform = "none";
-                         el.style.transition = "none";
-                         el.style.opacity = "1";
-                         el.style.filter = "blur(0)";
-                    } else {
-                        const randomX = (Math.random() - 0.5) * 1600;
-                        const randomY = (Math.random() - 0.5) * 1000;
-                        const randomRotate = (Math.random() - 0.5) * 40;
-                        el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                    }
+                    // Slide in from left
+                    el.style.transform = `translateX(-1500px)`;
                 });
 
                 // 4. OBSERVER (ONE WAY)
@@ -682,28 +670,13 @@
         }
 
         function startBioObserver() {
-            const visited = sessionStorage.getItem('visited');
             const hiddenElements = document.querySelectorAll('.bio-hidden');
-
-            if (visited) {
-                 hiddenElements.forEach(el => {
-                     // Force style overrides directly to ensure specificity
-                     el.style.opacity = "1";
-                     el.style.filter = "blur(0)";
-                     el.style.transform = "translateX(0)";
-                     el.style.transition = "none";
-                     
-                     el.classList.remove('bio-hidden');
-                     el.classList.add('bio-show');
-                 });
-            }
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('bio-show');
-                    } else {
-                        entry.target.classList.remove('bio-show');
+                        observer.unobserve(entry.target);
                     }
                 });
             });
