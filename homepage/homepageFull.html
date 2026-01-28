@@ -384,23 +384,34 @@
     .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
 
     /* 5. RANDOM FLY-IN ANIMATIONS */
+    /* OBSERVED WRAPPER: Must remain visible for IntersectionObserver to work */
     .hp-mid-wrapper .hidden-slide {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* ANIMATED CHILDREN */
+    .hp-mid-wrapper .slide-init {
         opacity: 0;
         filter: blur(5px);
+        transform: translateX(-1500px);
 
-        /* CHANGED: Increased time to 2.5s */
         transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
-
-        /* CHANGED: Added 0.5s delay */
         transition-delay: 0.1s;
 
         will-change: transform, opacity;
+        pointer-events: none;
     }
 
-    .hp-mid-wrapper .show-slide {
-        opacity: 1 !important;
+    .hp-mid-wrapper .slide-show {
+        opacity: 1;
         filter: blur(0px);
-        transform: translate(0, 0) rotate(0deg) !important;
+        transform: translate(0, 0);
+
+        transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
+        transition-delay: 0.1s;
+
+        pointer-events: auto;
     }
 
     .glitch-char { 
@@ -598,16 +609,27 @@
                 }
 
                 // 3. SETUP SLIDE-IN FROM LEFT
-                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    // Slide in from left
-                    el.style.transform = `translateX(-1500px)`;
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(section => {
+                    const child = section.querySelector('.image-container, .video-container');
+                    if(child) {
+                        child.classList.add('slide-init');
+                    }
                 });
 
                 // 4. OBSERVER (ONE WAY)
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            entry.target.classList.add('show-slide');
+                            const child = entry.target.querySelector('.image-container, .video-container');
+                            if (child) {
+                                child.classList.remove('slide-init');
+                                child.classList.add('slide-show');
+
+                                // Cleanup after animation to restore hover effects
+                                setTimeout(() => {
+                                    child.classList.remove('slide-show');
+                                }, 2600); // 2.5s transition + 0.1s delay
+                            }
                             observer.unobserve(entry.target);
                         }
                     });
