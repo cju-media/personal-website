@@ -425,12 +425,12 @@
     }
 </style>
 
-    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="/media/avengineering" class="image-container slide-init"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/music" class="image-container slide-init"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/max" class="image-container slide-init"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
-        <a href="/director/laptop-ensemble" class="video-container">
+        <a href="/director/laptop-ensemble" class="video-container slide-init">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
             <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
@@ -438,16 +438,16 @@
     </section>
 
     <section class="hidden-slide">
-        <a href="/highlights/videoart" class="video-container">
+        <a href="/highlights/videoart" class="video-container slide-init">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
             <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
-    <section class="hidden-slide"><a href="/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="/programming" class="image-container slide-init"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/albums" class="image-container slide-init"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container slide-init"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
 
     <script>
         (function() {
@@ -471,6 +471,7 @@
 
             function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
                 // --- GLITCH EFFECT SETTINGS ---
+            const isMobileQuery = window.matchMedia("(max-width: 768px)");
             const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
             const katakanaMap = {
                 'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
@@ -547,6 +548,12 @@
                         
                         // DO NOT Start effects immediately
                         // changeFontRandomly(span);
+
+                        if (isMobileQuery.matches) {
+                            span.dataset.active = "true";
+                            span.dataset.hoverStart = 0;
+                            changeFontRandomly(span);
+                        }
                     }
                 });
             }
@@ -608,13 +615,7 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP SLIDE-IN FROM LEFT
-                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(section => {
-                    const child = section.querySelector('.image-container, .video-container');
-                    if(child) {
-                        child.classList.add('slide-init');
-                    }
-                });
+                // 3. SETUP SLIDE-IN FROM LEFT (Handled in HTML to prevent FOUC)
 
                 // 4. OBSERVER (ONE WAY)
                 const observer = new IntersectionObserver((entries) => {
@@ -643,6 +644,7 @@
                 // 6. SETUP HOVER TRIGGERS
                 document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
                     container.addEventListener('mouseenter', () => {
+                        if (isMobileQuery.matches) return;
                         const spans = container.querySelectorAll('.glitch-char');
                         const now = Date.now();
                         spans.forEach(span => {
@@ -652,11 +654,30 @@
                         });
                     });
                     container.addEventListener('mouseleave', () => {
+                        if (isMobileQuery.matches) return;
                         const spans = container.querySelectorAll('.glitch-char');
                         spans.forEach(span => {
                             span.dataset.active = "false";
                         });
                     });
+                });
+
+                // 7. HANDLE RESIZE
+                isMobileQuery.addEventListener('change', (e) => {
+                    const spans = document.querySelectorAll('.hp-mid-wrapper .glitch-char');
+                    if (e.matches) {
+                        // Became mobile
+                        spans.forEach(span => {
+                            if (span.dataset.active !== "true") {
+                                span.dataset.active = "true";
+                                span.dataset.hoverStart = 0;
+                                changeFontRandomly(span);
+                            }
+                        });
+                    } else {
+                        // Became desktop
+                        spans.forEach(span => span.dataset.active = "false");
+                    }
                 });
             }
 
