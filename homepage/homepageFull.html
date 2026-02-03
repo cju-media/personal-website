@@ -58,7 +58,6 @@
     function setupLetters(staggerTime) {
         // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
-        let globalIndex = 0;
         const allLetters = []; // Store elements to avoid requerying
 
         // Phase 1: Setup initial state (teleport)
@@ -66,6 +65,8 @@
             const letters = col.querySelectorAll('.span-class');
             letters.forEach((span, index) => {
                 span.dataset.wordIndex = colIndex;
+                // Store index for delay calculation later
+                span.dataset.charIndex = index;
                 allLetters.push(span);
 
                 // Keep the wide fly-in range
@@ -87,8 +88,9 @@
         allLetters.forEach((span) => {
              // Restore CSS transition
             span.style.transition = '';
-            span.style.transitionDelay = `${globalIndex * staggerTime}s`;
-            globalIndex++;
+            // Delay is based on character index (column), so C, J, U (index 0) animate together
+            const charIndex = parseInt(span.dataset.charIndex);
+            span.style.transitionDelay = `${charIndex * staggerTime}s`;
         });
 
         // 3. Setup Intersection Observer
@@ -618,21 +620,14 @@
                 }
 
                 // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
-                const visited = sessionStorage.getItem('visited');
+                // const visited = sessionStorage.getItem('visited');
                 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    if (visited) {
-                         el.classList.add('show-slide');
-                         el.style.transform = "none";
-                         el.style.transition = "none";
-                         el.style.opacity = "1";
-                         el.style.filter = "blur(0)";
-                    } else {
-                        const randomX = (Math.random() - 0.5) * 1600;
-                        const randomY = (Math.random() - 0.5) * 1000;
-                        const randomRotate = (Math.random() - 0.5) * 40;
-                        el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                    }
+                    // Slide in from left only
+                    // On mobile, reduce the offset so it's not too far off-screen
+                    const isMobile = window.innerWidth <= 768;
+                    const startX = isMobile ? -50 : -500;
+                    el.style.transform = `translate(${startX}px, 0px)`;
                 });
 
                 // 4. OBSERVER (ONE WAY)
@@ -650,24 +645,40 @@
                 // 5. APPLY GLITCH EFFECT
                 applyGlitchToElements('.hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1');
 
-                // 6. SETUP HOVER TRIGGERS
-                document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
-                    container.addEventListener('mouseenter', () => {
+                // 6. SETUP HOVER TRIGGERS (Desktop) OR ALWAYS ON (Mobile)
+                const isMobile = window.innerWidth <= 768;
+
+                if (isMobile) {
+                    // Mobile: Always active
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
                         const spans = container.querySelectorAll('.glitch-char');
-                        const now = Date.now();
                         spans.forEach(span => {
                             span.dataset.active = "true";
-                            span.dataset.hoverStart = now;
+                            // For mobile, skip hover start ramp-up logic if desired, or just set it
+                            span.dataset.hoverStart = Date.now();
                             changeFontRandomly(span);
                         });
                     });
-                    container.addEventListener('mouseleave', () => {
-                        const spans = container.querySelectorAll('.glitch-char');
-                        spans.forEach(span => {
-                            span.dataset.active = "false";
+                } else {
+                    // Desktop: Hover behavior
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
+                        container.addEventListener('mouseenter', () => {
+                            const spans = container.querySelectorAll('.glitch-char');
+                            const now = Date.now();
+                            spans.forEach(span => {
+                                span.dataset.active = "true";
+                                span.dataset.hoverStart = now;
+                                changeFontRandomly(span);
+                            });
+                        });
+                        container.addEventListener('mouseleave', () => {
+                            const spans = container.querySelectorAll('.glitch-char');
+                            spans.forEach(span => {
+                                span.dataset.active = "false";
+                            });
                         });
                     });
-                });
+                }
             }
 
             const checkLoad = setInterval(() => {
