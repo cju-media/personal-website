@@ -384,34 +384,23 @@
     .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
 
     /* 5. RANDOM FLY-IN ANIMATIONS */
-    /* OBSERVED WRAPPER: Must remain visible for IntersectionObserver to work */
     .hp-mid-wrapper .hidden-slide {
-        opacity: 1;
-        transform: none;
-    }
-
-    /* ANIMATED CHILDREN */
-    .hp-mid-wrapper .slide-init {
         opacity: 0;
         filter: blur(5px);
-        transform: translateX(-1500px);
 
+        /* CHANGED: Increased time to 2.5s */
         transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
+
+        /* CHANGED: Added 0.5s delay */
         transition-delay: 0.1s;
 
         will-change: transform, opacity;
-        pointer-events: none;
     }
 
-    .hp-mid-wrapper .slide-show {
-        opacity: 1;
+    .hp-mid-wrapper .show-slide {
+        opacity: 1 !important;
         filter: blur(0px);
-        transform: translate(0, 0);
-
-        transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
-        transition-delay: 0.1s;
-
-        pointer-events: auto;
+        transform: translate(0, 0) rotate(0deg) !important;
     }
 
     .glitch-char { 
@@ -608,11 +597,21 @@
                     startWatchdog("mid-laptop", perfVids);
                 }
 
-                // 3. SETUP SLIDE-IN FROM LEFT
-                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(section => {
-                    const child = section.querySelector('.image-container, .video-container');
-                    if(child) {
-                        child.classList.add('slide-init');
+                // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
+                const visited = sessionStorage.getItem('visited');
+                
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
+                    if (visited) {
+                         el.classList.add('show-slide');
+                         el.style.transform = "none";
+                         el.style.transition = "none";
+                         el.style.opacity = "1";
+                         el.style.filter = "blur(0)";
+                    } else {
+                        const randomX = (Math.random() - 0.5) * 1600;
+                        const randomY = (Math.random() - 0.5) * 1000;
+                        const randomRotate = (Math.random() - 0.5) * 40;
+                        el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                     }
                 });
 
@@ -620,16 +619,7 @@
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            const child = entry.target.querySelector('.image-container, .video-container');
-                            if (child) {
-                                child.classList.remove('slide-init');
-                                child.classList.add('slide-show');
-
-                                // Cleanup after animation to restore hover effects
-                                setTimeout(() => {
-                                    child.classList.remove('slide-show');
-                                }, 2600); // 2.5s transition + 0.1s delay
-                            }
+                            entry.target.classList.add('show-slide');
                             observer.unobserve(entry.target);
                         }
                     });
@@ -692,13 +682,28 @@
         }
 
         function startBioObserver() {
+            const visited = sessionStorage.getItem('visited');
             const hiddenElements = document.querySelectorAll('.bio-hidden');
+
+            if (visited) {
+                 hiddenElements.forEach(el => {
+                     // Force style overrides directly to ensure specificity
+                     el.style.opacity = "1";
+                     el.style.filter = "blur(0)";
+                     el.style.transform = "translateX(0)";
+                     el.style.transition = "none";
+                     
+                     el.classList.remove('bio-hidden');
+                     el.classList.add('bio-show');
+                 });
+            }
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('bio-show');
-                        observer.unobserve(entry.target);
+                    } else {
+                        entry.target.classList.remove('bio-show');
                     }
                 });
             });
