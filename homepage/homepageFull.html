@@ -609,10 +609,9 @@
                 // const visited = sessionStorage.getItem('visited');
                 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    const randomX = (Math.random() - 0.5) * 1600;
-                    const randomY = (Math.random() - 0.5) * 1000;
-                    const randomRotate = (Math.random() - 0.5) * 40;
-                    el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                    // Slide in from left only
+                    const startX = -500;
+                    el.style.transform = `translate(${startX}px, 0px)`;
                 });
 
                 // 4. OBSERVER (ONE WAY)
