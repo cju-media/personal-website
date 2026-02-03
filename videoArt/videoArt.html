@@ -1,8 +1,53 @@
 <body>
+   <div class="text-block1">
+            <h1>
+                <h1>
+                    <span class="span-class">V</span>
+                    <span class="span-class">I</span>
+                    <span class="span-class">D</span>
+                    <span class="span-class">E</span>
+                    <span class="span-class">O</span>
+
+                <span class="span-class">‎</span>
+                  <span class="span-class">‎</span>
+                  <span class="span-class"> </span>
+
+
+                    <span class="span-class">A</span>
+                    <span class="span-class">R</span>
+                    <span class="span-class">T</span>
+
+                </h1>
+
+            </h1>
+        </div>
   <script>
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
+        // --- TITLE ANIMATION LOGIC ---
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+
+        // Function to change font class for a single span
+        function changeFontRandomly(span) {
+            // Remove previously added font classes
+            fontClasses.forEach(fontClass => {
+                span.classList.remove(fontClass);
+            });
+
+            const randomIndex = Math.floor(Math.random() * fontClasses.length);
+            span.classList.add(fontClasses[randomIndex]);
+
+            // Randomize the interval duration for the next change (between 300ms and 700ms)
+            const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+            setTimeout(() => changeFontRandomly(span), randomInterval);
+        }
+
+        const spans = document.querySelectorAll('.text-block1 .span-class');
+        spans.forEach(span => {
+            changeFontRandomly(span);
+        });
+
      var videos = [
         "https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
         "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
@@ -100,6 +145,36 @@
      video.addEventListener("click", init1)
   </script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+
+    .font1 {
+        font-family: Arial, sans-serif;
+    }
+
+    .font2 {
+        font-family: Times New Roman, serif;
+    }
+
+    .font3 {
+        font-family: Courier New, monospace;
+    }
+
+    .font4 {
+        font-family: essay-text, monospace;
+    }
+
+    .font5 {
+        font-family: 'Playfair Display', serif;
+    }
+
+    h1 {
+        font-size: calc(2.5vw + 10px);
+        text-align: center;
+
+        /*   max-font-size: 36px; */
+        /* Set your desired maximum font size */
+    }
+
     section {
       display: grid;
       place-items: top;
