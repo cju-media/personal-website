@@ -624,7 +624,9 @@
                 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
                     // Slide in from left only
-                    const startX = -500;
+                    // On mobile, reduce the offset so it's not too far off-screen
+                    const isMobile = window.innerWidth <= 768;
+                    const startX = isMobile ? -50 : -500;
                     el.style.transform = `translate(${startX}px, 0px)`;
                 });
 
