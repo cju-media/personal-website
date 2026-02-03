@@ -1,24 +1,15 @@
 <body>
    <div class="text-block1">
             <h1>
-                <h1>
-                    <span class="span-class">V</span>
-                    <span class="span-class">I</span>
-                    <span class="span-class">D</span>
-                    <span class="span-class">E</span>
-                    <span class="span-class">O</span>
-
-                <span class="span-class">‎</span>
-                  <span class="span-class">‎</span>
-                  <span class="span-class"> </span>
-
-
-                    <span class="span-class">A</span>
-                    <span class="span-class">R</span>
-                    <span class="span-class">T</span>
-
-                </h1>
-
+                <span class="span-class">V</span>
+                <span class="span-class">I</span>
+                <span class="span-class">D</span>
+                <span class="span-class">E</span>
+                <span class="span-class">O</span>
+                &nbsp;&nbsp;
+                <span class="span-class">A</span>
+                <span class="span-class">R</span>
+                <span class="span-class">T</span>
             </h1>
         </div>
         <div class="text-block2">
@@ -31,30 +22,57 @@
         <span></span><span></span><span></span><span></span>
         <!-- <p>Test </p> -->
   <script>
+    if (typeof Squarespace === 'undefined') {
+        var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
+        var Y = null;
+    }
+
     Squarespace.onInitialize(Y, init1)
 
     function init1() {
         // --- TITLE ANIMATION LOGIC ---
-        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5'];
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+        const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+        const katakanaMap = {
+            'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+            'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+            'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+        };
 
-        // Function to change font class for a single span
         function changeFontRandomly(span) {
-            // Remove previously added font classes
-            fontClasses.forEach(fontClass => {
-                span.classList.remove(fontClass);
-            });
-
+            if (!span.dataset.original) {
+                span.dataset.original = span.innerText;
+            }
+            fontClasses.forEach(fontClass => span.classList.remove(fontClass));
             const randomIndex = Math.floor(Math.random() * fontClasses.length);
             span.classList.add(fontClasses[randomIndex]);
 
-            // Randomize the interval duration for the next change (between 300ms and 700ms)
-            const randomInterval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-            setTimeout(() => changeFontRandomly(span), randomInterval);
+            if (Math.random() < 0.05) {
+                const originalChar = span.dataset.original.toUpperCase();
+                if (katakanaMap[originalChar]) {
+                    span.innerText = katakanaMap[originalChar];
+                }
+            } else {
+                span.innerText = span.dataset.original;
+            }
+
+            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+            setTimeout(() => changeFontRandomly(span), interval);
+        }
+
+        function changeColorRandomly(span) {
+            const randomColorIndex = Math.floor(Math.random() * colors.length);
+            span.style.color = colors[randomColorIndex];
+            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+            setTimeout(() => changeColorRandomly(span), interval);
         }
 
         const spans = document.querySelectorAll('.text-block1 .span-class');
         spans.forEach(span => {
             changeFontRandomly(span);
+            changeColorRandomly(span);
         });
 
      var videos = [
@@ -154,7 +172,7 @@
      video.addEventListener("click", init1)
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
     .font1 {
         font-family: Arial, sans-serif;
@@ -175,6 +193,8 @@
     .font5 {
         font-family: 'Playfair Display', serif;
     }
+
+    .font6 { font-family: 'VT323', monospace; font-size: 1.1em; }
 
     h1 {
         font-size: calc(2.5vw + 10px);
