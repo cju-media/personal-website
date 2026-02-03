@@ -1,80 +1,203 @@
 <body>
+  <script>
+    Squarespace.onInitialize(Y, init1)
 
-    <style>
-        .link {
-			text-decoration: underline;
-      color: #8c979a;/* add underline */
-		}
-    </style>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-    <p id="resultText">With <span id="cellValuePlaceholder">hundreds of</span>
-        events and counting since 2017, Cameron has <span id="yearsPassedPlaceholder"></span> years of experience in live
-        sound, live video, live streaming and live event production. From twenty-piece bands to multi-stream video
-        installations, Cameron has done it all and everything inbetween.
-    </p>
+    function init1() {
+     var videos = [
+        "https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
+        "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
+        "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov",
+        "https://cameron-johnston-6skl.squarespace.com/s/visuals2-H264-Proxy-half-size.mov",
+             "https://cameron-johnston-6skl.squarespace.com/s/Demon-Visuals-copy-H264-Proxy-half-size.mov",
+             "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov", 
+       'https://www.cameronjohnston.xyz/s/Reel-1.mov', 
+       'https://www.cameronjohnston.xyz/s/Reel-3.mov', 
+         'https://www.cameronjohnston.xyz/s/Reel-2.mov'
 
-    <br>
+      ]
 
-    <p> Check out all his recent events <a class="link"
-            href="https://www.cameronjohnston.xyz/audiovideo-events">here.</a></p>
+      document.getElementsByTagName('video')[0].volume = 0
+      
+      var randomIndexVideo = Math.floor(Math.random() * videos.length)
+      var video = videos[randomIndexVideo]
+      var myVideo = document.getElementById("myVideo")
+      myVideo.src = video
+      
+      var randomIndexVideo2 = Math.floor(Math.random() * videos.length)
+      var video2 = videos[randomIndexVideo2]
+      var myVideo2 = document.getElementById("myVideo2")
+      myVideo2.src = video2
 
-    <script>
-        function getCellValue(sheetId, apiKey, range) {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: sheetId,
-                range: range,
-                key: apiKey,
-            }).then((response) => {
-                const values = response.result.values;
-                if (values && values.length > 0 && values[0].length > 0) {
-                    const cellValue = values[0][0]; // Assuming you want the value from the first row and first column
-                    document.getElementById('cellValuePlaceholder').innerText = cellValue;
-                } else {
-                    console.error('No data found in the specified range.');
-                    document.getElementById('cellValuePlaceholder').innerText = 'N/A';
-                }
-            }).catch((error) => {
-                console.error('Error fetching data:', error);
-                document.getElementById('cellValuePlaceholder').innerText = 'Error';
-            });
+      var randomIndexVideo3 = Math.floor(Math.random() * videos.length)
+      var video3 = videos[randomIndexVideo3]
+      var myVideo3 = document.getElementById("myVideo3")
+      myVideo3.src = video3
+      
+      var randomIndexVideo4 = Math.floor(Math.random() * videos.length)
+      var video4 = videos[randomIndexVideo4]
+      var myVideo4 = document.getElementById("myVideo4")
+      myVideo4.src = video4
+
+      
+      
+         myVideo.addEventListener("loadedmetadata", function () {
+        console.log(myVideo.duration)
+        myVideo.muted = true
+           myVideo.play()
+        if (myVideo.autoplay) {
+          myVideo.play()
+          myVideo.controls = false
+        } else {
+          myVideo2.controls = true
         }
-
-        function init() {
-            gapi.client.init({
-                apiKey: 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE',
-                discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-            }).then(() => {
-                getCellValue('1TCgJ_U-HAP4jFAjRWrBKs0_PfrIWj3oK3VnWBd1S0bs', 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE', 'Offset!E2');
-            }).catch((error) => {
-                console.error('Error initializing Google API client:', error);
-                document.getElementById('cellValuePlaceholder').innerText = 'Error';
-            });
-        }
-
-        function calculateYearsPassed() {
-            const currentYear = new Date().getFullYear();
-            const baseYear = 2017;
-            const yearsPassed = currentYear - baseYear;
-            return yearsPassed;
-        }
-
-        function updateYearsPassed() {
-            const yearsPassed = calculateYearsPassed();
-            document.getElementById('yearsPassedPlaceholder').innerText = yearsPassed;
-        }
-
-        // Initial update on page load
-        updateYearsPassed();
+        myVideo.muted = true
+        myVideo.loop = true
+      })
       
 
-  gapi.load('client', init);
-  
+      myVideo2.addEventListener("loadedmetadata", function () {
+        console.log(myVideo2.duration)
+        myVideo2.muted = true
+        if (myVideo2.autoplay) {
+          myVideo2.play()
+          myVideo2.controls = false
+        } else {
+          myVideo2.controls = true
+        }
+        myVideo2.muted = true
+        myVideo2.loop = true
+      })
+      
+      myVideo3.addEventListener("loadedmetadata", function () {
+        myVideo3.muted = true
+        console.log(myVideo3.duration)
+        if (myVideo3.autoplay) {
+          myVideo3.play()
+          myVideo3.controls = false
+        } else {
+          myVideo3.controls = true
+        }
+        myVideo3.muted = true
+        myVideo3.loop = true
+      })
+            myVideo4.addEventListener("loadedmetadata", function () {
+        console.log(myVideo4.duration)
+              myVideo4.muted = true
+        if (myVideo4.autoplay) {
+          myVideo4.play()
+          myVideo4.controls = false
+        } else {
+          myVideo4.controls = true
+        }
+        myVideo4.muted = true
+        myVideo4.loop = true
+      })
+    }
+    let video = document.getElementByTagName("video");
+
+     video.addEventListener("click", init1)
+  </script>
+  <style>
+    section {
+      display: grid;
+      place-items: top;
+      align-content: left;
+      text-align: left;
+      min-height: 5vh;
+      display: block;
+      
 
 
+    }
 
+    .image-container1 {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+/*       height: auto; */
+      max-height: 100%;
+/*       height: 300px; */
+      border-radius: 10px 10px 0px 0px;
+      max-height: 50vh; 
 
+/*       transition: all 0.3s ease-in-out; */
+    }
+    
+    .image-container2 {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+/*       height: auto; */
+      max-height: 100%;
+/*       height: 300px; */
+      border-radius: 0px 0px 10px 10px;
+      max-height: 50vh; 
 
-        
-    </script>
+/*       transition: all 0.3s ease-in-out; */
+    }
 
+          video::-webkit-media-controls {
+  display: none;
+}
+
+    #myVideo {
+      width: 50%;
+      height: 50vh;
+
+    }
+
+    #myVideo2 {
+      width: 50%;
+      height: 51vh;
+        scale: 1 1.01;
+      transform: translate(100%, -100%);
+    }
+
+        #myVideo3 {
+      width: 50%;
+      height: 50vh;
+
+    }
+
+    #myVideo4 {
+      width: 50%;
+      height: 51vh;
+        scale: 1 1.01;
+      transform: translate(100%, -100%);
+    }
+
+    /* New CSS for scaling to 16:9 aspect ratio */
+    video {
+      object-fit: cover;
+      width: 50vw;
+      height: fill;
+    }
+
+    @media (max-aspect-ratio: 16/9) {
+      video {
+/*         height: 50vh;
+        width: 89.0625vh; */
+        width: 50vw;
+        height: fill;
+      }
+    }
+
+    @media (min-aspect-ratio: 16/9) {
+      video {
+        width: 50vw;
+        height: fill;
+      }
+    }
+  </style>
+  <section>
+
+    <div class="image-container1">
+      <video playsinline autoplay id="myVideo"></video>
+      <video playsinline autoplay id="myVideo2"></video>
+    </div>
+      <div class="image-container2">
+      <video autoplay playsinline id="myVideo3"></video>
+      <video autoplay playsinline id="myVideo4"></video>
+    </div>
+  </section>
 </body>
