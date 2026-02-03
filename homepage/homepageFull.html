@@ -459,6 +459,20 @@
             }
 
             function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
+                const urns = {};
+                function getNextVideo(elementId, videoList) {
+                    if (!urns[elementId] || urns[elementId].length === 0) {
+                        // Refill and shuffle
+                        urns[elementId] = [...videoList];
+                        // Fisher-Yates shuffle
+                        for (let i = urns[elementId].length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [urns[elementId][i], urns[elementId][j]] = [urns[elementId][j], urns[elementId][i]];
+                        }
+                    }
+                    return urns[elementId].pop();
+                }
+
                 // --- GLITCH EFFECT SETTINGS ---
             const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
             const katakanaMap = {
@@ -552,7 +566,7 @@
 
                 const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
 
-                v.src = videoList[Math.floor(Math.random() * videoList.length)];
+                v.src = getNextVideo(elementId, videoList);
                 v.load();
 
                 const videoReadyPromise = new Promise(resolve => {
@@ -587,12 +601,12 @@
                 const l = document.getElementById("mid-laptop");
 
                 if(v && artVids.length > 0) {
-                    v.src = artVids[0];
+                    v.src = getNextVideo("mid-video", artVids);
                     v.onended = () => swapWithDelay("mid-video", artVids);
                     startWatchdog("mid-video", artVids);
                 }
                 if(l && perfVids.length > 0) {
-                    l.src = perfVids[0];
+                    l.src = getNextVideo("mid-laptop", perfVids);
                     l.onended = () => swapWithDelay("mid-laptop", perfVids);
                     startWatchdog("mid-laptop", perfVids);
                 }
