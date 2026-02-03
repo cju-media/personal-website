@@ -620,21 +620,13 @@
                 }
 
                 // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
-                const visited = sessionStorage.getItem('visited');
+                // const visited = sessionStorage.getItem('visited');
                 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    if (visited) {
-                         el.classList.add('show-slide');
-                         el.style.transform = "none";
-                         el.style.transition = "none";
-                         el.style.opacity = "1";
-                         el.style.filter = "blur(0)";
-                    } else {
-                        const randomX = (Math.random() - 0.5) * 1600;
-                        const randomY = (Math.random() - 0.5) * 1000;
-                        const randomRotate = (Math.random() - 0.5) * 40;
-                        el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                    }
+                    const randomX = (Math.random() - 0.5) * 1600;
+                    const randomY = (Math.random() - 0.5) * 1000;
+                    const randomRotate = (Math.random() - 0.5) * 40;
+                    el.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 });
 
                 // 4. OBSERVER (ONE WAY)
