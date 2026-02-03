@@ -112,6 +112,41 @@
       var myVideo4 = document.getElementById("myVideo4")
       myVideo4.src = video4
 
+      // --- FLY-IN ANIMATION LOGIC ---
+      const videoElements = [myVideo, myVideo2, myVideo3, myVideo4];
+
+      // 1. Initial State: Scatter
+      videoElements.forEach(v => {
+          v.classList.add('fly-in-element');
+
+          const randomX = (Math.random() - 0.5) * 2000;
+          const randomY = (Math.random() - 0.5) * 2000;
+          const randomRotate = (Math.random() - 0.5) * 180;
+
+          // Apply initial state
+          v.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+          v.style.opacity = "0";
+      });
+
+      // 2. Shuffle Order for Landing
+      const shuffledVideos = [...videoElements];
+      for (let i = shuffledVideos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledVideos[i], shuffledVideos[j]] = [shuffledVideos[j], shuffledVideos[i]];
+      }
+
+      // 3. Trigger Landing with Stagger
+      // Force reflow to ensure initial state is rendered
+      void document.body.offsetWidth;
+
+      shuffledVideos.forEach((v, index) => {
+          setTimeout(() => {
+              v.classList.add('fly-in-landed');
+              // Clear inline transform so CSS class takes over
+              v.style.transform = '';
+          }, index * 500 + 100); // 500ms stagger
+      });
+
       
       
          myVideo.addEventListener("loadedmetadata", function () {
@@ -233,6 +268,8 @@
     }
 
     .image-container1 {
+      display: flex; /* FLEX LAYOUT ADDED */
+      flex-wrap: wrap;
       overflow: hidden;
       position: relative;
       width: 100%;
@@ -246,6 +283,8 @@
     }
     
     .image-container2 {
+      display: flex; /* FLEX LAYOUT ADDED */
+      flex-wrap: wrap;
       overflow: hidden;
       position: relative;
       width: 100%;
@@ -256,6 +295,17 @@
       max-height: 50vh; 
 
 /*       transition: all 0.3s ease-in-out; */
+    }
+
+    /* Animation Classes */
+    .fly-in-element {
+        will-change: transform, opacity;
+        transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+    }
+
+    .fly-in-landed {
+        opacity: 1 !important;
+        transform: translate(0, 0) rotate(0deg) !important;
     }
 
           video::-webkit-media-controls {
@@ -272,7 +322,7 @@
       width: 50%;
       height: 51vh;
         scale: 1 1.01;
-      transform: translate(100%, -100%);
+      /* transform removed for flex layout */
     }
 
         #myVideo3 {
@@ -285,7 +335,7 @@
       width: 50%;
       height: 51vh;
         scale: 1 1.01;
-      transform: translate(100%, -100%);
+      /* transform removed for flex layout */
     }
 
     /* New CSS for scaling to 16:9 aspect ratio */
