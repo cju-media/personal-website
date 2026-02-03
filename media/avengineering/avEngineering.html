@@ -1,0 +1,80 @@
+<body>
+
+    <style>
+        .link {
+			text-decoration: underline;
+      color: #8c979a;/* add underline */
+		}
+    </style>
+    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+    <p id="resultText">With <span id="cellValuePlaceholder">hundreds of</span>
+        events and counting since 2017, Cameron has <span id="yearsPassedPlaceholder"></span> years of experience in live
+        sound, live video, live streaming and live event production. From twenty-piece bands to multi-stream video
+        installations, Cameron has done it all and everything inbetween.
+    </p>
+
+    <br>
+
+    <p> Check out all his recent events <a class="link"
+            href="https://www.cameronjohnston.xyz/audiovideo-events">here.</a></p>
+
+    <script>
+        function getCellValue(sheetId, apiKey, range) {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: sheetId,
+                range: range,
+                key: apiKey,
+            }).then((response) => {
+                const values = response.result.values;
+                if (values && values.length > 0 && values[0].length > 0) {
+                    const cellValue = values[0][0]; // Assuming you want the value from the first row and first column
+                    document.getElementById('cellValuePlaceholder').innerText = cellValue;
+                } else {
+                    console.error('No data found in the specified range.');
+                    document.getElementById('cellValuePlaceholder').innerText = 'N/A';
+                }
+            }).catch((error) => {
+                console.error('Error fetching data:', error);
+                document.getElementById('cellValuePlaceholder').innerText = 'Error';
+            });
+        }
+
+        function init() {
+            gapi.client.init({
+                apiKey: 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE',
+                discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+            }).then(() => {
+                getCellValue('1TCgJ_U-HAP4jFAjRWrBKs0_PfrIWj3oK3VnWBd1S0bs', 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE', 'Offset!E2');
+            }).catch((error) => {
+                console.error('Error initializing Google API client:', error);
+                document.getElementById('cellValuePlaceholder').innerText = 'Error';
+            });
+        }
+
+        function calculateYearsPassed() {
+            const currentYear = new Date().getFullYear();
+            const baseYear = 2017;
+            const yearsPassed = currentYear - baseYear;
+            return yearsPassed;
+        }
+
+        function updateYearsPassed() {
+            const yearsPassed = calculateYearsPassed();
+            document.getElementById('yearsPassedPlaceholder').innerText = yearsPassed;
+        }
+
+        // Initial update on page load
+        updateYearsPassed();
+      
+
+  gapi.load('client', init);
+  
+
+
+
+
+
+        
+    </script>
+
+</body>
