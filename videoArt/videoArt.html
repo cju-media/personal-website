@@ -1,80 +1,99 @@
-<body>
+<style>
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-    <style>
-        .link {
-			text-decoration: underline;
-      color: #8c979a;/* add underline */
-		}
-    </style>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-    <p id="resultText">With <span id="cellValuePlaceholder">hundreds of</span>
-        events and counting since 2017, Cameron has <span id="yearsPassedPlaceholder"></span> years of experience in live
-        sound, live video, live streaming and live event production. From twenty-piece bands to multi-stream video
-        installations, Cameron has done it all and everything inbetween.
-    </p>
+    .video-item {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        background: #000;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
 
-    <br>
+    .video-item video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
 
-    <p> Check out all his recent events <a class="link"
-            href="https://www.cameronjohnston.xyz/audiovideo-events">here.</a></p>
+<div id="video-grid-container" class="video-grid">
+    <!-- Videos will be injected here -->
+</div>
 
-    <script>
-        function getCellValue(sheetId, apiKey, range) {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: sheetId,
-                range: range,
-                key: apiKey,
-            }).then((response) => {
-                const values = response.result.values;
-                if (values && values.length > 0 && values[0].length > 0) {
-                    const cellValue = values[0][0]; // Assuming you want the value from the first row and first column
-                    document.getElementById('cellValuePlaceholder').innerText = cellValue;
-                } else {
-                    console.error('No data found in the specified range.');
-                    document.getElementById('cellValuePlaceholder').innerText = 'N/A';
-                }
-            }).catch((error) => {
-                console.error('Error fetching data:', error);
-                document.getElementById('cellValuePlaceholder').innerText = 'Error';
+<script>
+    (function() {
+        // Shared Media Loader
+        function loadMedia() {
+            const url = "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/media.json?t=" + Date.now();
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error("Failed to fetch media.json:", error);
+                    return null;
+                });
+        }
+
+        function shuffleArray(array) {
+            // Fisher-Yates shuffle (Urn Random)
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initVideoArt() {
+            loadMedia().then(mediaData => {
+                if (!mediaData || !mediaData.artVids) return;
+
+                // Create a copy to shuffle and deduplicate
+                const artVids = [...new Set(mediaData.artVids)];
+
+                // Urn Random: Shuffle the array to ensure no duplicates are displayed
+                shuffleArray(artVids);
+
+                const container = document.getElementById('video-grid-container');
+                if (!container) return;
+
+                container.innerHTML = '';
+
+                artVids.forEach(videoUrl => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'video-item';
+
+                    const video = document.createElement('video');
+                    video.src = videoUrl;
+                    video.controls = true;
+                    video.playsInline = true;
+                    // video.loop = true;
+
+                    wrapper.appendChild(video);
+                    container.appendChild(wrapper);
+                });
             });
         }
 
-        function init() {
-            gapi.client.init({
-                apiKey: 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE',
-                discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-            }).then(() => {
-                getCellValue('1TCgJ_U-HAP4jFAjRWrBKs0_PfrIWj3oK3VnWBd1S0bs', 'AIzaSyDA-FgS8BiC6h95Op1T3gNtgfHyWKgKBGE', 'Offset!E2');
-            }).catch((error) => {
-                console.error('Error initializing Google API client:', error);
-                document.getElementById('cellValuePlaceholder').innerText = 'Error';
-            });
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initVideoArt);
+        } else {
+            initVideoArt();
         }
-
-        function calculateYearsPassed() {
-            const currentYear = new Date().getFullYear();
-            const baseYear = 2017;
-            const yearsPassed = currentYear - baseYear;
-            return yearsPassed;
-        }
-
-        function updateYearsPassed() {
-            const yearsPassed = calculateYearsPassed();
-            document.getElementById('yearsPassedPlaceholder').innerText = yearsPassed;
-        }
-
-        // Initial update on page load
-        updateYearsPassed();
-      
-
-  gapi.load('client', init);
-  
-
-
-
-
-
-        
-    </script>
-
-</body>
+    })();
+</script>
