@@ -214,6 +214,10 @@
         gap: 40px;
         perspective: 1000px;
         width: 100%;
+
+        /* Prevent FOUC: Initially hidden, revealed by JS */
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
     }
 
     .text-block1 br { display: none !important; }
