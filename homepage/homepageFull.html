@@ -37,9 +37,7 @@
 
             // CHECK SESSION STORAGE
             const visited = sessionStorage.getItem('visited');
-            if (visited) {
-                staggerTime = 0;
-            } else {
+            if (!visited) {
                 sessionStorage.setItem('visited', 'true');
             }
 
@@ -53,11 +51,11 @@
             }
 
             // Continue with letters setup...
-            setupLetters(staggerTime, visited);
+            setupLetters(staggerTime);
         });
     }
 
-    function setupLetters(staggerTime, visited) {
+    function setupLetters(staggerTime) {
         // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
 
@@ -66,22 +64,14 @@
             letters.forEach((span, index) => {
                 span.dataset.wordIndex = colIndex;
 
-                if (visited) {
-                    // Immediate show
-                    span.style.transform = "translate(0, 0) rotate(0deg)";
-                    span.style.opacity = "1";
-                    span.style.transitionDelay = "0s";
-                    span.classList.add('landed');
-                } else {
-                    // Keep the wide fly-in range
-                    const randomX = (Math.random() - 0.5) * 2400;
-                    const randomY = (Math.random() - 0.5) * 2400;
-                    const randomRotate = (Math.random() - 0.5) * 360;
+                // Keep the wide fly-in range
+                const randomX = (Math.random() - 0.5) * 2400;
+                const randomY = (Math.random() - 0.5) * 2400;
+                const randomRotate = (Math.random() - 0.5) * 360;
 
-                    span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
-                    span.style.opacity = "0";
-                    span.style.transitionDelay = `${index * staggerTime}s`;
-                }
+                span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                span.style.opacity = "0";
+                span.style.transitionDelay = `${index * staggerTime}s`;
             });
         });
 
