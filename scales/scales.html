@@ -1,0 +1,172 @@
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easy-Read Scale Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; background: #eceff1; }
+        .container { background: white; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; align-items: flex-end; flex-wrap: wrap; }
+        select, button { padding: 10px; border-radius: 8px; border: 2px solid #2196F3; background: white; cursor: pointer; }
+        button { background: #2196F3; color: white; border: none; font-weight: bold; }
+        #paper { margin-top: 20px; min-width: 600px; }
+        .label { font-weight: bold; font-size: 11px; color: #666; display: block; text-transform: uppercase; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Scale Visualizer</h1>
+    <div class="controls">
+        <div>
+            <span class="label">Root</span>
+            <select id="keySelector" onchange="renderScale()">
+                <option value="C" selected>C</option>
+                <option value="G">G</option><option value="D">D</option>
+                <option value="A">A</option><option value="E">E</option>
+                <option value="B">B</option><option value="F#">F#</option>
+                <option value="C#">C#</option>
+                <option value="F">F</option><option value="Bb">Bb</option>
+                <option value="Eb">Eb</option><option value="Ab">Ab</option>
+                <option value="Db">Db</option><option value="Gb">Gb</option>
+                <option value="Cb">Cb</option>
+            </select>
+        </div>
+        <div>
+            <span class="label">Scale Type</span>
+            <select id="scaleSelector" onchange="renderScale()">
+                <option value="major" selected>Major</option>
+                <option value="naturalMinor">Natural Minor</option>
+                <option value="harmonicMinor">Harmonic Minor</option>
+                <option value="melodicMinor">Melodic Minor</option>
+                <option value="wholeTone">Whole Tone</option>
+                <option value="dimWH">Diminished (W-H)</option>
+                <option value="dimHW">Diminished (H-W)</option>
+                <option value="pentatonicMajor">Pentatonic Major</option>
+                <option value="pentatonicMinor">Pentatonic Minor</option>
+            </select>
+        </div>
+        <div>
+            <span class="label">Octave</span>
+            <select id="octaveSelector" onchange="renderScale()">
+                <option value="6">6 (8va)</option><option value="5">5</option>
+                <option value="4" selected>4</option><option value="3">3</option>
+                <option value="2">2</option><option value="1">1</option>
+            </select>
+        </div>
+        <button onclick="randomizeKey()">Random Root 🎲</button>
+        <button onclick="randomizeScale()">Random Scale 🧪</button>
+    </div>
+    <div id="paper"></div>
+</div>
+
+<script>
+    const alphabet = ["C", "D", "E", "F", "G", "A", "B"];
+    const letterValues = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
+    
+    // Simplest enharmonic spellings for non-diatonic scales
+    const easyChromatic = ["C", "^C", "D", "_E", "E", "F", "^F", "G", "_A", "A", "_B", "B"];
+    const easyLabels = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    const scaleIntervals = {
+        major: [0, 2, 4, 5, 7, 9, 11, 12],
+        naturalMinor: [0, 2, 3, 5, 7, 8, 10, 12],
+        harmonicMinor: [0, 2, 3, 5, 7, 8, 11, 12],
+        melodicMinor: [0, 2, 3, 5, 7, 9, 11, 12],
+        wholeTone: [0, 2, 4, 6, 8, 10, 12],
+        dimWH: [0, 2, 3, 5, 6, 8, 9, 11, 12],
+        dimHW: [0, 1, 3, 4, 6, 7, 9, 10, 12],
+        pentatonicMajor: [0, 2, 4, 7, 9, 12],
+        pentatonicMinor: [0, 3, 5, 7, 10, 12]
+    };
+
+    function randomizeKey() {
+        const select = document.getElementById('keySelector');
+        select.selectedIndex = Math.floor(Math.random() * select.options.length);
+        renderScale();
+    }
+
+    function randomizeScale() {
+        const select = document.getElementById('scaleSelector');
+        select.selectedIndex = Math.floor(Math.random() * select.options.length);
+        renderScale();
+    }
+
+    function renderScale() {
+        const rootInput = document.getElementById('keySelector').value;
+        const type = document.getElementById('scaleSelector').value;
+        const baseOctave = parseInt(document.getElementById('octaveSelector').value);
+
+        let rootLetter = rootInput[0];
+        let rootAccidental = rootInput.slice(1);
+        let rootValue = letterValues[rootLetter];
+        if (rootAccidental === "#") rootValue += 1;
+        if (rootAccidental === "b") rootValue -= 1;
+
+        const isComplexScale = ["wholeTone", "dimWH", "dimHW", "pentatonicMajor", "pentatonicMinor"].includes(type);
+
+        let abcNotes = "";
+        if (baseOctave === 6) abcNotes += "!8va(! ";
+
+        scaleIntervals[type].forEach((interval, step) => {
+            let targetValue = rootValue + interval;
+            let currentOctave, formattedNote, displayLabel;
+
+            if (isComplexScale) {
+                // EASY READ LOGIC: Ignore alphabet rules, use standard sharps/flats
+                let noteIndex = ((targetValue % 12) + 12) % 12;
+                let octaveOffset = Math.floor(targetValue / 12);
+                currentOctave = baseOctave + octaveOffset;
+                
+                let renderOctave = (baseOctave === 6) ? currentOctave - 1 : currentOctave;
+                let baseNote = easyChromatic[noteIndex];
+                displayLabel = easyLabels[noteIndex];
+
+                if (renderOctave === 4) formattedNote = baseNote;
+                else if (renderOctave >= 5) formattedNote = baseNote.toLowerCase() + "'".repeat(renderOctave - 5);
+                else formattedNote = baseNote + ",".repeat(4 - renderOctave);
+
+            } else {
+                // DIATONIC LOGIC: Strict alphabet rules for Major/Minor
+                let rawLetterIndex = alphabet.indexOf(rootLetter) + step;
+                let letterIndex = rawLetterIndex % 7;
+                let letterOctaveOffset = Math.floor(rawLetterIndex / 7);
+                let targetLetter = alphabet[letterIndex];
+                let absoluteLetterValue = letterValues[targetLetter] + (letterOctaveOffset * 12);
+                let diff = targetValue - absoluteLetterValue;
+                
+                let accidental = "";
+                if (diff === 1) accidental = "^";
+                if (diff === 2) accidental = "^^";
+                if (diff === -1) accidental = "_";
+                if (diff === -2) accidental = "__";
+                
+                currentOctave = baseOctave + letterOctaveOffset;
+                let renderOctave = (baseOctave === 6) ? currentOctave - 1 : currentOctave;
+                
+                if (renderOctave === 4) formattedNote = accidental + targetLetter;
+                else if (renderOctave >= 5) formattedNote = accidental + targetLetter.toLowerCase() + "'".repeat(renderOctave - 5);
+                else formattedNote = accidental + targetLetter + ",".repeat(4 - renderOctave);
+
+                displayLabel = targetLetter + accidental.replace("^", "#").replace("_", "b");
+            }
+
+            abcNotes += `"${displayLabel}"${formattedNote} `;
+            if (baseOctave === 6 && step === scaleIntervals[type].length - 1) abcNotes += "!8va)! ";
+        });
+
+        const standardScales = ["major", "naturalMinor", "harmonicMinor", "melodicMinor"];
+        let keySig = standardScales.includes(type) ? rootInput + (type.includes("Minor") ? "m" : "") : "none";
+        let clef = (baseOctave < 4) ? "bass" : "treble";
+
+        const abcString = `X:1\nL:1/4\nK:${keySig} clef=${clef}\n${abcNotes} |]`;
+        ABCJS.renderAbc("paper", abcString, { 
+            responsive: "resize", scale: 1.4,
+            paddingtop: (baseOctave >= 5) ? 120 : 40,
+            paddingbottom: (baseOctave <= 2) ? 120 : 40
+        });
+    }
+
+    window.onload = renderScale;
+</script>
+</body>
