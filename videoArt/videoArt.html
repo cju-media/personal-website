@@ -18,23 +18,25 @@
 
       document.getElementsByTagName('video')[0].volume = 0
       
-      var randomIndexVideo = Math.floor(Math.random() * videos.length)
-      var video = videos[randomIndexVideo]
+      // Fisher-Yates shuffle
+      for (let i = videos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [videos[i], videos[j]] = [videos[j], videos[i]];
+      }
+
+      var video = videos[0]
       var myVideo = document.getElementById("myVideo")
       myVideo.src = video
       
-      var randomIndexVideo2 = Math.floor(Math.random() * videos.length)
-      var video2 = videos[randomIndexVideo2]
+      var video2 = videos[1]
       var myVideo2 = document.getElementById("myVideo2")
       myVideo2.src = video2
 
-      var randomIndexVideo3 = Math.floor(Math.random() * videos.length)
-      var video3 = videos[randomIndexVideo3]
+      var video3 = videos[2]
       var myVideo3 = document.getElementById("myVideo3")
       myVideo3.src = video3
       
-      var randomIndexVideo4 = Math.floor(Math.random() * videos.length)
-      var video4 = videos[randomIndexVideo4]
+      var video4 = videos[3]
       var myVideo4 = document.getElementById("myVideo4")
       myVideo4.src = video4
 
