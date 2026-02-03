@@ -629,24 +629,40 @@
                 // 5. APPLY GLITCH EFFECT
                 applyGlitchToElements('.hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1');
 
-                // 6. SETUP HOVER TRIGGERS
-                document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
-                    container.addEventListener('mouseenter', () => {
+                // 6. SETUP HOVER TRIGGERS (Desktop) OR ALWAYS ON (Mobile)
+                const isMobile = window.innerWidth <= 768;
+
+                if (isMobile) {
+                    // Mobile: Always active
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
                         const spans = container.querySelectorAll('.glitch-char');
-                        const now = Date.now();
                         spans.forEach(span => {
                             span.dataset.active = "true";
-                            span.dataset.hoverStart = now;
+                            // For mobile, skip hover start ramp-up logic if desired, or just set it
+                            span.dataset.hoverStart = Date.now();
                             changeFontRandomly(span);
                         });
                     });
-                    container.addEventListener('mouseleave', () => {
-                        const spans = container.querySelectorAll('.glitch-char');
-                        spans.forEach(span => {
-                            span.dataset.active = "false";
+                } else {
+                    // Desktop: Hover behavior
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
+                        container.addEventListener('mouseenter', () => {
+                            const spans = container.querySelectorAll('.glitch-char');
+                            const now = Date.now();
+                            spans.forEach(span => {
+                                span.dataset.active = "true";
+                                span.dataset.hoverStart = now;
+                                changeFontRandomly(span);
+                            });
+                        });
+                        container.addEventListener('mouseleave', () => {
+                            const spans = container.querySelectorAll('.glitch-char');
+                            spans.forEach(span => {
+                                span.dataset.active = "false";
+                            });
                         });
                     });
-                });
+                }
             }
 
             const checkLoad = setInterval(() => {
