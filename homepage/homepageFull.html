@@ -58,6 +58,7 @@
     function setupLetters(staggerTime) {
         // 2. Setup Letters
         const columns = document.querySelectorAll('.text-block1 h1');
+        let globalIndex = 0;
 
         columns.forEach((col, colIndex) => {
             const letters = col.querySelectorAll('.span-class');
@@ -71,7 +72,8 @@
 
                 span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
                 span.style.opacity = "0";
-                span.style.transitionDelay = `${index * staggerTime}s`;
+                span.style.transitionDelay = `${globalIndex * staggerTime}s`;
+                globalIndex++;
             });
         });
 
