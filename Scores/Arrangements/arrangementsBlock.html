@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arrangements Block Loader</title>
+</head>
+<body>
+    <div id="target-container"></div>
+    <script>
+        // Fetch the HTML fragment from the raw GitHub URL
+        // In a real scenario, this URL would point to the raw file on the main branch.
+        // For local testing, we might need to adjust this or use the relative path if serving locally.
+        const url = 'https://raw.githubusercontent.com/cju-media/Scores/main/Arrangements/arrangements.html';
+
+        // Use a local path for verification if needed, or stick to the raw URL logic.
+        // Since we can't fetch from GitHub main until this is merged, for verification
+        // we will simulate the fetch or point to the local server in the verification script.
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.text();
+            })
+            .then(html => {
+                const container = document.getElementById('target-container');
+                container.innerHTML = html;
+
+                // Manually execute scripts inserted via innerHTML
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            })
+            .catch(error => console.error('Error loading arrangements:', error));
+    </script>
+</body>
+</html>
