@@ -149,62 +149,20 @@
 
       
       
-         myVideo.addEventListener("loadedmetadata", function () {
-        console.log(myVideo.duration)
-        myVideo.muted = true
-           myVideo.play()
-        if (myVideo.autoplay) {
-          myVideo.play()
-          myVideo.controls = false
-        } else {
-          myVideo2.controls = true
-        }
-        myVideo.muted = true
-        myVideo.loop = true
-      })
-      
-
-      myVideo2.addEventListener("loadedmetadata", function () {
-        console.log(myVideo2.duration)
-        myVideo2.muted = true
-        if (myVideo2.autoplay) {
-          myVideo2.play()
-          myVideo2.controls = false
-        } else {
-          myVideo2.controls = true
-        }
-        myVideo2.muted = true
-        myVideo2.loop = true
-      })
-      
-      myVideo3.addEventListener("loadedmetadata", function () {
-        myVideo3.muted = true
-        console.log(myVideo3.duration)
-        if (myVideo3.autoplay) {
-          myVideo3.play()
-          myVideo3.controls = false
-        } else {
-          myVideo3.controls = true
-        }
-        myVideo3.muted = true
-        myVideo3.loop = true
-      })
-            myVideo4.addEventListener("loadedmetadata", function () {
-        console.log(myVideo4.duration)
-              myVideo4.muted = true
-        if (myVideo4.autoplay) {
-          myVideo4.play()
-          myVideo4.controls = false
-        } else {
-          myVideo4.controls = true
-        }
-        myVideo4.muted = true
-        myVideo4.loop = true
+      videoElements.forEach(v => {
+        v.addEventListener("loadedmetadata", function () {
+          console.log(v.duration)
+          v.muted = true
+          if (v.autoplay) {
+            v.play()
+            v.controls = false
+          } else {
+            v.controls = true
+          }
+          v.loop = true
+        })
       })
     }
-    let video = document.getElementByTagName("video");
-
-     video.addEventListener("click", init1)
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
