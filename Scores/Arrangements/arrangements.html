@@ -46,14 +46,50 @@
             line-height: 1.2;
         }
 
-        /* Button Container Styles */
+        /* Layout Styles */
+        .content-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        #text-container {
+            flex: 1;
+            text-align: left;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #333;
+        }
+
         #button-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            width: 100%;
-            max-width: 600px;
             text-align: center;
+        }
+
+        /* Mobile / Vertical Styles */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #text-container {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            #button-container {
+                width: 100%;
+                max-width: 600px;
+            }
         }
 
         /* Button Styles */
@@ -103,8 +139,18 @@
         </h1>
     </div>
 
-    <div id="button-container">
-        <div class="loading">Loading arrangements...</div>
+    <div class="content-wrapper">
+        <div id="text-container">
+            <p>
+                Welcome to the Arrangements collection. Here you will find a curated selection of musical arrangements hosted on our repository.
+                Please explore the links to view the details of each arrangement.
+                (This text is a placeholder and can be updated as needed.)
+            </p>
+        </div>
+
+        <div id="button-container">
+            <div class="loading">Loading arrangements...</div>
+        </div>
     </div>
 
     <script>
