@@ -63,7 +63,7 @@
       const resizeTick = new Date().getTime();
       
       // 2. Determine fit mode based on orientation
-      const viewMode = window.innerHeight > window.innerWidth ? "#view=FitH" : "#view=FitV";
+      const viewMode = "#view=Fit";
       
       // 3. Update the source with a unique URL to FORCE the reload
       const finalUrl = `${baseUrl}?v=${resizeTick}${viewMode}`;
