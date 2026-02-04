@@ -1,4 +1,4 @@
-<body>
+<!DOCTYPE html><html><head><title>Video Art Test</title></head><body>
    <div class="text-block1">
             <h1>
                 <span class="span-class">V</span>
@@ -15,7 +15,7 @@
         <div class="text-block2">
             <span></span>
             <p>
-               The following compilation shows a number of projects where I was involved in developing the video art and projections. I work primarily in Max to combine video, audio, and lighting. 
+               The following compilation shows a number of projects where I was involved in developing the video art and projections. I work primarily in Max to combine video, audio, and lighting.
             </p>
             <hr>
         </div>
@@ -81,15 +81,15 @@
         "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov",
         "https://cameron-johnston-6skl.squarespace.com/s/visuals2-H264-Proxy-half-size.mov",
              "https://cameron-johnston-6skl.squarespace.com/s/Demon-Visuals-copy-H264-Proxy-half-size.mov",
-             "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov", 
-       'https://www.cameronjohnston.xyz/s/Reel-1.mov', 
-       'https://www.cameronjohnston.xyz/s/Reel-3.mov', 
+             "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov",
+       'https://www.cameronjohnston.xyz/s/Reel-1.mov',
+       'https://www.cameronjohnston.xyz/s/Reel-3.mov',
          'https://www.cameronjohnston.xyz/s/Reel-2.mov'
 
       ]
 
       document.getElementsByTagName('video')[0].volume = 0
-      
+
       // Fisher-Yates shuffle
       for (let i = videos.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -99,7 +99,7 @@
       var video = videos[0]
       var myVideo = document.getElementById("myVideo")
       myVideo.src = video
-      
+
       var video2 = videos[1]
       var myVideo2 = document.getElementById("myVideo2")
       myVideo2.src = video2
@@ -107,7 +107,7 @@
       var video3 = videos[2]
       var myVideo3 = document.getElementById("myVideo3")
       myVideo3.src = video3
-      
+
       var video4 = videos[3]
       var myVideo4 = document.getElementById("myVideo4")
       myVideo4.src = video4
@@ -147,8 +147,8 @@
           }, index * 500 + 100); // 500ms stagger
       });
 
-      
-      
+
+
       videoElements.forEach(v => {
         v.addEventListener("loadedmetadata", function () {
           console.log(v.duration)
@@ -220,7 +220,7 @@
       text-align: left;
       min-height: 5vh;
       display: block;
-      
+
 
 
     }
@@ -235,11 +235,11 @@
       max-height: 100%;
 /*       height: 300px; */
       /* border-radius moved to child video elements */
-      max-height: 50vh; 
+      max-height: 50vh;
 
 /*       transition: all 0.3s ease-in-out; */
     }
-    
+
     .image-container2 {
       display: flex; /* FLEX LAYOUT ADDED */
       flex-wrap: wrap;
@@ -250,7 +250,7 @@
       max-height: 100%;
 /*       height: 300px; */
       /* border-radius moved to child video elements */
-      max-height: 50vh; 
+      max-height: 50vh;
 
 /*       transition: all 0.3s ease-in-out; */
     }
@@ -336,4 +336,4 @@
       <video autoplay playsinline id="myVideo4"></video>
     </div>
   </section>
-</body>
+</body></html>
