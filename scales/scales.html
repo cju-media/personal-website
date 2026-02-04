@@ -4,23 +4,23 @@
     <title>Easy-Read Scale Visualizer</title>
     <script src="https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js" id="abcjs-script"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; background: #eceff1; }
+        #scales-wrapper { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; background: #eceff1; margin: 0; }
         /* .container { background: white; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); } */
-        .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; align-items: flex-end; flex-wrap: wrap; }
-        select, button { padding: 10px; border-radius: 8px; border: 2px solid #2196F3; background: white; cursor: pointer; }
-        button { background: #2196F3; color: white; border: none; font-weight: bold; }
-        #paper { margin-top: 20px; width: 100%; }
-        .label { font-weight: bold; font-size: 11px; color: #666; display: block; text-transform: uppercase; margin-bottom: 5px; }
+        #scales-wrapper .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; align-items: flex-end; flex-wrap: wrap; }
+        #scales-wrapper select, #scales-wrapper button { padding: 10px; border-radius: 8px; border: 2px solid #2196F3; background: white; cursor: pointer; }
+        #scales-wrapper button { background: #2196F3; color: white; border: none; font-weight: bold; }
+        #scales-wrapper #paper { margin-top: 20px; width: 100%; }
+        #scales-wrapper .label { font-weight: bold; font-size: 11px; color: #666; display: block; text-transform: uppercase; margin-bottom: 5px; }
 
         @media (max-width: 600px) {
-            body { padding: 10px; }
-            #paper { width: calc(100% - 20px); margin-left: auto; margin-right: auto; }
+            #scales-wrapper { padding: 10px; }
+            #scales-wrapper #paper { width: calc(100% - 20px); margin-left: auto; margin-right: auto; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="scales-wrapper" class="container">
     <h1>Scale Visualizer</h1>
     <div class="controls">
         <div>
