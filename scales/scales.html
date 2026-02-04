@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Easy-Read Scale Visualizer</title>
-    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js" id="abcjs-script"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; background: #eceff1; }
         /* .container { background: white; padding: 30px; display: inline-block; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); } */
@@ -176,8 +176,11 @@
         if (typeof ABCJS !== "undefined") {
             renderScale();
         } else {
-            // Poll for ABCJS if it hasn't loaded yet
-            setTimeout(initScales, 100);
+            // Wait for ABCJS to load
+            const script = document.getElementById("abcjs-script");
+            if (script) {
+                script.addEventListener("load", renderScale);
+            }
         }
     }
 
