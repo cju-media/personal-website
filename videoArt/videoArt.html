@@ -119,8 +119,12 @@
       videoElements.forEach(v => {
           v.classList.add('fly-in-element');
 
-          const randomX = (Math.random() - 0.5) * 2000;
-          const randomY = (Math.random() - 0.5) * 2000;
+          // Polar coordinates to ensure off-screen start
+          const radius = Math.max(window.innerWidth, window.innerHeight) + 500;
+          const angle = Math.random() * 2 * Math.PI;
+
+          const randomX = Math.cos(angle) * radius;
+          const randomY = Math.sin(angle) * radius;
           const randomRotate = (Math.random() - 0.5) * 180;
 
           // Apply initial state
