@@ -1,0 +1,214 @@
+<!-- <div id="particle-canvas"></div> -->
+
+<h1 class="centered-text" style="font-size: 48px;">Programming</h1>
+
+
+
+<p class="" style="white-space:pre-wrap;">Cameron has experience working in Javascript, HTML, CSS, Node.js, C, C++, Swift and C#. His first experience in programming was with his interactions Max. Pushing to the limits of the software, and interfacing Max with many different protocols and other software, it became necessary to explore more traditional programming language. Max has had javascript integration for at least a decade at this point so it made sense to expand into js. </p>
+<p class="" style="white-space:pre-wrap;">Node.js greatly expanded the possibilities of Max and allowed Cameron to greatly expand his work in Max, getting access to the wealth of packages available in node. Working with Node, Cameron has developed a <a class = 'link' href="https://github.com/cameronjohnstonmusic/youtube-chat-from-max" target="_blank">Youtube Chat Bot</a> for the <a class = 'link' href="https://www.fccla.org/live" target="_blank">FCCLA Worship Service Livestream</a>. The Node script uses the Youtube Broadcast API to post relevant chat messages in line with the service program. These share links to church events, donation links, and welcomes the virtual congregation to the service. Additionally, Cameron has expanded Max’s capabilities with Node, including <a class = 'link' href="https://github.com/cameronjohnstonmusic/Max-Text-to-Speech" target="_blank">text-to-speech</a>, <a class = 'link' href="https://github.com/cameronjohnstonmusic/QR-Generator-Max" target="_blank">QR code generation</a>, <a class = 'link' href="https://github.com/cameronjohnstonmusic/Youtube-in-Jitter" target="_blank">Youtube playback in jitter</a>, and reading/posting to Twitch chat.</p>
+<p class="" style="white-space:pre-wrap;">Cameron works extensive in hardware and software development and integration. With experience in arduino development, included building hardware integrations with soldering, Cameron has a built a number of personal and professional hardware projects with arduino. He designed and implemented the code and circuits for each project.</p>
+<head>
+	<style>
+	.link {
+			text-decoration: underline;
+      color: #8c979a;/* add underline */
+		}
+      .unlink {
+			text-decoration: none; /* remove underline */
+		}
+	</style>
+</head>
+
+
+
+<script> 
+
+ 
+
+  Squarespace.onInitialize(Y, init1)
+
+  function init1 (){
+    console.log('Script is working');
+    getLatestCommitRepo();
+  }
+
+  
+
+
+
+  const username = "cju-media";
+const url = `https://api.github.com/users/${username}/repos`;
+
+  
+  
+  
+  
+
+
+const getLatestCommitRepo = async () => {
+  const response = await fetch(url);
+  const repositories = await response.json();
+
+  let latestCommit = null;
+  let latestCommitRepoName = 'Loading';
+  let latestCommitRepoUrl = null;
+  let totalCommits = 0;
+  const committedRepos = new Set(); // initialize a Set to store the repositories you have committed to
+
+  for (const repo of repositories) {
+    const commitsUrl = repo.commits_url.replace("{/sha}", "");
+    const commitsResponse = await fetch(commitsUrl);
+    const commits = await commitsResponse.json();
+
+    totalCommits += commits.length;
+
+    for (const commit of commits) {
+      if (commit.author && commit.author.login === username) { // check if the commit was made by you
+        committedRepos.add(repo.name); // add the repository to the Set
+      }
+
+      if (!latestCommit || commit.commit.author.date > latestCommit.commit.author.date) {
+        latestCommit = commit;
+        latestCommitRepoName = repo.name;
+        latestCommitRepoUrl = repo.html_url;
+      }
+    }
+  }
+
+  console.log(`The most recent commit for ${username} is in the repository: ${latestCommitRepoName}`);
+  console.log(`The repository URL is: ${latestCommitRepoUrl}`);
+  console.log(`Total number of commits: ${totalCommits}`);
+  console.log(`Number of repositories committed to: ${committedRepos.size}`); // print the size of the Set to get the number of repositories committed to
+
+  const paragraph = document.getElementById("message");
+  const paragraph2 = document.getElementById("message2");
+  const paragraph3 = document.getElementById("message3");
+
+   paragraph2.innerHTML = "";
+  // paragraph.classList.add("link");
+
+  paragraph2.innerHTML = `${paragraph2.innerHTML} <p class = 'unlink'> He was last working on: <a href="${latestCommitRepoUrl}" target="_blank"style="text-decoration: underline; color: #8c979a";>${latestCommitRepoName}</a>  </p> `;
+  paragraph3.innerHTML = `${paragraph3.innerHTML} <p class = 'unlink'> Cameron has ${totalCommits} commits across <a href="https://github.com/cju-media?tab=repositories" target="_blank"style="text-decoration: underline; color: #8c979a";>${committedRepos.size} public repos. </a> </p> `;
+};
+
+
+</script>
+
+<head>
+	<style>
+	.link {
+			text-decoration: underline; /* add underline */
+		}
+      .unlink {
+			text-decoration: none; /* remove underline */
+		}
+	</style>
+</head>
+
+
+
+
+<body>
+
+  <p id="message3"></p>
+
+
+
+  <p id = 'message2'> Loading... </p>
+
+  
+</body>
+
+<body>
+
+  <p> Check out his <a class = "link" href = "https://github.com/cju-media" target="_blank">  GitHub!</a> </p> 
+
+  
+</body>
+
+<style>
+   #particle-canvas {
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+
+<body>
+  <p id="message3"></p>
+<!--   <p id='message2'> Loading...</p> -->
+
+<!--   <script>
+    let particles = [];
+
+    function setup() {
+  const canvas = createCanvas(windowWidth, windowHeight);
+ 
+  canvas.style('z-index', '-1');
+}
+
+    function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+    function draw() {
+      background(255);
+      
+      // create a new particle every frame
+      particles.push(new Particle());
+
+      // update and draw all particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.update();
+        particle.draw();
+
+        // remove particles that are offscreen
+        if (particle.isOffscreen()) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    class Particle {
+      constructor() {
+        this.position = createVector(random(width), random(height));
+        this.velocity = createVector(random(-1, 1), random(-1, 1));
+        this.acceleration = createVector(0, 0);
+        this.size = random(10, 30);
+        this.color = color(random(255), random(255), random(255));
+      }
+
+      update() {
+        this.velocity.add(this.acceleration);
+        this.position.add(this.velocity);
+        this.acceleration.mult(0);
+      }
+
+      draw() {
+        noStroke();
+        fill(this.color);
+        ellipse(this.position.x, this.position.y, this.size);
+      }
+
+      isOffscreen() {
+        return (
+          this.position.x < -this.size ||
+          this.position.x > width + this.size ||
+          this.position.y < -this.size ||
+          this.position.y > height + this.size
+        );
+      }
+    }
+  </script> -->
+
+  
+</body>
+
+  
