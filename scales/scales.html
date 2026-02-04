@@ -172,6 +172,21 @@
         });
     }
 
-    window.onload = renderScale;
+    function initScales() {
+        if (typeof ABCJS !== "undefined") {
+            renderScale();
+        } else {
+            // Poll for ABCJS if it hasn't loaded yet
+            setTimeout(initScales, 100);
+        }
+    }
+
+    // Try multiple hooks to catch Squarespace's initialization
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initScales);
+    } else {
+        initScales();
+    }
+    window.addEventListener("load", initScales);
 </script>
 </body>
