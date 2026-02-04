@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arrangements</title>
+<!-- Arrangements Page Fragment -->
+<div id="arrangements-page-wrapper">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
-        body {
+        /* Scoped Styles */
+        #arrangements-page-wrapper {
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
@@ -15,30 +12,31 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: transparent; /* Inherit from Squarespace */
             padding: 20px;
             box-sizing: border-box;
         }
 
         /* Glitch font classes */
-        .font1 { font-family: Arial, sans-serif; }
-        .font2 { font-family: Times New Roman, serif; }
-        .font3 { font-family: Courier New, monospace; }
-        .font4 { font-family: essay-text, monospace; }
-        .font5 { font-family: 'Playfair Display', serif; }
-        .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
+        #arrangements-page-wrapper .font1 { font-family: Arial, sans-serif; }
+        #arrangements-page-wrapper .font2 { font-family: Times New Roman, serif; }
+        #arrangements-page-wrapper .font3 { font-family: Courier New, monospace; }
+        #arrangements-page-wrapper .font4 { font-family: essay-text, monospace; }
+        #arrangements-page-wrapper .font5 { font-family: 'Playfair Display', serif; }
+        #arrangements-page-wrapper .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
 
-        h1 {
+        #arrangements-page-wrapper h1 {
             font-size: calc(2.5vw + 10px);
             text-align: center;
             margin-bottom: 40px;
+            color: inherit; /* Inherit text color */
         }
 
-        .text-block1 {
+        #arrangements-page-wrapper .text-block1 {
             padding-bottom: 25px;
         }
 
-        .span-class {
+        #arrangements-page-wrapper .span-class {
             display: inline-block;
             width: 1.2em;
             text-align: center;
@@ -47,7 +45,7 @@
         }
 
         /* Layout Styles */
-        .content-wrapper {
+        #arrangements-page-wrapper .content-wrapper {
             display: flex;
             flex-direction: row;
             justify-content: center;
@@ -57,16 +55,16 @@
             padding: 20px;
         }
 
-        #text-container {
+        #arrangements-page-wrapper #text-container {
             flex: 1;
             text-align: left;
             font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
             line-height: 1.6;
-            color: #333;
+            color: inherit; /* Inherit text color */
         }
 
-        #button-container {
+        #arrangements-page-wrapper #button-container {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -76,24 +74,24 @@
 
         /* Mobile / Vertical Styles */
         @media (max-width: 768px) {
-            .content-wrapper {
+            #arrangements-page-wrapper .content-wrapper {
                 flex-direction: column;
                 align-items: center;
             }
 
-            #text-container {
+            #arrangements-page-wrapper #text-container {
                 text-align: center;
                 margin-bottom: 20px;
             }
 
-            #button-container {
+            #arrangements-page-wrapper #button-container {
                 width: 100%;
                 max-width: 600px;
             }
         }
 
         /* Button Styles */
-        .repo-button {
+        #arrangements-page-wrapper .repo-button {
             display: block;
             padding: 15px 20px;
             background-color: #333;
@@ -107,20 +105,18 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .repo-button:hover {
+        #arrangements-page-wrapper .repo-button:hover {
             background-color: #555;
             transform: scale(1.02);
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
 
-        .loading {
+        #arrangements-page-wrapper .loading {
             font-family: monospace;
             color: #666;
             font-size: 1.2rem;
         }
     </style>
-</head>
-<body>
 
     <div class="text-block1">
         <h1>
@@ -152,90 +148,105 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Glitch Effect Logic
-            const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
-            const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
-            const katakanaMap = {
-                'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-                'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
-                'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
-                'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-                'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
-            };
+        (function() {
+            function initArrangements() {
+                // Prevent double initialization
+                if (window.arrangementsInitialized) return;
+                window.arrangementsInitialized = true;
 
-            function changeFontRandomly(span) {
-                if (!span.dataset.original) {
-                    span.dataset.original = span.innerText;
+                // Glitch Effect Logic
+                const wrapper = document.getElementById('arrangements-page-wrapper');
+                if (!wrapper) return; // Guard clause
+
+                const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+                const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+                const katakanaMap = {
+                    'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                    'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                    'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                    'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                    'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+                };
+
+                function changeFontRandomly(span) {
+                    if (!span.dataset.original) {
+                        span.dataset.original = span.innerText;
+                    }
+                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                    const randomIndex = Math.floor(Math.random() * fontClasses.length);
+                    span.classList.add(fontClasses[randomIndex]);
+
+                    if (Math.random() < 0.05) {
+                        const originalChar = span.dataset.original.toUpperCase();
+                        if (katakanaMap[originalChar]) {
+                            span.innerText = katakanaMap[originalChar];
+                        }
+                    } else {
+                        span.innerText = span.dataset.original;
+                    }
+
+                    const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                    setTimeout(() => changeFontRandomly(span), interval);
                 }
-                fontClasses.forEach(fontClass => span.classList.remove(fontClass));
-                const randomIndex = Math.floor(Math.random() * fontClasses.length);
-                span.classList.add(fontClasses[randomIndex]);
 
-                if (Math.random() < 0.05) {
-                    const originalChar = span.dataset.original.toUpperCase();
-                    if (katakanaMap[originalChar]) {
-                        span.innerText = katakanaMap[originalChar];
-                    }
-                } else {
-                    span.innerText = span.dataset.original;
+                function changeColorRandomly(span) {
+                    const randomColorIndex = Math.floor(Math.random() * colors.length);
+                    span.style.color = colors[randomColorIndex];
+                    const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                    setTimeout(() => changeColorRandomly(span), interval);
                 }
 
-                const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-                setTimeout(() => changeFontRandomly(span), interval);
-            }
-
-            function changeColorRandomly(span) {
-                const randomColorIndex = Math.floor(Math.random() * colors.length);
-                span.style.color = colors[randomColorIndex];
-                const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
-                setTimeout(() => changeColorRandomly(span), interval);
-            }
-
-            const spans = document.querySelectorAll('.text-block1 .span-class');
-            spans.forEach(span => {
-                changeFontRandomly(span);
-                changeColorRandomly(span);
-            });
-
-            // Fetch GitHub Directory
-            const container = document.getElementById('button-container');
-            const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/Arrangements?ref=main';
-            const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Arrangements/';
-
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`GitHub API Error: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    container.innerHTML = ''; // Clear loading message
-
-                    // Filter for directories
-                    const directories = data.filter(item => item.type === 'dir');
-
-                    if (directories.length === 0) {
-                        container.innerHTML = '<div class="loading">No arrangements found.</div>';
-                        return;
-                    }
-
-                    directories.forEach(dir => {
-                        const link = document.createElement('a');
-                        link.href = repoUrlBase + dir.name;
-                        link.className = 'repo-button';
-                        link.textContent = dir.name;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        container.appendChild(link);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching arrangements:', error);
-                    container.innerHTML = `<div class="loading" style="color: red;">Error loading arrangements. Please try again later.</div>`;
+                const spans = wrapper.querySelectorAll('.text-block1 .span-class');
+                spans.forEach(span => {
+                    changeFontRandomly(span);
+                    changeColorRandomly(span);
                 });
-        });
+
+                // Fetch GitHub Directory
+                const container = wrapper.querySelector('#button-container');
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/Arrangements?ref=main';
+                const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Arrangements/';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`GitHub API Error: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        container.innerHTML = ''; // Clear loading message
+
+                        // Filter for directories
+                        const directories = data.filter(item => item.type === 'dir');
+
+                        if (directories.length === 0) {
+                            container.innerHTML = '<div class="loading">No arrangements found.</div>';
+                            return;
+                        }
+
+                        directories.forEach(dir => {
+                            const link = document.createElement('a');
+                            link.href = repoUrlBase + dir.name;
+                            link.className = 'repo-button';
+                            link.textContent = dir.name;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            container.appendChild(link);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching arrangements:', error);
+                        container.innerHTML = `<div class="loading" style="color: red;">Error loading arrangements. Please try again later.</div>`;
+                    });
+            }
+
+            // Initialization logic for Squarespace
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initArrangements);
+            } else {
+                initArrangements();
+            }
+        })();
     </script>
-</body>
-</html>
+</div>
