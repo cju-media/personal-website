@@ -1,5 +1,197 @@
-<h1>Arrangements</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrangements</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Glitch font classes */
+        .font1 { font-family: Arial, sans-serif; }
+        .font2 { font-family: Times New Roman, serif; }
+        .font3 { font-family: Courier New, monospace; }
+        .font4 { font-family: essay-text, monospace; }
+        .font5 { font-family: 'Playfair Display', serif; }
+        .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
+
+        h1 {
+            font-size: calc(2.5vw + 10px);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .text-block1 {
+            padding-bottom: 25px;
+        }
+
+        .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
+        }
+
+        /* Button Container Styles */
+        #button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* Button Styles */
+        .repo-button {
+            display: block;
+            padding: 15px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .repo-button:hover {
+            background-color: #555;
+            transform: scale(1.02);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
 <body>
-    
+
+    <div class="text-block1">
+        <h1>
+            <span class="span-class">A</span>
+            <span class="span-class">R</span>
+            <span class="span-class">R</span>
+            <span class="span-class">A</span>
+            <span class="span-class">N</span>
+            <span class="span-class">G</span>
+            <span class="span-class">E</span>
+            <span class="span-class">M</span>
+            <span class="span-class">E</span>
+            <span class="span-class">N</span>
+            <span class="span-class">T</span>
+            <span class="span-class">S</span>
+        </h1>
+    </div>
+
+    <div id="button-container">
+        <div class="loading">Loading arrangements...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Glitch Effect Logic
+            const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+            const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+            const katakanaMap = {
+                'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+            };
+
+            function changeFontRandomly(span) {
+                if (!span.dataset.original) {
+                    span.dataset.original = span.innerText;
+                }
+                fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                const randomIndex = Math.floor(Math.random() * fontClasses.length);
+                span.classList.add(fontClasses[randomIndex]);
+
+                if (Math.random() < 0.05) {
+                    const originalChar = span.dataset.original.toUpperCase();
+                    if (katakanaMap[originalChar]) {
+                        span.innerText = katakanaMap[originalChar];
+                    }
+                } else {
+                    span.innerText = span.dataset.original;
+                }
+
+                const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                setTimeout(() => changeFontRandomly(span), interval);
+            }
+
+            function changeColorRandomly(span) {
+                const randomColorIndex = Math.floor(Math.random() * colors.length);
+                span.style.color = colors[randomColorIndex];
+                const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                setTimeout(() => changeColorRandomly(span), interval);
+            }
+
+            const spans = document.querySelectorAll('.text-block1 .span-class');
+            spans.forEach(span => {
+                changeFontRandomly(span);
+                changeColorRandomly(span);
+            });
+
+            // Fetch GitHub Directory
+            const container = document.getElementById('button-container');
+            const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/Arrangements?ref=main';
+            const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Arrangements/';
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`GitHub API Error: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    container.innerHTML = ''; // Clear loading message
+
+                    // Filter for directories
+                    const directories = data.filter(item => item.type === 'dir');
+
+                    if (directories.length === 0) {
+                        container.innerHTML = '<div class="loading">No arrangements found.</div>';
+                        return;
+                    }
+
+                    directories.forEach(dir => {
+                        const link = document.createElement('a');
+                        link.href = repoUrlBase + dir.name;
+                        link.className = 'repo-button';
+                        link.textContent = dir.name;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        container.appendChild(link);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching arrangements:', error);
+                    container.innerHTML = `<div class="loading" style="color: red;">Error loading arrangements. Please try again later.</div>`;
+                });
+        });
+    </script>
 </body>
 </html>
