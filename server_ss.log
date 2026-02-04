@@ -1,0 +1,2 @@
+127.0.0.1 - - [04/Feb/2026 04:26:45] "GET /test_screenshot.html HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 04:26:45] "GET /programming/programming.html HTTP/1.1" 200 -
