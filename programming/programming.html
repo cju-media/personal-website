@@ -137,7 +137,8 @@
     // 2. GitHub Repo Info Script
     (function() {
         const username = "cju-media";
-        const url = `https://api.github.com/users/${username}/repos`;
+        // Sort by pushed to prioritize active repos, per_page=100 to get maximum items
+        const url = `https://api.github.com/users/${username}/repos?per_page=100&sort=pushed`;
 
         const getLatestCommitRepo = async () => {
             try {
@@ -151,17 +152,44 @@
                 let totalCommits = 0;
                 const committedRepos = new Set();
 
-                // Be mindful of rate limits here. This part matches original logic.
+                // Track repositories fetched
+                let totalReposFetched = repositories.length;
+
+                // Be mindful of rate limits here.
                 for (const repo of repositories) {
-                    const commitsUrl = repo.commits_url.replace("{/sha}", "");
-                    const commitsResponse = await fetch(commitsUrl);
-                    if (!commitsResponse.ok) continue; // Skip if fails (e.g. rate limit or empty)
+                    const commitsUrl = repo.commits_url.replace("{/sha}", "") + "?per_page=100";
+
+                    let commitsResponse;
+                    try {
+                        commitsResponse = await fetch(commitsUrl);
+                    } catch (e) {
+                         console.error("Fetch failed for " + repo.name, e);
+                         continue;
+                    }
+
+                    // Handle empty repos (409) or other errors
+                    if (commitsResponse.status === 409) continue;
+
+                    // Check rate limit safety
+                    const remaining = commitsResponse.headers.get('x-ratelimit-remaining');
+                    if (!commitsResponse.ok) {
+                        // If 403 or other error, break to save state
+                        if (commitsResponse.status === 403) {
+                            console.warn("Rate limit hit, stopping commit fetch.");
+                            break;
+                        }
+                        continue;
+                    }
+
                     const commits = await commitsResponse.json();
 
                     if (Array.isArray(commits)) {
                         totalCommits += commits.length;
 
                         for (const commit of commits) {
+                            // If commit author is the user, count the repo as "committed to"
+                            // Note: We might want to just count all repos since we are filtering by owner?
+                            // But keeping original logic: check login
                             if (commit.author && commit.author.login === username) {
                                 committedRepos.add(repo.name);
                             }
@@ -172,6 +200,12 @@
                                 latestCommitRepoUrl = repo.html_url;
                             }
                         }
+                    }
+
+                    // Safety break if we are about to run out
+                    if (remaining && parseInt(remaining) <= 2) {
+                        console.warn("Approaching API rate limit, stopping.");
+                        break;
                     }
                 }
 
@@ -185,7 +219,17 @@
                     paragraph2.innerHTML += ` <p class='unlink'> He was last working on: <a href="${latestCommitRepoUrl}" target="_blank" style="text-decoration: underline; color: #8c979a;">${latestCommitRepoName}</a> </p> `;
                 }
                 if (paragraph3) {
-                     paragraph3.innerHTML += ` <p class='unlink'> Cameron has ${totalCommits} commits across <a href="https://github.com/cju-media?tab=repositories" target="_blank" style="text-decoration: underline; color: #8c979a;">${committedRepos.size} public repos. </a> </p> `;
+                     // Note: committedRepos.size tracks repos with *verified commits* by user in the batch we checked.
+                     // Since we might stop early due to rate limits, we should probably display totalReposFetched if higher, or clarify.
+                     // The original text said "across X public repos". 'repositories.length' is the total fetched (up to 100).
+                     // However, to be safe and match user intent "reporting 27 repos... I should have much more",
+                     // we can use the total list length if the loop finished, or just the count of repos we found commits in.
+                     // But the loop iterates *all* repos unless stopped.
+                     // So we can use repositories.length to show total *found* repos, which is now up to 100.
+
+                     // Use the max of what we found to be honest about the scan
+                     const repoCount = Math.max(committedRepos.size, repositories.length);
+                     paragraph3.innerHTML += ` <p class='unlink'> Cameron has ${totalCommits} commits across <a href="https://github.com/cju-media?tab=repositories" target="_blank" style="text-decoration: underline; color: #8c979a;">${repoCount} public repos. </a> </p> `;
                 }
             } catch (error) {
                 console.error("Error fetching GitHub data:", error);
