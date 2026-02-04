@@ -685,13 +685,20 @@
                 }
             }
 
-            const checkLoad = setInterval(() => {
-                if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
-                    initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
-                    clearInterval(checkLoad);
-                }
-            }, 100);
-            setTimeout(() => clearInterval(checkLoad), 5000);
+            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+
+            if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
+                runInit();
+            } else {
+                const observer = new MutationObserver((mutations, obs) => {
+                    if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
+                        runInit();
+                        obs.disconnect();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                setTimeout(() => observer.disconnect(), 5000);
+            }
             } // End startGlitchAndObserver
         })();
     </script>
