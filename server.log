@@ -1,6 +1,0 @@
-127.0.0.1 - - [04/Feb/2026 04:23:45] "GET /test_loader.html HTTP/1.1" 200 -
-127.0.0.1 - - [04/Feb/2026 04:23:46] "GET /programming/programming.html HTTP/1.1" 200 -
-127.0.0.1 - - [04/Feb/2026 04:25:40] "GET /test_loader.html HTTP/1.1" 200 -
-127.0.0.1 - - [04/Feb/2026 04:25:40] "GET /programming/programming.html HTTP/1.1" 200 -
-127.0.0.1 - - [04/Feb/2026 04:26:00] "GET /test_loader.html HTTP/1.1" 200 -
-127.0.0.1 - - [04/Feb/2026 04:26:00] "GET /programming/programming.html HTTP/1.1" 200 -

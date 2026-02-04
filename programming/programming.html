@@ -1,12 +1,10 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
-    /* Scoped to avoid breaking parent page if possible, but keeping original intent */
+    /* Scoped to avoid breaking parent page, removed isolation styles to integrate with Squarespace */
     #programming-page-content {
-        font-family: sans-serif;
-        background-color: #f0f0f0;
-        /* Ensure it takes full height if needed, though 'min-height: 100vh' on a partial might be weird */
-        /* min-height: 100vh; */
+        /* font-family: sans-serif;  <- Removed to inherit site font */
+        /* background-color: #f0f0f0; <- Removed to be transparent */
     }
 
     .font1 { font-family: Arial, sans-serif; }
@@ -16,9 +14,12 @@
     .font5 { font-family: 'Playfair Display', serif; }
     .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
 
-    h1 {
+    /* Scoped H1 to prevent global conflicts, but allow glitch effect */
+    #programming-page-content h1.glitch-header {
         font-size: calc(2.5vw + 10px);
         text-align: center;
+        /* Ensure it overrides Squarespace defaults for this specific header if needed */
+        margin-bottom: 0.5em;
     }
 
     .text-block1 { padding-bottom: 25px; }
@@ -39,6 +40,9 @@
         text-decoration: none;
     }
 
+    /* Fixed background that covers viewport - consider if this is desired.
+       If 'acting like iframe' means 'blocking background', this might be it.
+       Keeping it but ensuring z-index is low. */
     #particle-canvas {
         position: fixed;
         z-index: -1;
@@ -46,6 +50,7 @@
         left: 0;
         width: 100%;
         height: 100%;
+        pointer-events: none; /* Let clicks pass through */
     }
 </style>
 
@@ -53,7 +58,7 @@
 
     <!-- Glitch Text Section -->
     <div class="text-block1">
-        <h1>
+        <h1 class="glitch-header">
             <span class="span-class">P</span>
             <span class="span-class">R</span>
             <span class="span-class">O</span>
