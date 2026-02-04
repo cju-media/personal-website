@@ -9,11 +9,12 @@
         .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; align-items: flex-end; flex-wrap: wrap; }
         select, button { padding: 10px; border-radius: 8px; border: 2px solid #2196F3; background: white; cursor: pointer; }
         button { background: #2196F3; color: white; border: none; font-weight: bold; }
-        #paper { margin-top: 20px; width: 100%; overflow-x: auto; }
+        #paper { margin-top: 20px; width: 100%; }
         .label { font-weight: bold; font-size: 11px; color: #666; display: block; text-transform: uppercase; margin-bottom: 5px; }
 
         @media (max-width: 600px) {
             body { padding: 10px; }
+            #paper { width: calc(100% - 20px); margin-left: auto; margin-right: auto; }
         }
     </style>
 </head>
