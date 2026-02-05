@@ -176,12 +176,14 @@
                         'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
                     },
 
-                    start(span) {
+                    start(span, enableColor = true) {
                         if (!span.dataset.original) {
                             span.dataset.original = span.innerText;
                         }
                         this.loopFont(span);
-                        this.loopColor(span);
+                        if (enableColor) {
+                            this.loopColor(span);
+                        }
                     },
 
                     stop(span) {
@@ -286,7 +288,7 @@
                             // Interactive Glitch on Hover
                             link.addEventListener('mouseenter', () => {
                                 const chars = link.querySelectorAll('.button-char');
-                                chars.forEach(span => Glitch.start(span));
+                                chars.forEach(span => Glitch.start(span, false)); // false = disable color glitch
                             });
 
                             link.addEventListener('mouseleave', () => {
