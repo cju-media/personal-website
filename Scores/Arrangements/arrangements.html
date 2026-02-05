@@ -111,6 +111,13 @@
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
 
+        /* Button Character Styles - to prevent jitter */
+        #arrangements-page-wrapper .button-char {
+            display: inline-block;
+            min-width: 0.7em;
+            text-align: center;
+        }
+
         #arrangements-page-wrapper .loading {
             font-family: monospace;
             color: #666;
@@ -158,48 +165,81 @@
                 const wrapper = document.getElementById('arrangements-page-wrapper');
                 if (!wrapper) return; // Guard clause
 
-                const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
-                const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
-                const katakanaMap = {
-                    'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-                    'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
-                    'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
-                    'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-                    'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        this.loopColor(span);
+                    },
+
+                    stop(span) {
+                        clearTimeout(span._fontTimeout);
+                        clearTimeout(span._colorTimeout);
+                        this.reset(span);
+                    },
+
+                    reset(span) {
+                        if (span.dataset.original) {
+                            span.innerText = span.dataset.original;
+                        }
+                        span.style.color = ''; // Reset to inherited
+                        this.fontClasses.forEach(c => span.classList.remove(c));
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            // Change Font
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            // Chance to change to Katakana
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            span._fontTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            // Change Color
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            span._colorTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
                 };
 
-                function changeFontRandomly(span) {
-                    if (!span.dataset.original) {
-                        span.dataset.original = span.innerText;
-                    }
-                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
-                    const randomIndex = Math.floor(Math.random() * fontClasses.length);
-                    span.classList.add(fontClasses[randomIndex]);
-
-                    if (Math.random() < 0.05) {
-                        const originalChar = span.dataset.original.toUpperCase();
-                        if (katakanaMap[originalChar]) {
-                            span.innerText = katakanaMap[originalChar];
-                        }
-                    } else {
-                        span.innerText = span.dataset.original;
-                    }
-
-                    const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-                    setTimeout(() => changeFontRandomly(span), interval);
-                }
-
-                function changeColorRandomly(span) {
-                    const randomColorIndex = Math.floor(Math.random() * colors.length);
-                    span.style.color = colors[randomColorIndex];
-                    const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
-                    setTimeout(() => changeColorRandomly(span), interval);
-                }
-
-                const spans = wrapper.querySelectorAll('.text-block1 .span-class');
-                spans.forEach(span => {
-                    changeFontRandomly(span);
-                    changeColorRandomly(span);
+                // Initialize Title Spans (Continuous)
+                const titleSpans = wrapper.querySelectorAll('.text-block1 .span-class');
+                titleSpans.forEach(span => {
+                    Glitch.start(span);
                 });
 
                 // Fetch GitHub Directory
@@ -229,64 +269,29 @@
                             const link = document.createElement('a');
                             link.href = repoUrlBase + dir.name;
                             link.className = 'repo-button';
-
-                            // Initialize with spans for individual character control
-                            const originalText = dir.name;
-                            link.dataset.originalText = originalText;
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
 
-                            // Function to build spans
-                            function buildSpans(text) {
-                                link.innerHTML = '';
-                                for (let char of text) {
-                                    const span = document.createElement('span');
-                                    span.textContent = char;
-                                    span.dataset.char = char; // Store original char
-                                    link.appendChild(span);
-                                }
+                            // Build spans for button text
+                            const text = dir.name;
+                            for (let char of text) {
+                                const span = document.createElement('span');
+                                span.textContent = char;
+                                span.className = 'button-char';
+                                // Pre-set original for Glitch object logic
+                                span.dataset.original = char;
+                                link.appendChild(span);
                             }
 
-                            buildSpans(originalText);
-
-                            let glitchInterval;
-
+                            // Interactive Glitch on Hover
                             link.addEventListener('mouseenter', () => {
-                                clearInterval(glitchInterval);
-
-                                // Faster tick rate, but independent character updates
-                                glitchInterval = setInterval(() => {
-                                    const spans = link.querySelectorAll('span');
-
-                                    // Update each character independently with low probability
-                                    spans.forEach(span => {
-                                        if (Math.random() < 0.1) { // 10% chance to change per tick
-                                            const originalChar = span.dataset.char;
-                                            const upperChar = originalChar.toUpperCase();
-
-                                            // Toggle between original and Katakana
-                                            if (span.textContent === originalChar && katakanaMap[upperChar]) {
-                                                span.textContent = katakanaMap[upperChar];
-                                            } else {
-                                                span.textContent = originalChar;
-                                            }
-                                        }
-                                    });
-
-                                    // Randomize font of the button itself LESS frequently
-                                    if (Math.random() < 0.3) {
-                                        fontClasses.forEach(c => link.classList.remove(c));
-                                        link.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
-                                    }
-
-                                }, 100); // 100ms ticks, but updates are sparse
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => Glitch.start(span));
                             });
 
                             link.addEventListener('mouseleave', () => {
-                                clearInterval(glitchInterval);
-                                // Reset text and font
-                                buildSpans(link.dataset.originalText);
-                                fontClasses.forEach(c => link.classList.remove(c));
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => Glitch.stop(span));
                             });
 
                             container.appendChild(link);
