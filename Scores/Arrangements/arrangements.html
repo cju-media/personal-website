@@ -229,69 +229,64 @@
                             const link = document.createElement('a');
                             link.href = repoUrlBase + dir.name;
                             link.className = 'repo-button';
-                            link.textContent = dir.name;
-                            link.dataset.originalText = dir.name; // Store original text
+
+                            // Initialize with spans for individual character control
+                            const originalText = dir.name;
+                            link.dataset.originalText = originalText;
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
 
-                            // Hover Glitch Effect
+                            // Function to build spans
+                            function buildSpans(text) {
+                                link.innerHTML = '';
+                                for (let char of text) {
+                                    const span = document.createElement('span');
+                                    span.textContent = char;
+                                    span.dataset.char = char; // Store original char
+                                    link.appendChild(span);
+                                }
+                            }
+
+                            buildSpans(originalText);
+
                             let glitchInterval;
 
                             link.addEventListener('mouseenter', () => {
-                                // Clear any existing interval to be safe
                                 clearInterval(glitchInterval);
 
-                                const originalText = link.dataset.originalText;
-
+                                // Faster tick rate, but independent character updates
                                 glitchInterval = setInterval(() => {
-                                    // Process each character
-                                    let newText = '';
-                                    for (let i = 0; i < originalText.length; i++) {
-                                        const char = originalText[i];
-                                        // 30% chance to swap to Katakana or change font (simulated by just changing char for now as we can't easily span-wrap inside button text without breaking layout/CSS simplicity)
-                                        // Wait, the requirement implies using the same font swapping logic.
-                                        // To do font swapping per character, we need to wrap chars in spans.
-                                        // But changing innerHTML constantly on hover might be heavy.
-                                        // Let's stick to the character swap (Katakana) logic for the button text itself,
-                                        // or if we want font swapping we need to restructure the button content.
+                                    const spans = link.querySelectorAll('span');
 
-                                        // The original prompt said "text glitch effect... no color changing".
-                                        // The original effect uses spans. To replicate it fully we need spans.
-                                        // Let's try to just swap characters for a lighter effect, OR
-                                        // if we must use fonts, we'll need to tokenize the button text.
+                                    // Update each character independently with low probability
+                                    spans.forEach(span => {
+                                        if (Math.random() < 0.1) { // 10% chance to change per tick
+                                            const originalChar = span.dataset.char;
+                                            const upperChar = originalChar.toUpperCase();
 
-                                        // Let's try a simpler approach first: Randomly swap characters to Katakana map
-                                        // AND allow the font-family of the button ITSELF to jitter if desired,
-                                        // but the prompt implies the standard effect.
-
-                                        // Given the complexity of wrapping every char in a span on hover dynamically:
-                                        // Let's just implement the Katakana swap + random font class on the WHOLE button
-                                        // or per char if we accept the DOM churn.
-
-                                        // Actually, the request says "add the text glitch effect...".
-                                        // Let's implement the character swapping part (Katakana) which is the most visible part of the "glitch",
-                                        // and maybe cycle the font of the button itself.
-
-                                        if (Math.random() < 0.1) {
-                                            const upperChar = char.toUpperCase();
-                                            newText += katakanaMap[upperChar] || char;
-                                        } else {
-                                            newText += char;
+                                            // Toggle between original and Katakana
+                                            if (span.textContent === originalChar && katakanaMap[upperChar]) {
+                                                span.textContent = katakanaMap[upperChar];
+                                            } else {
+                                                span.textContent = originalChar;
+                                            }
                                         }
+                                    });
+
+                                    // Randomize font of the button itself LESS frequently
+                                    if (Math.random() < 0.3) {
+                                        fontClasses.forEach(c => link.classList.remove(c));
+                                        link.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
                                     }
-                                    link.textContent = newText;
 
-                                    // Randomize font of the button itself to simulate the "font glitch"
-                                    fontClasses.forEach(c => link.classList.remove(c));
-                                    link.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
-
-                                }, 300);
+                                }, 100); // 100ms ticks, but updates are sparse
                             });
 
                             link.addEventListener('mouseleave', () => {
                                 clearInterval(glitchInterval);
-                                link.textContent = link.dataset.originalText;
-                                fontClasses.forEach(c => link.classList.remove(c)); // Reset font
+                                // Reset text and font
+                                buildSpans(link.dataset.originalText);
+                                fontClasses.forEach(c => link.classList.remove(c));
                             });
 
                             container.appendChild(link);
