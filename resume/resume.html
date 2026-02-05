@@ -1,13 +1,39 @@
 <style>
-  .resume-view-container { 
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+  /* Scoped Container */
+  #resume-wrapper.resume-view-container {
     font-family: sans-serif; 
     text-align: center; 
     width: 100%;
     margin: 0 auto;
   }
 
-  /* The Wrapper handles the scaling math */
-  .pdf-wrapper {
+  /* Glitch Effect Styles */
+  #resume-wrapper .font1 { font-family: Arial, sans-serif; }
+  #resume-wrapper .font2 { font-family: Times New Roman, serif; }
+  #resume-wrapper .font3 { font-family: Courier New, monospace; }
+  #resume-wrapper .font4 { font-family: essay-text, monospace; }
+  #resume-wrapper .font5 { font-family: 'Playfair Display', serif; }
+  #resume-wrapper .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
+
+  #resume-wrapper h1 {
+      font-size: calc(2.5vw + 10px);
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
+  }
+
+  #resume-wrapper .span-class {
+      display: inline-block;
+      width: 1.2em;
+      text-align: center;
+      vertical-align: bottom;
+      line-height: 1.2;
+  }
+
+  /* PDF Wrapper Styles */
+  #resume-wrapper .pdf-wrapper {
     width: 100%;
     height: 80vh;
     overflow: hidden;
@@ -17,14 +43,10 @@
     background: #f4f4f4;
   }
 
-  .pdf-frame { 
-    /* We make the iframe larger than the container, then scale it down 
-       to 'zoom' the content if needed. For 1:1 fit, use these settings: */
+  #resume-wrapper .pdf-frame {
     width: 100%;
     height: 100%;
     border: none;
-    
-    /* Some browsers ignore FitH but respect zoom CSS */
     zoom: 1; 
     -moz-transform: scale(1); 
     -o-transform: scale(1); 
@@ -33,7 +55,7 @@
     transform-origin: 0 0;
   }
 
-  .download-btn { 
+  #resume-wrapper .download-btn {
     display: inline-block; 
     margin: 15px 0;
     padding: 12px 24px; 
@@ -45,7 +67,19 @@
   }
 </style>
 
-<div class="resume-view-container">
+<div id="resume-wrapper" class="resume-view-container">
+  <!-- Glitch Title -->
+  <div class="glitch-title-block">
+      <h1>
+          <span class="span-class">R</span>
+          <span class="span-class">E</span>
+          <span class="span-class">S</span>
+          <span class="span-class">U</span>
+          <span class="span-class">M</span>
+          <span class="span-class">E</span>
+      </h1>
+  </div>
+
   <div class="pdf-wrapper">
     <iframe id="live-pdf" class="pdf-frame" src=""></iframe>
   </div>
@@ -54,6 +88,60 @@
 
 <script>
   (function() {
+    // --- Glitch Effect Logic ---
+    const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+    const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+    const katakanaMap = {
+        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+    };
+
+    function changeFontRandomly(span) {
+        if (!span.dataset.original) {
+            span.dataset.original = span.innerText;
+        }
+
+        // Remove old font classes
+        fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+
+        // Add new random font class
+        const randomIndex = Math.floor(Math.random() * fontClasses.length);
+        span.classList.add(fontClasses[randomIndex]);
+
+        // Randomly switch to Katakana
+        if (Math.random() < 0.05) {
+            const originalChar = span.dataset.original.toUpperCase();
+            if (katakanaMap[originalChar]) {
+                span.innerText = katakanaMap[originalChar];
+            }
+        } else {
+            span.innerText = span.dataset.original;
+        }
+
+        const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+        setTimeout(() => changeFontRandomly(span), interval);
+    }
+
+    function changeColorRandomly(span) {
+        const randomColorIndex = Math.floor(Math.random() * colors.length);
+        span.style.color = colors[randomColorIndex];
+        const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+        setTimeout(() => changeColorRandomly(span), interval);
+    }
+
+    // Initialize Glitch
+    const spans = document.querySelectorAll('#resume-wrapper .span-class');
+    if (spans.length > 0) {
+        spans.forEach(span => {
+            changeFontRandomly(span);
+            changeColorRandomly(span);
+        });
+    }
+
+    // --- PDF Logic ---
     const iframe = document.getElementById('live-pdf');
     const downloadLink = document.getElementById('download-link');
     const baseUrl = "https://raw.githack.com/cju-media/personal-website/main/resume/resume.pdf";
@@ -68,10 +156,13 @@
       // 3. Update the source with a unique URL to FORCE the reload
       const finalUrl = `${baseUrl}?v=${resizeTick}${viewMode}`;
       
-      iframe.src = finalUrl;
-      downloadLink.href = baseUrl + "?v=" + resizeTick;
-      
-      console.log("PDF reloaded for new window size: " + viewMode);
+      if (iframe) {
+          iframe.src = finalUrl;
+          console.log("PDF reloaded for new window size: " + viewMode);
+      }
+      if (downloadLink) {
+          downloadLink.href = baseUrl + "?v=" + resizeTick;
+      }
     }
 
     // Initial load
@@ -84,13 +175,11 @@
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        // Optimization: Only reload if the width actually changed 
-        // (prevents annoying reloads when mobile address bars hide/show)
         if (window.innerWidth !== lastWidth) {
           lastWidth = window.innerWidth;
           updateIframe();
         }
-      }, 300); // 300ms delay ensures the window has finished snapping to its new size
+      }, 300);
     });
   })();
 </script>
