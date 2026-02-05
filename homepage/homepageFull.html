@@ -112,6 +112,26 @@
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
 
+        // 3a. Setup Visibility Observer for Optimization
+        let isHeaderVisible = true;
+        const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isHeaderVisible = entry.isIntersecting;
+                if (isHeaderVisible) {
+                    // Restart loops if stopped
+                     const allSpans = document.querySelectorAll('.text-block1 .span-class');
+                     allSpans.forEach(span => {
+                         if (span.dataset.looping !== "true") {
+                             changeFontRandomly(span);
+                             changeColorRandomly(span);
+                         }
+                     });
+                }
+            });
+        });
+        const container1 = document.querySelector('.container1');
+        if (container1) visibilityObserver.observe(container1);
+
         // 4. Animation Loops
         const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
         const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
@@ -124,6 +144,12 @@
         };
 
         function changeFontRandomly(span) {
+            span.dataset.looping = "true";
+            if (!isHeaderVisible) {
+                span.dataset.looping = "false";
+                return;
+            }
+
             if (!span.dataset.original) {
                 span.dataset.original = span.innerText;
             }
@@ -150,6 +176,8 @@
         }
 
         function changeColorRandomly(span) {
+            if (!isHeaderVisible) return;
+
             const randomColorIndex = Math.floor(Math.random() * colors.length);
             span.style.color = colors[randomColorIndex];
             const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
