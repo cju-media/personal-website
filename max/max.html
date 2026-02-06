@@ -122,6 +122,12 @@
             vertical-align: bottom;
         }
 
+        /* Wrapper to keep words together */
+        #max-patches-page-wrapper .word-wrapper {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
         #max-patches-page-wrapper .loading {
             font-family: monospace;
             color: #666;
@@ -255,7 +261,7 @@
 
                 // Fetch GitHub Repos
                 const container = wrapper.querySelector('#button-container');
-                const apiUrl = 'https://api.github.com/search/repositories?q=user:cju-media+language:Max&sort=updated';
+                const apiUrl = 'https://api.github.com/search/repositories?q=user:cju-media+language:Max';
 
                 fetch(apiUrl)
                     .then(response => {
@@ -268,12 +274,15 @@
                         container.innerHTML = ''; // Clear loading message
 
                         // Data is in data.items for search API
-                        const repos = data.items;
+                        let repos = data.items;
 
                         if (!repos || repos.length === 0) {
                             container.innerHTML = '<div class="loading">No Max patches found.</div>';
                             return;
                         }
+
+                        // Sort alphabetically
+                        repos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
                         repos.forEach(repo => {
                             const link = document.createElement('a');
@@ -284,14 +293,29 @@
 
                             // Build spans for button text
                             const text = repo.name.replace(/-/g, ' ');
-                            for (let char of text) {
-                                const span = document.createElement('span');
-                                span.textContent = char;
-                                span.className = 'button-char';
-                                // Pre-set original for Glitch object logic
-                                span.dataset.original = char;
-                                link.appendChild(span);
-                            }
+                            const words = text.split(' ');
+
+                            words.forEach((word, index) => {
+                                const wordSpan = document.createElement('span');
+                                wordSpan.className = 'word-wrapper';
+
+                                for (let char of word) {
+                                    const span = document.createElement('span');
+                                    span.textContent = char;
+                                    span.className = 'button-char';
+                                    // Pre-set original for Glitch object logic
+                                    span.dataset.original = char;
+                                    wordSpan.appendChild(span);
+                                }
+
+                                link.appendChild(wordSpan);
+
+                                // Add space after word if not the last one
+                                if (index < words.length - 1) {
+                                    const space = document.createTextNode(' ');
+                                    link.appendChild(space);
+                                }
+                            });
 
                             // Interactive Glitch on Hover
                             link.addEventListener('mouseenter', () => {
