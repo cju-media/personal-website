@@ -272,7 +272,7 @@
                         }
 
                         // Sort alphabetically
-                        repos.sort((a, b) => a.name.localeCompare(b.name));
+                        repos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
                         repos.forEach(repo => {
                             const link = document.createElement('a');
