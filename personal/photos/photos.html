@@ -11,6 +11,13 @@
     </div>
 
     <div id="loading-message">Fetching photos from iCloud...</div>
+
+    <div class="controls-container">
+        <a href="https://www.icloud.com/sharedalbum/#B2N5n8hH4Gdkz1m" target="_blank" rel="noopener noreferrer" class="icloud-button">
+            View on iCloud
+        </a>
+    </div>
+
     <div id="photos-grid" class="photos-grid">
         <!-- Photos will be injected here -->
     </div>
@@ -57,6 +64,28 @@
         width: 0.8em;
         text-align: center;
         vertical-align: bottom;
+    }
+
+    /* Controls */
+    #personal-photos-wrapper .controls-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    #personal-photos-wrapper .icloud-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007aff;
+        color: white;
+        text-decoration: none;
+        border-radius: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+    }
+
+    #personal-photos-wrapper .icloud-button:hover {
+        background-color: #0056b3;
     }
 
     /* Grid Layout */
@@ -174,11 +203,18 @@
 
     // --- CONFIG ---
     const ALBUM_TOKEN = "B2N5n8hH4Gdkz1m";
-    // List of CORS proxies to try in order
+    // List of CORS proxies
     const PROXIES = [
         "https://corsproxy.io/?",
-        "https://api.allorigins.win/raw?url="
+        "https://api.allorigins.win/raw?url=",
+        "https://thingproxy.freeboard.io/fetch/"
     ];
+
+    // Randomize Proxies to distribute load
+    for (let i = PROXIES.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [PROXIES[i], PROXIES[j]] = [PROXIES[j], PROXIES[i]];
+    }
 
     // --- GLITCH EFFECT ---
     const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
