@@ -1,6 +1,10 @@
 
 
-*The List* is an ongoing collection of things that have affected me: music, movies, vidoes, books, articles (if i ever start reading), podcasts (gross). This is something that should be on twitter but I deleted most social media AND I never got any interaction on my posts anyway. So this method isnt much worse anyway.
+*The List* is an ongoing collection of things that have affected me: music, movies, vidoes, books, articles (if I ever start reading), podcasts (gross). This is something that should be on twitter but I deleted most social media AND I never got any interaction on my posts anyway. So this method isnt much worse anyway.
+
+# 2-7-26
+working a mitzah today. Only video. I thought two hours of setup was more than enough but I barely made it with 15 minutes to spare. Never trust an in-house system. No mixer, one PA with two inputs. i ran two lines from my 2 channel wireless system to the PA from my setup to the PA and then use the mix out of the 1/4 inch mix output into my computer for stream. 
+
 
 # 2-6-26
 
