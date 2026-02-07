@@ -186,13 +186,28 @@ def main():
             thumb_filename = f"{photo_guid}_thumb.jpg"
             thumb_filepath = os.path.join(IMAGES_DIR, thumb_filename)
             download_file(thumb_url, thumb_filepath)
+        # Caption Logic
+        # iCloud Shared Albums store captions as the first comment by the owner, usually.
+        # The 'caption' field in the photo object is often empty.
+        # We check if there's a 'caption' (explicit) or 'comments' (array).
+        caption = photo.get("caption", "")
+        if not caption:
+            # Check comments
+            comments = photo.get("comments", [])
+            if comments:
+                # Use the first comment as the caption? Or the most recent?
+                # Usually the owner's comment describing the photo is what we want.
+                # Let's take the text of the first comment.
+                # comments is a list of objects like { "commentContent": "...", "isBatchComment": "...", ... }
+                first_comment = comments[0]
+                caption = first_comment.get("commentContent", "")
 
         output_photos.append({
             "id": photo_guid,
             "type": "video" if is_video else "image",
             "src": f"images/{filename}",
             "thumb": f"images/{thumb_filename}" if thumb_filename else None,
-            "caption": photo.get("caption", ""),
+            "caption": caption,
             "date": photo.get("dateCreated")
         })
 
