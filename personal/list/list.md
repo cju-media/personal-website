@@ -2,7 +2,7 @@
 
 *The List* is an ongoing collection of things that have affected me: music, movies, vidoes, books, articles (if i ever start reading), podcasts (gross). This is something that should be on twitter but I deleted most social media AND I never got any interaction on my posts anyway. So this method isnt much worse anyway.
 
-# 2-6-26 8:30pm
+# 2-6-26
 
 *[Variations for Winds, Strings, and Keyboards](https://youtu.be/1p2XXxO7gyE?si=xURDa8wdcdU3U33o) - John Adams*
 
