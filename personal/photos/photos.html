@@ -268,8 +268,13 @@
 
     // Fetch helper with proxy fallback
     async function fetchWithProxy(urlWithoutProxy, bodyObj) {
+        // Append cache-buster to the target URL (before proxy encoding)
+        // iCloud API ignores extra query params usually, but this busts the proxy cache.
+        const separator = urlWithoutProxy.includes('?') ? '&' : '?';
+        const urlWithCacheBuster = urlWithoutProxy + separator + '_t=' + Date.now();
+
         for (const proxy of PROXIES) {
-            const url = proxy + encodeURIComponent(urlWithoutProxy);
+            const url = proxy + encodeURIComponent(urlWithCacheBuster);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
