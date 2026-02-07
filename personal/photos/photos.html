@@ -11,6 +11,14 @@
     </div>
 
     <div class="controls-container">
+        <div class="control-group">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" class="sort-select">
+                <option value="random">Random</option>
+                <option value="date-desc">Date Added (Newest)</option>
+                <option value="date-asc">Date Added (Oldest)</option>
+            </select>
+        </div>
         <a href="https://www.icloud.com/sharedalbum/#B2N5n8hH4Gdkz1m" target="_blank" rel="noopener noreferrer" class="icloud-button">
             View on iCloud
         </a>
@@ -68,13 +76,34 @@
 
     /* Controls */
     #personal-photos-wrapper .controls-container {
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
         margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    #personal-photos-wrapper .control-group {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    #personal-photos-wrapper .sort-select {
+        padding: 8px 12px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        background-color: white;
+        font-family: inherit;
+        font-size: inherit;
+        outline: none;
+        cursor: pointer;
     }
 
     #personal-photos-wrapper .icloud-button {
         display: inline-block;
-        padding: 10px 20px;
+        padding: 8px 20px;
         background-color: #007aff;
         color: white;
         text-decoration: none;
@@ -273,12 +302,70 @@
     // --- GALLERY LOGIC ---
     const grid = wrapper.querySelector('#photos-grid');
     const loadingMsg = wrapper.querySelector('#loading-message');
+    const sortSelect = wrapper.querySelector('#sort-select');
 
     // REPO CONFIG
-    // This points to the raw content of the repository to load the JSON manifest.
-    // Ensure this matches the correct user/repo branch.
     const REPO_BASE = 'https://raw.githack.com/cju-media/personal-website/main/personal/photos/';
     const JSON_URL = REPO_BASE + 'photos.json';
+
+    let allPhotos = [];
+
+    function renderGrid(photos) {
+        grid.innerHTML = ''; // Clear current grid
+
+        photos.forEach(photo => {
+            const item = document.createElement('div');
+            item.className = 'photo-item';
+
+            const src = REPO_BASE + photo.src;
+            const thumb = photo.thumb ? (REPO_BASE + photo.thumb) : src;
+
+            const img = document.createElement('img');
+            img.src = thumb;
+            img.alt = photo.caption || 'Photo';
+            img.loading = 'lazy';
+            img.onload = () => img.classList.add('loaded');
+
+            item.appendChild(img);
+
+            const isVideo = photo.type === 'video';
+
+            if (isVideo) {
+                const indicator = document.createElement('div');
+                indicator.className = 'video-indicator';
+                indicator.innerHTML = '&#9658;';
+                item.appendChild(indicator);
+            }
+
+            item.addEventListener('click', () => {
+                openLightbox(photo, src, isVideo);
+            });
+
+            grid.appendChild(item);
+        });
+    }
+
+    function sortAndRender(criteria) {
+        let sorted = [...allPhotos]; // Copy array
+
+        if (criteria === 'random') {
+            // Fisher-Yates
+            for (let i = sorted.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+            }
+        } else if (criteria === 'date-desc') {
+            sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
+        } else if (criteria === 'date-asc') {
+            sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+        }
+
+        renderGrid(sorted);
+    }
+
+    sortSelect.addEventListener('change', (e) => {
+        sortAndRender(e.target.value);
+    });
 
     fetch(JSON_URL)
         .then(response => {
@@ -292,46 +379,10 @@
             }
 
             loadingMsg.style.display = 'none';
+            allPhotos = photos;
 
-            // Randomize order (Fisher-Yates)
-            for (let i = photos.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [photos[i], photos[j]] = [photos[j], photos[i]];
-            }
-
-            photos.forEach(photo => {
-                const item = document.createElement('div');
-                item.className = 'photo-item';
-
-                // Construct absolute URLs to the images in the repo
-                // photo.src is relative "images/xxx.jpg" in the JSON
-                // We use REPO_BASE to make it absolute for Squarespace injection
-                const src = REPO_BASE + photo.src;
-                const thumb = photo.thumb ? (REPO_BASE + photo.thumb) : src;
-
-                const img = document.createElement('img');
-                img.src = thumb;
-                img.alt = photo.caption || 'Photo';
-                img.loading = 'lazy';
-                img.onload = () => img.classList.add('loaded');
-
-                item.appendChild(img);
-
-                const isVideo = photo.type === 'video';
-
-                if (isVideo) {
-                    const indicator = document.createElement('div');
-                    indicator.className = 'video-indicator';
-                    indicator.innerHTML = '&#9658;';
-                    item.appendChild(indicator);
-                }
-
-                item.addEventListener('click', () => {
-                    openLightbox(photo, src, isVideo);
-                });
-
-                grid.appendChild(item);
-            });
+            // Initial render (Random default)
+            sortAndRender('random');
         })
         .catch(err => {
             console.error(err);
