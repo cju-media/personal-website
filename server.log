@@ -1,3 +1,0 @@
-127.0.0.1 - - [07/Feb/2026 05:22:05] "GET /test_the_list.html HTTP/1.1" 200 -
-127.0.0.1 - - [07/Feb/2026 05:22:05] "GET /The%20List/theList.html HTTP/1.1" 200 -
-127.0.0.1 - - [07/Feb/2026 05:22:05] "GET /The%20List/The%20List.md HTTP/1.1" 200 -
