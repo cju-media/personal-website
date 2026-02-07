@@ -1,0 +1,314 @@
+<div id="personal-photos-wrapper">
+    <div class="header-container">
+        <h1>
+            <span class="glitch-char">P</span>
+            <span class="glitch-char">H</span>
+            <span class="glitch-char">O</span>
+            <span class="glitch-char">T</span>
+            <span class="glitch-char">O</span>
+            <span class="glitch-char">S</span>
+        </h1>
+    </div>
+
+    <div id="photos-grid" class="photos-grid">
+        <!-- Photos will be injected here -->
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Full view">
+            <video id="lightbox-video" controls style="display:none;"></video>
+            <div id="lightbox-caption" class="caption"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Scoped Styles */
+    #personal-photos-wrapper {
+        font-family: 'Courier New', Courier, monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        color: #333;
+    }
+
+    /* Glitch Title Styles */
+    #personal-photos-wrapper h1 {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 40px;
+        letter-spacing: 0.2em;
+        font-weight: normal;
+    }
+
+    #personal-photos-wrapper .glitch-char {
+        display: inline-block;
+        width: 0.8em;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+    /* Grid Layout */
+    #personal-photos-wrapper .photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    #personal-photos-wrapper .photo-item {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s;
+    }
+
+    #personal-photos-wrapper .photo-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #personal-photos-wrapper .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    #personal-photos-wrapper .video-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        pointer-events: none;
+    }
+
+    /* Lightbox Styles */
+    #personal-photos-wrapper .lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #personal-photos-wrapper .lightbox.active {
+        display: flex;
+    }
+
+    #personal-photos-wrapper .lightbox-content {
+        max-width: 90%;
+        max-height: 80vh;
+        position: relative;
+    }
+
+    #personal-photos-wrapper .lightbox-content img,
+    #personal-photos-wrapper .lightbox-content video {
+        max-width: 100%;
+        max-height: 80vh;
+        display: block;
+        margin: 0 auto;
+        border: 2px solid white;
+    }
+
+    #personal-photos-wrapper .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    #personal-photos-wrapper .caption {
+        margin-top: 10px;
+        color: #ccc;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    /* Glitch Fonts */
+    #personal-photos-wrapper .font1 { font-family: Arial, sans-serif; }
+    #personal-photos-wrapper .font2 { font-family: 'Times New Roman', serif; }
+    #personal-photos-wrapper .font3 { font-family: 'Courier New', monospace; }
+    #personal-photos-wrapper .font4 { font-family: Impact, sans-serif; }
+    #personal-photos-wrapper .font5 { font-family: Georgia, serif; }
+    #personal-photos-wrapper .font6 { font-family: Verdana, sans-serif; }
+</style>
+
+<script>
+(function() {
+    // --- INIT GUARD ---
+    if (window.personalPhotosInitialized) return;
+    window.personalPhotosInitialized = true;
+
+    // --- GLITCH EFFECT ---
+    const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+    const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+    const katakanaMap = {
+        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+    };
+
+    function changeFontRandomly(span) {
+        if (!span.dataset.original) {
+            span.dataset.original = span.innerText;
+        }
+        fontClasses.forEach(c => span.classList.remove(c));
+        const randomIndex = Math.floor(Math.random() * fontClasses.length);
+        span.classList.add(fontClasses[randomIndex]);
+
+        if (Math.random() < 0.05) {
+            const originalChar = span.dataset.original.toUpperCase();
+            if (katakanaMap[originalChar]) {
+                span.innerText = katakanaMap[originalChar];
+            }
+        } else {
+            span.innerText = span.dataset.original;
+        }
+
+        const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+        setTimeout(() => changeFontRandomly(span), interval);
+    }
+
+    function changeColorRandomly(span) {
+        const randomColorIndex = Math.floor(Math.random() * colors.length);
+        span.style.color = colors[randomColorIndex];
+        const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+        setTimeout(() => changeColorRandomly(span), interval);
+    }
+
+    const wrapper = document.getElementById('personal-photos-wrapper');
+    const spans = wrapper.querySelectorAll('.glitch-char');
+    spans.forEach(span => {
+        changeFontRandomly(span);
+        changeColorRandomly(span);
+    });
+
+    // --- PHOTO FETCHING ---
+    const grid = wrapper.querySelector('#photos-grid');
+    const lightbox = wrapper.querySelector('#lightbox-modal');
+    const lightboxImg = wrapper.querySelector('#lightbox-img');
+    const lightboxVideo = wrapper.querySelector('#lightbox-video');
+    const lightboxCaption = wrapper.querySelector('#lightbox-caption');
+    const closeBtn = wrapper.querySelector('.close-btn');
+
+    // Determine path to photos.json
+    // Assuming this script is running in the context of the page,
+    // and photos.json is in the same directory as the page URL?
+    // Or relative to the root?
+    // If the page URL is /personal/photos/..., then fetching 'photos.json' should work.
+    // However, if we are on a different page injecting this, we might need a robust path.
+    // We'll try relative path first.
+    // Given the structure, likely 'personal/photos/photos.json' from root.
+    // But since the loader injects it, the browser sees the path relative to the current page.
+    // The safest bet for this setup is usually a full path or absolute path from root.
+    // We'll try to guess based on script location? No, script is inline.
+    // We'll assume the page is hosted at root or we use absolute path '/personal/photos/photos.json'.
+    // If the site is cameronjohnston.xyz/personal/photos/, then 'photos.json' is fine.
+
+    // Use raw GitHub URL for reliability across Squarespace and local dev
+    // (Assuming main branch is deployed). This matches the pattern used in other
+    // parts of this "personal-website" repo (e.g. resume.html, max.html).
+    // If you fork this repo, update 'cju-media' to your username.
+    const REPO_BASE = 'https://raw.githack.com/cju-media/personal-website/main/personal/photos/';
+    const jsonPath = REPO_BASE + 'photos.json';
+
+    fetch(jsonPath)
+        .then(response => {
+            if (!response.ok) {
+                 throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const grid = document.getElementById('photos-grid');
+            if (!grid) return; // Guard
+
+            data.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+
+                // photos.json contains paths like "images/xxx.jpg"
+                // We prepend the REPO_BASE to make them absolute URLs
+                const thumbPath = photo.thumb ? photo.thumb : photo.src;
+                const fullThumbUrl = REPO_BASE + thumbPath;
+                const fullSrcUrl = REPO_BASE + photo.src;
+
+                const img = document.createElement('img');
+                img.src = fullThumbUrl;
+                img.alt = photo.caption || 'Photo';
+                img.loading = 'lazy';
+
+                item.appendChild(img);
+
+                if (photo.type === 'video') {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'video-indicator';
+                    indicator.innerHTML = '&#9658;'; // Play symbol
+                    item.appendChild(indicator);
+                }
+
+                item.addEventListener('click', () => {
+                    openLightbox(photo, fullSrcUrl);
+                });
+
+                grid.appendChild(item);
+            });
+        })
+        .catch(err => {
+            console.error('Error loading photos:', err);
+            grid.innerHTML = '<p style="text-align:center">Error loading photos. Please ensure photos.json exists.</p>';
+        });
+
+    function openLightbox(photo, src) {
+        lightboxImg.style.display = 'none';
+        lightboxVideo.style.display = 'none';
+        lightboxVideo.pause();
+
+        if (photo.type === 'video') {
+            lightboxVideo.src = src;
+            lightboxVideo.style.display = 'block';
+            // Auto play logic?
+            // lightboxVideo.play();
+        } else {
+            lightboxImg.src = src;
+            lightboxImg.style.display = 'block';
+        }
+
+        lightboxCaption.textContent = photo.caption || '';
+        lightbox.classList.add('active');
+    }
+
+    closeBtn.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+        lightboxVideo.pause();
+    });
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            lightbox.classList.remove('active');
+            lightboxVideo.pause();
+        }
+    });
+
+})();
+</script>
