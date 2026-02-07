@@ -140,13 +140,6 @@ def main():
         elif sorted_keys:
             best_image_checksum = derivatives[sorted_keys[0]]["checksum"]
 
-        # Try to find thumbnail (342 or smallest)
-        sorted_keys_asc = sorted([k for k in derivatives.keys() if k.isdigit()], key=lambda x: int(x))
-        if "342" in derivatives:
-            thumb_checksum = derivatives["342"]["checksum"]
-        elif sorted_keys_asc:
-            thumb_checksum = derivatives[sorted_keys_asc[0]]["checksum"]
-
         # Helper to construct URL
         def get_download_url(checksum):
             if not checksum or checksum not in items:
@@ -161,7 +154,6 @@ def main():
             return None
 
         main_url = get_download_url(best_image_checksum)
-        thumb_url = get_download_url(thumb_checksum)
 
         if not main_url:
             print(f"Skipping {photo_guid}: No URL found for checksum {best_image_checksum}")
@@ -181,11 +173,9 @@ def main():
 
         download_file(main_url, filepath)
 
-        thumb_filename = None
-        if thumb_url:
-            thumb_filename = f"{photo_guid}_thumb.jpg"
-            thumb_filepath = os.path.join(IMAGES_DIR, thumb_filename)
-            download_file(thumb_url, thumb_filepath)
+        # Use main image as thumbnail for higher quality
+        thumb_filename = filename
+
         # Caption Logic
         # iCloud Shared Albums store captions as the first comment by the owner, usually.
         # The 'caption' field in the photo object is often empty.

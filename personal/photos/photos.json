@@ -1,9 +1,25 @@
 [
   {
+    "id": "14BC13D9-B1BE-43CB-BAD8-0260DBE0565E",
+    "type": "image",
+    "src": "images/14BC13D9-B1BE-43CB-BAD8-0260DBE0565E.jpg",
+    "thumb": "images/14BC13D9-B1BE-43CB-BAD8-0260DBE0565E.jpg",
+    "caption": "Mika",
+    "date": "2021-10-30T18:30:43Z"
+  },
+  {
+    "id": "50AE4114-4BB4-4068-A328-F60C76BDBE59",
+    "type": "image",
+    "src": "images/50AE4114-4BB4-4068-A328-F60C76BDBE59.jpg",
+    "thumb": "images/50AE4114-4BB4-4068-A328-F60C76BDBE59.jpg",
+    "caption": "Views (not by drake)",
+    "date": "2026-01-07T22:30:14Z"
+  },
+  {
     "id": "AA1F3BBD-E81E-4078-B2A6-553F4A802E71",
     "type": "image",
     "src": "images/AA1F3BBD-E81E-4078-B2A6-553F4A802E71.jpg",
-    "thumb": "images/AA1F3BBD-E81E-4078-B2A6-553F4A802E71_thumb.jpg",
+    "thumb": "images/AA1F3BBD-E81E-4078-B2A6-553F4A802E71.jpg",
     "caption": "",
     "date": "2026-01-19T00:44:37Z"
   },
@@ -11,7 +27,7 @@
     "id": "330B5B14-B045-4560-AB5D-B778EA0F70F8",
     "type": "image",
     "src": "images/330B5B14-B045-4560-AB5D-B778EA0F70F8.jpg",
-    "thumb": "images/330B5B14-B045-4560-AB5D-B778EA0F70F8_thumb.jpg",
+    "thumb": "images/330B5B14-B045-4560-AB5D-B778EA0F70F8.jpg",
     "caption": "",
     "date": "2026-02-05T22:22:45Z"
   },
@@ -19,7 +35,7 @@
     "id": "CF4CEC95-4A11-4E49-A9A2-406FAA30A85A",
     "type": "image",
     "src": "images/CF4CEC95-4A11-4E49-A9A2-406FAA30A85A.jpg",
-    "thumb": "images/CF4CEC95-4A11-4E49-A9A2-406FAA30A85A_thumb.jpg",
+    "thumb": "images/CF4CEC95-4A11-4E49-A9A2-406FAA30A85A.jpg",
     "caption": "",
     "date": "2026-02-05T22:22:50Z"
   },
@@ -27,7 +43,7 @@
     "id": "2223C667-2317-4DD9-830E-3B32907505C4",
     "type": "image",
     "src": "images/2223C667-2317-4DD9-830E-3B32907505C4.jpg",
-    "thumb": "images/2223C667-2317-4DD9-830E-3B32907505C4_thumb.jpg",
+    "thumb": "images/2223C667-2317-4DD9-830E-3B32907505C4.jpg",
     "caption": "Angles",
     "date": "2026-02-04T20:58:19Z"
   },
@@ -35,7 +51,7 @@
     "id": "31790BF9-46F9-4E32-AAA8-7C09863F97E1",
     "type": "image",
     "src": "images/31790BF9-46F9-4E32-AAA8-7C09863F97E1.jpg",
-    "thumb": "images/31790BF9-46F9-4E32-AAA8-7C09863F97E1_thumb.jpg",
+    "thumb": "images/31790BF9-46F9-4E32-AAA8-7C09863F97E1.jpg",
     "caption": "",
     "date": "2026-02-05T22:22:42Z"
   },
@@ -43,7 +59,7 @@
     "id": "01CE0827-BC80-49EB-BB19-0B5C2239D94F",
     "type": "image",
     "src": "images/01CE0827-BC80-49EB-BB19-0B5C2239D94F.jpg",
-    "thumb": "images/01CE0827-BC80-49EB-BB19-0B5C2239D94F_thumb.jpg",
+    "thumb": "images/01CE0827-BC80-49EB-BB19-0B5C2239D94F.jpg",
     "caption": "",
     "date": "2026-02-05T01:42:36Z"
   }
