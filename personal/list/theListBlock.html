@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The List Block Loader</title>
+</head>
+<body>
+    <div id="target-container"></div>
+    <script>
+        // Fetch the HTML fragment from the raw GitHub URL
+        const url = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/theList.html';
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.text();
+            })
+            .then(html => {
+                const container = document.getElementById('target-container');
+                container.innerHTML = html;
+
+                // Manually execute scripts inserted via innerHTML
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            })
+            .catch(error => console.error('Error loading The List:', error));
+    </script>
+</body>
+</html>
