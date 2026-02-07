@@ -2,22 +2,29 @@
 
 This directory contains the code for the "Photos" page on the personal website.
 
-## Updating Photos
+## How It Works
 
-The photos are fetched from an iCloud Shared Album. Due to CORS restrictions and expiring URLs, the photos must be downloaded and committed to the repository.
+The gallery displays photos from an iCloud Shared Album. Because iCloud's API is private and restricts direct browser access (CORS), we use a two-step process:
 
-To update the gallery with new photos from the album:
+1.  A Python script (`fetch_icloud_photos.py`) runs periodically to scrape the album, download new images, and update a manifest (`photos.json`).
+2.  The frontend (`photos.html`) simply loads this `photos.json` and the local images.
+
+## Automation
+
+A GitHub Action (`.github/workflows/update-photos.yml`) is configured to run this update process automatically every 6 hours.
+
+-   **When new photos are added to the album:** They will appear on the site within ~6 hours (or after the next scheduled run).
+-   **Manual Update:** You can manually trigger the workflow from the "Actions" tab in your GitHub repository if you want to see changes immediately.
+
+## Updating Manually (Local)
+
+If you prefer to run the update locally:
 
 1.  Ensure you have Python 3 installed.
 2.  Run the fetch script:
     ```bash
     python3 fetch_icloud_photos.py
     ```
-    This will:
-    - Check for new photos in the shared album.
-    - Download new photos (large and thumbnail) to the `images/` directory.
-    - Update `photos.json` with the new list.
-
 3.  Commit and push the changes:
     ```bash
     git add images/ photos.json
