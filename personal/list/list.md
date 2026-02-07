@@ -5,6 +5,7 @@
 working a mitzah today. Only video. I thought two hours of setup was more than enough but I barely made it with 15 minutes to spare. Never trust an in-house system. No mixer, one PA with two inputs. i ran two lines from my 2 channel wireless system to the PA from my setup to the PA and then use the mix out of the 1/4 inch mix output into my computer for stream.
 
 
+
 # 2-6-26
 
 *[Variations for Winds, Strings, and Keyboards](https://youtu.be/1p2XXxO7gyE?si=xURDa8wdcdU3U33o) - John Adams*
