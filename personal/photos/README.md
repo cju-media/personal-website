@@ -4,42 +4,29 @@ This directory contains the code for the "Photos" page on the personal website.
 
 ## How It Works
 
-The gallery displays photos from an iCloud Shared Album. Because iCloud's API is private and restricts direct browser access (CORS), we use a two-step process:
+The gallery displays photos dynamically from an iCloud Shared Album.
 
-1.  A Python script (`fetch_icloud_photos.py`) runs periodically to scrape the album, download new images, and update a manifest (`photos.json`).
-2.  The frontend (`photos.html`) simply loads this `photos.json` and the local images.
+Because iCloud does not allow direct browser access (CORS), the frontend uses a public CORS proxy (`https://corsproxy.io/`) to fetch the album metadata and asset URLs.
 
-## Automation
+1.  **Loader:** `photosBlock.html` injects `photos.html`.
+2.  **Logic:** `photos.html` contains JavaScript that:
+    -   Connects to iCloud's `webstream` API via the proxy.
+    -   Handles partition redirects (trying `p01` then failing over to `p147` if needed).
+    -   Fetches image URLs using `webasseturls`.
+    -   Renders the images directly from iCloud's CDNs (which generally allow hotlinking for `<img>` tags).
 
-A GitHub Action (`.github/workflows/update-photos.yml`) is configured to run this update process automatically every 6 hours.
+## Limitations
 
--   **When new photos are added to the album:** They will appear on the site within ~6 hours (or after the next scheduled run).
--   **Manual Update:** You can manually trigger the workflow from the "Actions" tab in your GitHub repository if you want to see changes immediately.
-
-## Updating Manually (Local)
-
-If you prefer to run the update locally:
-
-1.  Ensure you have Python 3 installed.
-2.  Run the fetch script:
-    ```bash
-    python3 fetch_icloud_photos.py
-    ```
-3.  Commit and push the changes:
-    ```bash
-    git add images/ photos.json
-    git commit -m "Update photos from iCloud"
-    git push
-    ```
+-   **Proxy Dependency:** The site relies on `corsproxy.io` being up and running. If the proxy goes down or blocks the traffic, the gallery will fail to load.
+-   **Rate Limiting:** Excessive traffic might trigger rate limits on the proxy or iCloud side.
+-   **Partitioning:** iCloud Shared Albums are sharded across different partitions (e.g., `p147`). The script attempts to guess or hardcode a fallback, but if iCloud changes partitioning logic significantly, it might break.
 
 ## Files
 
--   `photos.html`: The HTML fragment that displays the gallery. It fetches `photos.json` from the main branch.
--   `photosBlock.html`: A loader file to inject `photos.html` into a Squarespace page.
--   `fetch_icloud_photos.py`: The Python script to download photos.
--   `photos.json`: The data file used by the frontend.
--   `images/`: The directory containing the downloaded images.
+-   `photos.html`: The main gallery component with all logic.
+-   `photosBlock.html`: Loader for Squarespace injection.
+-   `README.md`: This file.
 
 ## Configuration
 
-The iCloud Shared Album token is hardcoded in `fetch_icloud_photos.py`. If you change albums, update the `TOKEN` variable.
+The `ALBUM_TOKEN` is hardcoded in the `photos.html` script. Update this if you switch albums.

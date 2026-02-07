@@ -10,6 +10,7 @@
         </h1>
     </div>
 
+    <div id="loading-message">Fetching photos from iCloud...</div>
     <div id="photos-grid" class="photos-grid">
         <!-- Photos will be injected here -->
     </div>
@@ -33,6 +34,13 @@
         max-width: 1200px;
         margin: 0 auto;
         color: #333;
+    }
+
+    #loading-message {
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+        color: #666;
     }
 
     /* Glitch Title Styles */
@@ -65,6 +73,7 @@
         cursor: pointer;
         border: 1px solid #ddd;
         transition: transform 0.2s;
+        background-color: #f9f9f9;
     }
 
     #personal-photos-wrapper .photo-item:hover {
@@ -77,6 +86,12 @@
         height: 100%;
         object-fit: cover;
         display: block;
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+
+    #personal-photos-wrapper .photo-item img.loaded {
+        opacity: 1;
     }
 
     #personal-photos-wrapper .video-indicator {
@@ -157,6 +172,14 @@
     if (window.personalPhotosInitialized) return;
     window.personalPhotosInitialized = true;
 
+    // --- CONFIG ---
+    const ALBUM_TOKEN = "B2N5n8hH4Gdkz1m";
+    // List of CORS proxies to try in order
+    const PROXIES = [
+        "https://corsproxy.io/?",
+        "https://api.allorigins.win/raw?url="
+    ];
+
     // --- GLITCH EFFECT ---
     const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
     const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
@@ -203,92 +226,169 @@
         changeColorRandomly(span);
     });
 
-    // --- PHOTO FETCHING ---
+    // --- ICLOUD FETCHING LOGIC ---
     const grid = wrapper.querySelector('#photos-grid');
+    const loadingMsg = wrapper.querySelector('#loading-message');
+
+    // Fetch helper with proxy fallback
+    async function fetchWithProxy(urlWithoutProxy, bodyObj) {
+        for (const proxy of PROXIES) {
+            const url = proxy + encodeURIComponent(urlWithoutProxy);
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' }, // Avoid complex preflight
+                    body: JSON.stringify(bodyObj)
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                console.warn(`Proxy ${proxy} failed:`, e);
+            }
+        }
+        throw new Error("All proxies failed.");
+    }
+
+    async function fetchStream() {
+        let partition = "p01";
+        // Fallback to p147 which we've seen work
+        const partitions = ["p01", "p147"];
+
+        for (const p of partitions) {
+            const base = `https://${p}-sharedstreams.icloud.com/${ALBUM_TOKEN}/sharedstreams/webstream`;
+            try {
+                const data = await fetchWithProxy(base, { streamCtag: null });
+                return { data, partition: p };
+            } catch (e) {
+                console.warn(`Partition ${p} failed:`, e);
+            }
+        }
+        throw new Error("Failed to fetch stream from any partition.");
+    }
+
+    async function fetchAssets(partition, photoGuids) {
+        const base = `https://${partition}-sharedstreams.icloud.com/${ALBUM_TOKEN}/sharedstreams/webasseturls`;
+        return await fetchWithProxy(base, { photoGuids: photoGuids });
+    }
+
+    async function initGallery() {
+        try {
+            const { data: streamData, partition } = await fetchStream();
+            const photos = streamData.photos || [];
+
+            if (photos.length === 0) {
+                loadingMsg.textContent = "No photos found in album.";
+                return;
+            }
+
+            const photoGuids = photos.map(p => p.photoGuid);
+            const assetData = await fetchAssets(partition, photoGuids);
+
+            const items = assetData.items || {};
+            const locations = assetData.locations || {};
+
+            loadingMsg.style.display = 'none';
+
+            // Sort photos by date (newest first)
+            photos.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
+
+            photos.forEach(photo => {
+                const derivatives = photo.derivatives || {};
+
+                // Helper to find checksum
+                const keys = Object.keys(derivatives);
+
+                // Find best image (largest)
+                let bestKey = keys.find(k => k === "2048");
+                if (!bestKey) {
+                    const sortedKeys = keys.filter(k => !isNaN(k)).sort((a,b) => parseInt(b) - parseInt(a));
+                    if (sortedKeys.length > 0) bestKey = sortedKeys[0];
+                }
+
+                // Find thumbnail (approx 342)
+                let thumbKey = keys.find(k => k === "342");
+                if (!thumbKey) {
+                     const sortedKeysAsc = keys.filter(k => !isNaN(k)).sort((a,b) => parseInt(a) - parseInt(b));
+                     if (sortedKeysAsc.length > 0) thumbKey = sortedKeysAsc[0];
+                }
+
+                if (!bestKey) return;
+
+                const bestChecksum = derivatives[bestKey].checksum;
+                const thumbChecksum = thumbKey ? derivatives[thumbKey].checksum : bestChecksum;
+
+                function buildUrl(checksum) {
+                    if (!checksum || !items[checksum]) return null;
+                    const item = items[checksum];
+                    const loc = item.url_location;
+                    const path = item.url_path;
+
+                    if (loc && path && locations[loc]) {
+                        const scheme = locations[loc].scheme || "https";
+                        const host = locations[loc].hosts[0];
+                        return `${scheme}://${host}${path}`;
+                    }
+                    return null;
+                }
+
+                const src = buildUrl(bestChecksum);
+                const thumb = buildUrl(thumbChecksum);
+
+                if (!src) return;
+
+                const isVideo = (photo.mediaAssetType === "video") || src.includes(".mp4");
+
+                // Create DOM Elements
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+
+                const img = document.createElement('img');
+                img.src = thumb || src;
+                img.alt = photo.caption || 'Photo';
+                img.loading = 'lazy';
+                img.onload = () => img.classList.add('loaded');
+
+                item.appendChild(img);
+
+                if (isVideo) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'video-indicator';
+                    indicator.innerHTML = '&#9658;';
+                    item.appendChild(indicator);
+                }
+
+                item.addEventListener('click', () => {
+                    openLightbox(photo, src, isVideo);
+                });
+
+                grid.appendChild(item);
+            });
+
+        } catch (error) {
+            console.error(error);
+            loadingMsg.textContent = "Error loading photos. (Proxy limitation)";
+            loadingMsg.style.color = "red";
+        }
+    }
+
+    // --- LIGHTBOX ---
     const lightbox = wrapper.querySelector('#lightbox-modal');
     const lightboxImg = wrapper.querySelector('#lightbox-img');
     const lightboxVideo = wrapper.querySelector('#lightbox-video');
     const lightboxCaption = wrapper.querySelector('#lightbox-caption');
     const closeBtn = wrapper.querySelector('.close-btn');
 
-    // Determine path to photos.json
-    // Assuming this script is running in the context of the page,
-    // and photos.json is in the same directory as the page URL?
-    // Or relative to the root?
-    // If the page URL is /personal/photos/..., then fetching 'photos.json' should work.
-    // However, if we are on a different page injecting this, we might need a robust path.
-    // We'll try relative path first.
-    // Given the structure, likely 'personal/photos/photos.json' from root.
-    // But since the loader injects it, the browser sees the path relative to the current page.
-    // The safest bet for this setup is usually a full path or absolute path from root.
-    // We'll try to guess based on script location? No, script is inline.
-    // We'll assume the page is hosted at root or we use absolute path '/personal/photos/photos.json'.
-    // If the site is cameronjohnston.xyz/personal/photos/, then 'photos.json' is fine.
-
-    // Use raw GitHub URL for reliability across Squarespace and local dev
-    // (Assuming main branch is deployed). This matches the pattern used in other
-    // parts of this "personal-website" repo (e.g. resume.html, max.html).
-    // If you fork this repo, update 'cju-media' to your username.
-    const REPO_BASE = 'https://raw.githack.com/cju-media/personal-website/main/personal/photos/';
-    const jsonPath = REPO_BASE + 'photos.json';
-
-    fetch(jsonPath)
-        .then(response => {
-            if (!response.ok) {
-                 throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const grid = document.getElementById('photos-grid');
-            if (!grid) return; // Guard
-
-            data.forEach(photo => {
-                const item = document.createElement('div');
-                item.className = 'photo-item';
-
-                // photos.json contains paths like "images/xxx.jpg"
-                // We prepend the REPO_BASE to make them absolute URLs
-                const thumbPath = photo.thumb ? photo.thumb : photo.src;
-                const fullThumbUrl = REPO_BASE + thumbPath;
-                const fullSrcUrl = REPO_BASE + photo.src;
-
-                const img = document.createElement('img');
-                img.src = fullThumbUrl;
-                img.alt = photo.caption || 'Photo';
-                img.loading = 'lazy';
-
-                item.appendChild(img);
-
-                if (photo.type === 'video') {
-                    const indicator = document.createElement('div');
-                    indicator.className = 'video-indicator';
-                    indicator.innerHTML = '&#9658;'; // Play symbol
-                    item.appendChild(indicator);
-                }
-
-                item.addEventListener('click', () => {
-                    openLightbox(photo, fullSrcUrl);
-                });
-
-                grid.appendChild(item);
-            });
-        })
-        .catch(err => {
-            console.error('Error loading photos:', err);
-            grid.innerHTML = '<p style="text-align:center">Error loading photos. Please ensure photos.json exists.</p>';
-        });
-
-    function openLightbox(photo, src) {
+    function openLightbox(photo, src, isVideo) {
         lightboxImg.style.display = 'none';
         lightboxVideo.style.display = 'none';
         lightboxVideo.pause();
 
-        if (photo.type === 'video') {
+        if (isVideo) {
             lightboxVideo.src = src;
             lightboxVideo.style.display = 'block';
-            // Auto play logic?
-            // lightboxVideo.play();
+            lightboxVideo.play().catch(e => console.log("Autoplay blocked", e));
         } else {
             lightboxImg.src = src;
             lightboxImg.style.display = 'block';
@@ -309,6 +409,9 @@
             lightboxVideo.pause();
         }
     });
+
+    // Start
+    initGallery();
 
 })();
 </script>
