@@ -1,0 +1,469 @@
+<div id="personal-photos-wrapper">
+    <div class="header-container">
+        <h1>
+            <span class="glitch-char">P</span>
+            <span class="glitch-char">H</span>
+            <span class="glitch-char">O</span>
+            <span class="glitch-char">T</span>
+            <span class="glitch-char">O</span>
+            <span class="glitch-char">S</span>
+        </h1>
+    </div>
+
+    <div id="loading-message">Fetching photos from iCloud...</div>
+
+    <div class="controls-container">
+        <a href="https://www.icloud.com/sharedalbum/#B2N5n8hH4Gdkz1m" target="_blank" rel="noopener noreferrer" class="icloud-button">
+            View on iCloud
+        </a>
+    </div>
+
+    <div id="photos-grid" class="photos-grid">
+        <!-- Photos will be injected here -->
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Full view">
+            <video id="lightbox-video" controls style="display:none;"></video>
+            <div id="lightbox-caption" class="caption"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Scoped Styles */
+    #personal-photos-wrapper {
+        font-family: 'Courier New', Courier, monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        color: #333;
+    }
+
+    #loading-message {
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+        color: #666;
+    }
+
+    /* Glitch Title Styles */
+    #personal-photos-wrapper h1 {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 40px;
+        letter-spacing: 0.2em;
+        font-weight: normal;
+    }
+
+    #personal-photos-wrapper .glitch-char {
+        display: inline-block;
+        width: 0.8em;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+    /* Controls */
+    #personal-photos-wrapper .controls-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    #personal-photos-wrapper .icloud-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007aff;
+        color: white;
+        text-decoration: none;
+        border-radius: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+    }
+
+    #personal-photos-wrapper .icloud-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Grid Layout */
+    #personal-photos-wrapper .photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    #personal-photos-wrapper .photo-item {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s;
+        background-color: #f9f9f9;
+    }
+
+    #personal-photos-wrapper .photo-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #personal-photos-wrapper .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+
+    #personal-photos-wrapper .photo-item img.loaded {
+        opacity: 1;
+    }
+
+    #personal-photos-wrapper .video-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        pointer-events: none;
+    }
+
+    /* Lightbox Styles */
+    #personal-photos-wrapper .lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #personal-photos-wrapper .lightbox.active {
+        display: flex;
+    }
+
+    #personal-photos-wrapper .lightbox-content {
+        max-width: 90%;
+        max-height: 80vh;
+        position: relative;
+    }
+
+    #personal-photos-wrapper .lightbox-content img,
+    #personal-photos-wrapper .lightbox-content video {
+        max-width: 100%;
+        max-height: 80vh;
+        display: block;
+        margin: 0 auto;
+        border: 2px solid white;
+    }
+
+    #personal-photos-wrapper .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    #personal-photos-wrapper .caption {
+        margin-top: 10px;
+        color: #ccc;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    /* Glitch Fonts */
+    #personal-photos-wrapper .font1 { font-family: Arial, sans-serif; }
+    #personal-photos-wrapper .font2 { font-family: 'Times New Roman', serif; }
+    #personal-photos-wrapper .font3 { font-family: 'Courier New', monospace; }
+    #personal-photos-wrapper .font4 { font-family: Impact, sans-serif; }
+    #personal-photos-wrapper .font5 { font-family: Georgia, serif; }
+    #personal-photos-wrapper .font6 { font-family: Verdana, sans-serif; }
+</style>
+
+<script>
+(function() {
+    // --- INIT GUARD ---
+    if (window.personalPhotosInitialized) return;
+    window.personalPhotosInitialized = true;
+
+    // --- CONFIG ---
+    const ALBUM_TOKEN = "B2N5n8hH4Gdkz1m";
+    // List of CORS proxies
+    const PROXIES = [
+        "https://corsproxy.io/?",
+        "https://api.allorigins.win/raw?url=",
+        "https://thingproxy.freeboard.io/fetch/"
+    ];
+
+    // Randomize Proxies to distribute load
+    for (let i = PROXIES.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [PROXIES[i], PROXIES[j]] = [PROXIES[j], PROXIES[i]];
+    }
+
+    // --- GLITCH EFFECT ---
+    const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+    const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+    const katakanaMap = {
+        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+    };
+
+    function changeFontRandomly(span) {
+        if (!span.dataset.original) {
+            span.dataset.original = span.innerText;
+        }
+        fontClasses.forEach(c => span.classList.remove(c));
+        const randomIndex = Math.floor(Math.random() * fontClasses.length);
+        span.classList.add(fontClasses[randomIndex]);
+
+        if (Math.random() < 0.05) {
+            const originalChar = span.dataset.original.toUpperCase();
+            if (katakanaMap[originalChar]) {
+                span.innerText = katakanaMap[originalChar];
+            }
+        } else {
+            span.innerText = span.dataset.original;
+        }
+
+        const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+        setTimeout(() => changeFontRandomly(span), interval);
+    }
+
+    function changeColorRandomly(span) {
+        const randomColorIndex = Math.floor(Math.random() * colors.length);
+        span.style.color = colors[randomColorIndex];
+        const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+        setTimeout(() => changeColorRandomly(span), interval);
+    }
+
+    const wrapper = document.getElementById('personal-photos-wrapper');
+    const spans = wrapper.querySelectorAll('.glitch-char');
+    spans.forEach(span => {
+        changeFontRandomly(span);
+        changeColorRandomly(span);
+    });
+
+    // --- ICLOUD FETCHING LOGIC ---
+    const grid = wrapper.querySelector('#photos-grid');
+    const loadingMsg = wrapper.querySelector('#loading-message');
+
+    // Fetch helper with proxy fallback
+    async function fetchWithProxy(urlWithoutProxy, bodyObj) {
+        // Append cache-buster to the target URL (before proxy encoding)
+        // iCloud API ignores extra query params usually, but this busts the proxy cache.
+        const separator = urlWithoutProxy.includes('?') ? '&' : '?';
+        const urlWithCacheBuster = urlWithoutProxy + separator + '_t=' + Date.now();
+
+        for (const proxy of PROXIES) {
+            const url = proxy + encodeURIComponent(urlWithCacheBuster);
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' }, // Avoid complex preflight
+                    body: JSON.stringify(bodyObj)
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                console.warn(`Proxy ${proxy} failed:`, e);
+            }
+        }
+        throw new Error("All proxies failed.");
+    }
+
+    async function fetchStream() {
+        let partition = "p01";
+        // Fallback to p147 which we've seen work
+        const partitions = ["p01", "p147"];
+
+        for (const p of partitions) {
+            const base = `https://${p}-sharedstreams.icloud.com/${ALBUM_TOKEN}/sharedstreams/webstream`;
+            try {
+                const data = await fetchWithProxy(base, { streamCtag: null });
+                return { data, partition: p };
+            } catch (e) {
+                console.warn(`Partition ${p} failed:`, e);
+            }
+        }
+        throw new Error("Failed to fetch stream from any partition.");
+    }
+
+    async function fetchAssets(partition, photoGuids) {
+        const base = `https://${partition}-sharedstreams.icloud.com/${ALBUM_TOKEN}/sharedstreams/webasseturls`;
+        return await fetchWithProxy(base, { photoGuids: photoGuids });
+    }
+
+    async function initGallery() {
+        try {
+            const { data: streamData, partition } = await fetchStream();
+            const photos = streamData.photos || [];
+
+            if (photos.length === 0) {
+                loadingMsg.textContent = "No photos found in album.";
+                return;
+            }
+
+            const photoGuids = photos.map(p => p.photoGuid);
+            const assetData = await fetchAssets(partition, photoGuids);
+
+            const items = assetData.items || {};
+            const locations = assetData.locations || {};
+
+            loadingMsg.style.display = 'none';
+
+            // Shuffle photos (Fisher-Yates)
+            for (let i = photos.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [photos[i], photos[j]] = [photos[j], photos[i]];
+            }
+
+            photos.forEach(photo => {
+                const derivatives = photo.derivatives || {};
+
+                // Helper to find checksum
+                const keys = Object.keys(derivatives);
+
+                // Find best image (largest)
+                let bestKey = keys.find(k => k === "2048");
+                if (!bestKey) {
+                    const sortedKeys = keys.filter(k => !isNaN(k)).sort((a,b) => parseInt(b) - parseInt(a));
+                    if (sortedKeys.length > 0) bestKey = sortedKeys[0];
+                }
+
+                // Find thumbnail (approx 342)
+                let thumbKey = keys.find(k => k === "342");
+                if (!thumbKey) {
+                     const sortedKeysAsc = keys.filter(k => !isNaN(k)).sort((a,b) => parseInt(a) - parseInt(b));
+                     if (sortedKeysAsc.length > 0) thumbKey = sortedKeysAsc[0];
+                }
+
+                if (!bestKey) return;
+
+                const bestChecksum = derivatives[bestKey].checksum;
+                const thumbChecksum = thumbKey ? derivatives[thumbKey].checksum : bestChecksum;
+
+                function buildUrl(checksum) {
+                    if (!checksum || !items[checksum]) return null;
+                    const item = items[checksum];
+                    const loc = item.url_location;
+                    const path = item.url_path;
+
+                    if (loc && path && locations[loc]) {
+                        const scheme = locations[loc].scheme || "https";
+                        const host = locations[loc].hosts[0];
+                        return `${scheme}://${host}${path}`;
+                    }
+                    return null;
+                }
+
+                const src = buildUrl(bestChecksum);
+                const thumb = buildUrl(thumbChecksum);
+
+                if (!src) return;
+
+                const isVideo = (photo.mediaAssetType === "video") || src.includes(".mp4");
+
+                // Create DOM Elements
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+
+                const img = document.createElement('img');
+                img.src = thumb || src;
+                img.alt = photo.caption || 'Photo';
+                img.loading = 'lazy';
+                img.onload = () => img.classList.add('loaded');
+
+                item.appendChild(img);
+
+                if (isVideo) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'video-indicator';
+                    indicator.innerHTML = '&#9658;';
+                    item.appendChild(indicator);
+                }
+
+                item.addEventListener('click', () => {
+                    openLightbox(photo, src, isVideo);
+                });
+
+                grid.appendChild(item);
+            });
+
+        } catch (error) {
+            console.error(error);
+            loadingMsg.textContent = "Error loading photos. (Proxy limitation)";
+            loadingMsg.style.color = "red";
+        }
+    }
+
+    // --- LIGHTBOX ---
+    const lightbox = wrapper.querySelector('#lightbox-modal');
+    const lightboxImg = wrapper.querySelector('#lightbox-img');
+    const lightboxVideo = wrapper.querySelector('#lightbox-video');
+    const lightboxCaption = wrapper.querySelector('#lightbox-caption');
+    const closeBtn = wrapper.querySelector('.close-btn');
+
+    function openLightbox(photo, src, isVideo) {
+        lightboxImg.style.display = 'none';
+        lightboxVideo.style.display = 'none';
+        lightboxVideo.pause();
+
+        if (isVideo) {
+            lightboxVideo.src = src;
+            lightboxVideo.style.display = 'block';
+            lightboxVideo.play().catch(e => console.log("Autoplay blocked", e));
+        } else {
+            lightboxImg.src = src;
+            lightboxImg.style.display = 'block';
+        }
+
+        lightboxCaption.textContent = photo.caption || '';
+        lightbox.classList.add('active');
+    }
+
+    closeBtn.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+        lightboxVideo.pause();
+    });
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            lightbox.classList.remove('active');
+            lightboxVideo.pause();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+            lightbox.classList.remove('active');
+            lightboxVideo.pause();
+        }
+    });
+
+    // Start
+    initGallery();
+
+})();
+</script>
