@@ -454,6 +454,14 @@
         }
     });
 
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+            lightbox.classList.remove('active');
+            lightboxVideo.pause();
+        }
+    });
+
     // Start
     initGallery();
 
