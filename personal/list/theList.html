@@ -211,7 +211,7 @@
                     contentContainer.appendChild(introDiv);
 
                     children.forEach(child => {
-                        if (child.tagName === 'H1') {
+                        if (child.tagName === 'H2') {
                             currentEntry = document.createElement('div');
                             currentEntry.classList.add('list-entry');
                             // Initially visible
@@ -299,7 +299,10 @@
                         })
                         .then(markdown => {
                             let md = markdown;
+                            // Remove title
                             md = md.replace(/^#\s*THE LIST\s*/i, '');
+                            // Downgrade H1 to H2
+                            md = md.replace(/^#\s/gm, '## ');
                             contentContainer.innerHTML = marked.parse(md);
                             setupEntries();
                             bindNavEvents();
