@@ -51,21 +51,44 @@
 </style>
 
 <div id="the-list-page-wrapper">
-    <h1>
-        <span class="glitch-span">T</span>
-        <span class="glitch-span">H</span>
-        <span class="glitch-span">E</span>
-        <span class="glitch-span" style="width: 0.5em;">&nbsp;</span>
-        <span class="glitch-span">L</span>
-        <span class="glitch-span">I</span>
-        <span class="glitch-span">S</span>
-        <span class="glitch-span">T</span>
-    </h1>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
-    <div id="the-list-content">
-        Loading...
-    </div>
-</div>
+        /* Scoped Styles */
+        #the-list-page-wrapper {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: auto;
+            margin: 0;
+            background-color: transparent; /* Inherit from Squarespace */
+            padding: 0 20px 20px 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* Glitch font classes */
+        #the-list-page-wrapper .font1 { font-family: Arial, sans-serif !important; }
+        #the-list-page-wrapper .font2 { font-family: Times New Roman, serif !important; }
+        #the-list-page-wrapper .font3 { font-family: Courier New, monospace !important; }
+        #the-list-page-wrapper .font4 { font-family: essay-text, monospace !important; }
+        #the-list-page-wrapper .font5 { font-family: 'Playfair Display', serif !important; }
+        #the-list-page-wrapper .font6 { font-family: 'VT323', monospace !important; transform: scale(1.1); }
+
+        #the-list-page-wrapper h1.glitch-title {
+            font-size: min(5vw, 3rem);
+            text-align: left;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            margin-bottom: 40px;
+            margin-top: -8px;
+            color: inherit;
+            width: 100%;
+            max-width: 800px;
+        }
 
 <script>
 (function() {
@@ -122,9 +145,31 @@
             changeColorRandomly(span);
         });
 
-        // --- Markdown Loading Logic ---
-        const contentDiv = document.getElementById('the-list-content');
-        const markdownUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/list.md';
+        #the-list-page-wrapper .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Hyperlink styling */
+        #the-list-page-wrapper a {
+            color: blue !important;
+            text-decoration: underline;
+        }
+    </style>
+
+    <h1 class="glitch-title">
+        <span class="span-class">T</span>
+        <span class="span-class">H</span>
+        <span class="span-class">E</span>
+        <span class="span-class" style="width: 0.5em;">&nbsp;</span>
+        <span class="span-class">L</span>
+        <span class="span-class">I</span>
+        <span class="span-class">S</span>
+        <span class="span-class">T</span>
+    </h1>
 
         function loadMarked(callback) {
             if (window.marked) {
