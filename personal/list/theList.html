@@ -104,7 +104,7 @@
         <span class="span-class">T</span>
     </h1>
 
-    <div style="width: 100%; max-width: 800px; text-align: left; margin-bottom: 20px;">
+    <div id="list-nav" style="width: 100%; max-width: 800px; text-align: left; margin-bottom: 20px;">
         | <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |
     </div>
 
@@ -184,6 +184,8 @@
                 // Load Marked.js and Fetch Content
                 const contentContainer = wrapper.querySelector('#list-content');
                 const listUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/list.md';
+                const navContainer = wrapper.querySelector('#list-nav');
+                const randomLink = wrapper.querySelector('#random-link');
 
                 function loadMarked(callback) {
                     if (window.marked) {
@@ -199,6 +201,96 @@
                     document.head.appendChild(script);
                 }
 
+                function setupEntries() {
+                    const children = Array.from(contentContainer.children);
+                    contentContainer.innerHTML = ''; // Clear to rebuild with wrappers
+
+                    let currentEntry = null;
+                    const introDiv = document.createElement('div');
+                    introDiv.classList.add('intro-text');
+                    contentContainer.appendChild(introDiv);
+
+                    children.forEach(child => {
+                        if (child.tagName === 'H1') {
+                            currentEntry = document.createElement('div');
+                            currentEntry.classList.add('list-entry');
+                            // Initially visible
+                            contentContainer.appendChild(currentEntry);
+                            currentEntry.appendChild(child);
+                        } else {
+                            if (currentEntry) {
+                                currentEntry.appendChild(child);
+                            } else {
+                                introDiv.appendChild(child);
+                            }
+                        }
+                    });
+
+                    // Remove intro if empty
+                    if (introDiv.children.length === 0) {
+                        introDiv.remove();
+                    }
+                }
+
+                function showRandomEntry(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    if (entries.length === 0) return;
+
+                    const intro = contentContainer.querySelector('.intro-text');
+                    if (intro) intro.style.display = 'none';
+
+                    entries.forEach(entry => entry.style.display = 'none');
+                    const randomIndex = Math.floor(Math.random() * entries.length);
+                    entries[randomIndex].style.display = 'block';
+
+                    updateNavForRandom();
+                }
+
+                function showAllEntries(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    const intro = contentContainer.querySelector('.intro-text');
+
+                    if (intro) intro.style.display = 'block';
+                    entries.forEach(entry => entry.style.display = 'block');
+
+                    updateNavForMain();
+                }
+
+                function updateNavForRandom() {
+                    // Check if back link already exists
+                    if (!navContainer.querySelector('#back-link')) {
+                        // Current HTML: | <a ...>about</a> | <a ...>random</a> |
+                        // Desired: | <a ...>back</a> | <a ...>about</a> | <a ...>random</a> |
+                        // We can just prepend to the innerHTML, but let's be cleaner
+                        const backLinkHtml = '| <a href="#" id="back-link">back</a> ';
+                        // Insert at the beginning, but inside the first text node usually starts with "| "
+                        // Let's replace the content to be safe
+                        navContainer.innerHTML = `| <a href="#" id="back-link">back</a> | <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+
+                        // Re-bind events since we replaced innerHTML
+                        bindNavEvents();
+                    }
+                }
+
+                function updateNavForMain() {
+                    navContainer.innerHTML = `| <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+                    bindNavEvents();
+                }
+
+                function bindNavEvents() {
+                    const randomBtn = navContainer.querySelector('#random-link');
+                    if (randomBtn) randomBtn.onclick = showRandomEntry;
+
+                    const backBtn = navContainer.querySelector('#back-link');
+                    if (backBtn) backBtn.onclick = showAllEntries;
+
+                    // About link remains a placeholder for now
+                }
+
                 function fetchAndRenderList() {
                     fetch(listUrl)
                         .then(response => {
@@ -206,18 +298,11 @@
                             return response.text();
                         })
                         .then(markdown => {
-                            // Simple text glitch support: ++text++
-                            // We can use a custom renderer or just replace after parsing
-                            // Let's rely on standard markdown for now as per request.
-                            // However, we need to remove the title from markdown if we are displaying it separately
-                            // Or keep it. The user's list.md has "# THE LIST"
-
-                            // Let's strip the first H1 if it matches "THE LIST" to avoid duplication
                             let md = markdown;
-                            // Regex to remove '# THE LIST' at start
                             md = md.replace(/^#\s*THE LIST\s*/i, '');
-
                             contentContainer.innerHTML = marked.parse(md);
+                            setupEntries();
+                            bindNavEvents();
                         })
                         .catch(error => {
                             console.error('Error loading list:', error);
