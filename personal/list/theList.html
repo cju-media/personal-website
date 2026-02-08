@@ -203,6 +203,13 @@
                 const randomLink = wrapper.querySelector('#random-link');
                 let aboutContentCached = null;
 
+                function setLinksTargetBlank(container) {
+                    const links = container.querySelectorAll('a');
+                    links.forEach(link => {
+                        link.setAttribute('target', '_blank');
+                    });
+                }
+
                 function loadMarked(callback) {
                     if (window.marked) {
                         callback();
@@ -284,6 +291,7 @@
 
                     if (aboutContentCached) {
                         aboutContainer.innerHTML = aboutContentCached;
+                        setLinksTargetBlank(aboutContainer);
                         updateNavForAbout();
                     } else {
                         aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
@@ -296,6 +304,7 @@
                             .then(markdown => {
                                 aboutContentCached = marked.parse(markdown);
                                 aboutContainer.innerHTML = aboutContentCached;
+                                setLinksTargetBlank(aboutContainer);
                             })
                             .catch(error => {
                                 console.error('Error loading about:', error);
@@ -364,6 +373,7 @@
                             md = md.replace(/^#\s/gm, '## ');
                             contentContainer.innerHTML = marked.parse(md);
                             setupEntries();
+                            setLinksTargetBlank(contentContainer);
                             bindNavEvents();
                         })
                         .catch(error => {
