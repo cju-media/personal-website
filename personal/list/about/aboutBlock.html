@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The List Block Loader</title>
+    <title>About the List Block Loader</title>
 </head>
 <body>
-    <div id="target-container"></div>
+    <div id="about-list-target-container"></div>
     <script>
         // Fetch the HTML fragment from the raw GitHub URL
-        const url = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/theList.html';
+        const url = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/about/about.html';
 
         fetch(url)
             .then(response => {
@@ -16,7 +16,7 @@
                 return response.text();
             })
             .then(html => {
-                const container = document.getElementById('target-container');
+                const container = document.getElementById('about-list-target-container');
                 container.innerHTML = html;
 
                 // Manually execute scripts inserted via innerHTML
@@ -28,7 +28,7 @@
                     oldScript.parentNode.replaceChild(newScript, oldScript);
                 });
             })
-            .catch(error => console.error('Error loading The List:', error));
+            .catch(error => console.error('Error loading About the List:', error));
     </script>
 </body>
 </html>

@@ -2,24 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The List Loader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The List Error Test</title>
 </head>
 <body>
-    <div id="the-list-target-container"></div>
+    <div id="content"></div>
     <script>
-        (function() {
-            const url = 'https://raw.githubusercontent.com/cju-media/personal-website/main/The%20List/theList.html';
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.text();
-                })
+        // Simulate dynamic loading
+        setTimeout(() => {
+            fetch('file:///app/personal/list/theList.html')
+                .then(response => response.text())
                 .then(html => {
-                    const container = document.getElementById('the-list-target-container');
+                    const container = document.getElementById('content');
                     container.innerHTML = html;
-
-                    // Manually execute scripts inserted via innerHTML
+                    // Execute scripts manually since innerHTML doesn't
                     const scripts = container.querySelectorAll('script');
                     scripts.forEach(oldScript => {
                         const newScript = document.createElement('script');
@@ -27,9 +23,8 @@
                         newScript.appendChild(document.createTextNode(oldScript.innerHTML));
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
-                })
-                .catch(error => console.error('Error loading The List:', error));
-        })();
+                });
+        }, 100);
     </script>
 </body>
 </html>

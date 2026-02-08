@@ -1,55 +1,3 @@
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
-
-    #the-list-page-wrapper {
-        font-family: sans-serif;
-        padding: 20px;
-        max-width: 800px;
-        margin: 0 auto;
-        color: #333;
-    }
-
-    #the-list-page-wrapper .font1 { font-family: Arial, sans-serif; }
-    #the-list-page-wrapper .font2 { font-family: Times New Roman, serif; }
-    #the-list-page-wrapper .font3 { font-family: Courier New, monospace; }
-    #the-list-page-wrapper .font4 { font-family: essay-text, monospace; }
-    #the-list-page-wrapper .font5 { font-family: 'Playfair Display', serif; }
-    #the-list-page-wrapper .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
-
-    #the-list-page-wrapper h1 {
-        font-size: calc(2.5vw + 20px);
-        text-align: center;
-        margin-bottom: 40px;
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    #the-list-page-wrapper .glitch-span {
-        display: inline-block;
-        width: 0.8em;
-        text-align: center;
-        vertical-align: bottom;
-        line-height: 1.2;
-    }
-
-    #the-list-content {
-        line-height: 1.6;
-        font-size: 1.1rem;
-    }
-
-    #the-list-content a {
-        color: #0000EE !important;
-        text-decoration: underline !important;
-    }
-
-    #the-list-content .list-highlight {
-        font-weight: bold;
-        color: #000;
-        /* Custom decoration for ++ syntax */
-    }
-</style>
-
 <div id="the-list-page-wrapper">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
@@ -90,60 +38,57 @@
             max-width: 800px;
         }
 
-<script>
-(function() {
-    function initTheList() {
-        // --- Glitch Logic ---
-        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
-        const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
-        const katakanaMap = {
-            'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
-            'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
-            'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
-        };
-
-        const wrapper = document.getElementById('the-list-page-wrapper');
-        if (!wrapper) return;
-
-        function changeFontRandomly(span) {
-            if (!span.dataset.original) {
-                span.dataset.original = span.innerText;
-            }
-            // Skip spaces
-            if (!span.innerText.trim()) return;
-
-            fontClasses.forEach(fontClass => span.classList.remove(fontClass));
-            const randomIndex = Math.floor(Math.random() * fontClasses.length);
-            span.classList.add(fontClasses[randomIndex]);
-
-            if (Math.random() < 0.05) {
-                const originalChar = span.dataset.original.toUpperCase();
-                if (katakanaMap[originalChar]) {
-                    span.innerText = katakanaMap[originalChar];
-                }
-            } else {
-                span.innerText = span.dataset.original;
-            }
-
-            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-            setTimeout(() => changeFontRandomly(span), interval);
+        #the-list-page-wrapper .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
         }
 
-        function changeColorRandomly(span) {
-            if (!span.innerText.trim()) return;
-            const randomColorIndex = Math.floor(Math.random() * colors.length);
-            span.style.color = colors[randomColorIndex];
-            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
-            setTimeout(() => changeColorRandomly(span), interval);
+        /* Content Styles */
+        #the-list-page-wrapper #list-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 1.1rem;
         }
 
-        const spans = wrapper.querySelectorAll('.glitch-span');
-        spans.forEach(span => {
-            changeFontRandomly(span);
-            changeColorRandomly(span);
-        });
+        #the-list-page-wrapper #list-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #the-list-page-wrapper #list-content li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        #the-list-page-wrapper #list-content li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #333;
+        }
+
+        #the-list-page-wrapper #list-content h2 {
+            font-size: 2.5rem;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+
+        #the-list-page-wrapper #list-content h3 {
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Checkbox styling from markdown */
+        #the-list-page-wrapper input[type="checkbox"] {
+            margin-right: 10px;
+        }
 
         #the-list-page-wrapper .loading {
             font-family: monospace;
@@ -171,51 +116,270 @@
         <span class="span-class">T</span>
     </h1>
 
-        function loadMarked(callback) {
-            if (window.marked) {
-                callback();
-                return;
-            }
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-            script.onload = callback;
-            document.head.appendChild(script);
-        }
+    <div id="list-nav" style="width: 100%; max-width: 800px; text-align: left; margin-bottom: 20px;">
+        | <a href="https://cju.media/thelistabout" target="_blank" id="about-link">about</a> | <a href="#" id="random-link">random</a> |
+    </div>
 
-        function parseCustomSyntax(markdown) {
-            // Remove the title from markdown if it exists, since we have our own header
-            // "The List" is the first line usually.
-            let cleanMd = markdown.replace(/^#\s+The List\s*$/m, '');
+    <div id="list-content">
+        <div class="loading">Loading list...</div>
+    </div>
+    <div id="about-content" style="display:none; width: 100%; max-width: 800px; text-align: left; line-height: 1.6; font-size: 1.1rem;"></div>
 
-            // Replace ++text++ with <span class="list-highlight">text</span>
-            // Note: This regex might need adjustment if ++ wraps newlines
-            cleanMd = cleanMd.replace(/\+\+(.*?)\+\+/gs, '<span class="list-highlight">$1</span>');
-            return cleanMd;
-        }
+    <script>
+        (function() {
+            function initTheList() {
+                const wrapper = document.getElementById('the-list-page-wrapper');
+                if (!wrapper) return;
 
-        function fetchAndRender() {
-            fetch(markdownUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(text => {
-                    const processedMarkdown = parseCustomSyntax(text);
-                    contentDiv.innerHTML = marked.parse(processedMarkdown);
-                })
-                .catch(error => {
-                    console.error('Error loading The List:', error);
-                    contentDiv.innerHTML = '<p>Error loading content.</p>';
+                // Prevent double initialization on the same element
+                if (wrapper.dataset.initialized) return;
+                wrapper.dataset.initialized = "true";
+
+                // Glitch Logic
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'ク', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        this.loopColor(span);
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
+                };
+
+                // Initialize Title Glitch
+                const titleSpans = wrapper.querySelectorAll('.glitch-title .span-class');
+                titleSpans.forEach(span => {
+                    if (span.innerHTML === '&nbsp;') return;
+                    Glitch.start(span);
                 });
-        }
 
-        loadMarked(fetchAndRender);
-    }
+                // Load Marked.js and Fetch Content
+                const contentContainer = wrapper.querySelector('#list-content');
+                const aboutContainer = wrapper.querySelector('#about-content');
+                const listUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/list.md';
+                const aboutUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/about/about.md';
+                const navContainer = wrapper.querySelector('#list-nav');
+                const randomLink = wrapper.querySelector('#random-link');
+                let aboutContentCached = null;
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTheList);
-    } else {
-        initTheList();
-    }
-})();
-</script>
+                function loadMarked(callback) {
+                    if (window.marked) {
+                        callback();
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                    script.onload = callback;
+                    script.onerror = () => {
+                        contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading markdown parser.</div>';
+                    };
+                    document.head.appendChild(script);
+                }
+
+                function setupEntries() {
+                    const children = Array.from(contentContainer.children);
+                    contentContainer.innerHTML = ''; // Clear to rebuild with wrappers
+
+                    let currentEntry = null;
+                    const introDiv = document.createElement('div');
+                    introDiv.classList.add('intro-text');
+                    contentContainer.appendChild(introDiv);
+
+                    children.forEach(child => {
+                        if (child.tagName === 'H2') {
+                            currentEntry = document.createElement('div');
+                            currentEntry.classList.add('list-entry');
+                            // Initially visible
+                            contentContainer.appendChild(currentEntry);
+                            currentEntry.appendChild(child);
+                        } else {
+                            if (currentEntry) {
+                                currentEntry.appendChild(child);
+                            } else {
+                                introDiv.appendChild(child);
+                            }
+                        }
+                    });
+
+                    // Remove intro if empty
+                    if (introDiv.children.length === 0) {
+                        introDiv.remove();
+                    }
+                }
+
+                function showRandomEntry(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    if (entries.length === 0) return;
+
+                    const intro = contentContainer.querySelector('.intro-text');
+                    if (intro) intro.style.display = 'none';
+
+                    entries.forEach(entry => entry.style.display = 'none');
+                    const randomIndex = Math.floor(Math.random() * entries.length);
+                    entries[randomIndex].style.display = 'block';
+
+                    updateNavForRandom();
+                }
+
+                function showAllEntries(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    const intro = contentContainer.querySelector('.intro-text');
+
+                    if (intro) intro.style.display = 'block';
+                    entries.forEach(entry => entry.style.display = 'block');
+
+                    updateNavForMain();
+                }
+
+                function showAbout(e) {
+                    if (e) e.preventDefault();
+
+                    contentContainer.style.display = 'none';
+                    aboutContainer.style.display = 'block';
+
+                    if (aboutContentCached) {
+                        aboutContainer.innerHTML = aboutContentCached;
+                        updateNavForAbout();
+                    } else {
+                        aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
+                        updateNavForAbout();
+                        fetch(aboutUrl)
+                            .then(response => {
+                                if (!response.ok) throw new Error("Network response was not ok");
+                                return response.text();
+                            })
+                            .then(markdown => {
+                                aboutContentCached = marked.parse(markdown);
+                                aboutContainer.innerHTML = aboutContentCached;
+                            })
+                            .catch(error => {
+                                console.error('Error loading about:', error);
+                                aboutContainer.innerHTML = '<div class="loading" style="color: red;">Error loading about content.</div>';
+                            });
+                    }
+                }
+
+                function hideAbout(e) {
+                    if (e) e.preventDefault();
+                    aboutContainer.style.display = 'none';
+                    contentContainer.style.display = 'block';
+                    // Return to main list view
+                    showAllEntries(e);
+                }
+
+                function updateNavForRandom() {
+                    // Check if back link already exists
+                    if (!navContainer.querySelector('#back-link')) {
+                        navContainer.innerHTML = `| <a href="#" id="back-link">back</a> | <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+                        bindNavEvents();
+                    }
+                }
+
+                function updateNavForMain() {
+                    navContainer.innerHTML = `| <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+                    bindNavEvents();
+                }
+
+                function updateNavForAbout() {
+                    navContainer.innerHTML = `| <a href="#" id="back-link">back</a> |`;
+                    bindNavEvents(true);
+                }
+
+                function bindNavEvents(isAboutPage = false) {
+                    const randomBtn = navContainer.querySelector('#random-link');
+                    if (randomBtn) randomBtn.onclick = showRandomEntry;
+
+                    const backBtn = navContainer.querySelector('#back-link');
+                    if (backBtn) {
+                        if (isAboutPage) {
+                            backBtn.onclick = hideAbout;
+                        } else {
+                            backBtn.onclick = showAllEntries;
+                        }
+                    }
+
+                    const aboutBtn = navContainer.querySelector('#about-link');
+                    if (aboutBtn) {
+                        aboutBtn.onclick = showAbout;
+                        aboutBtn.removeAttribute('target');
+                    }
+                }
+
+                function fetchAndRenderList() {
+                    fetch(listUrl)
+                        .then(response => {
+                            if (!response.ok) throw new Error("Network response was not ok");
+                            return response.text();
+                        })
+                        .then(markdown => {
+                            let md = markdown;
+                            // Remove title
+                            md = md.replace(/^#\s*THE LIST\s*/i, '');
+                            // Downgrade H1 to H2
+                            md = md.replace(/^#\s/gm, '## ');
+                            contentContainer.innerHTML = marked.parse(md);
+                            setupEntries();
+                            bindNavEvents();
+                        })
+                        .catch(error => {
+                            console.error('Error loading list:', error);
+                            contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading list content.</div>';
+                        });
+                }
+
+                loadMarked(fetchAndRenderList);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTheList);
+            } else {
+                initTheList();
+            }
+        })();
+    </script>
+</div>
