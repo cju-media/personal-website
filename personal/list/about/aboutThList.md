@@ -1,0 +1,1 @@
+*The List* is an ongoing collection of things that have affected me: music, movies, vidoes, books, articles (if I ever start reading), podcasts (gross). This is something that should be on twitter but I deleted most social media AND I never got any interaction on my posts anyway. So this method isnt much worse anyway.
