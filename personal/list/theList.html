@@ -111,6 +111,7 @@
     <div id="list-content">
         <div class="loading">Loading list...</div>
     </div>
+    <div id="about-content" style="display:none; width: 100%; max-width: 800px; text-align: left; line-height: 1.6; font-size: 1.1rem;"></div>
 
     <script>
         (function() {
@@ -183,9 +184,12 @@
 
                 // Load Marked.js and Fetch Content
                 const contentContainer = wrapper.querySelector('#list-content');
+                const aboutContainer = wrapper.querySelector('#about-content');
                 const listUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/list.md';
+                const aboutUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/about/about.md';
                 const navContainer = wrapper.querySelector('#list-nav');
                 const randomLink = wrapper.querySelector('#random-link');
+                let aboutContentCached = null;
 
                 function loadMarked(callback) {
                     if (window.marked) {
@@ -260,18 +264,46 @@
                     updateNavForMain();
                 }
 
+                function showAbout(e) {
+                    if (e) e.preventDefault();
+
+                    contentContainer.style.display = 'none';
+                    aboutContainer.style.display = 'block';
+
+                    if (aboutContentCached) {
+                        aboutContainer.innerHTML = aboutContentCached;
+                        updateNavForAbout();
+                    } else {
+                        aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
+                        updateNavForAbout();
+                        fetch(aboutUrl)
+                            .then(response => {
+                                if (!response.ok) throw new Error("Network response was not ok");
+                                return response.text();
+                            })
+                            .then(markdown => {
+                                aboutContentCached = marked.parse(markdown);
+                                aboutContainer.innerHTML = aboutContentCached;
+                            })
+                            .catch(error => {
+                                console.error('Error loading about:', error);
+                                aboutContainer.innerHTML = '<div class="loading" style="color: red;">Error loading about content.</div>';
+                            });
+                    }
+                }
+
+                function hideAbout(e) {
+                    if (e) e.preventDefault();
+                    aboutContainer.style.display = 'none';
+                    contentContainer.style.display = 'block';
+                    // Return to main list view
+                    showAllEntries(e);
+                }
+
                 function updateNavForRandom() {
                     // Check if back link already exists
                     if (!navContainer.querySelector('#back-link')) {
-                        // Current HTML: | <a ...>about</a> | <a ...>random</a> |
-                        // Desired: | <a ...>back</a> | <a ...>about</a> | <a ...>random</a> |
-                        // We can just prepend to the innerHTML, but let's be cleaner
-                        const backLinkHtml = '| <a href="#" id="back-link">back</a> ';
-                        // Insert at the beginning, but inside the first text node usually starts with "| "
-                        // Let's replace the content to be safe
                         navContainer.innerHTML = `| <a href="#" id="back-link">back</a> | <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
-
-                        // Re-bind events since we replaced innerHTML
                         bindNavEvents();
                     }
                 }
@@ -281,14 +313,29 @@
                     bindNavEvents();
                 }
 
-                function bindNavEvents() {
+                function updateNavForAbout() {
+                    navContainer.innerHTML = `| <a href="#" id="back-link">back</a> |`;
+                    bindNavEvents(true);
+                }
+
+                function bindNavEvents(isAboutPage = false) {
                     const randomBtn = navContainer.querySelector('#random-link');
                     if (randomBtn) randomBtn.onclick = showRandomEntry;
 
                     const backBtn = navContainer.querySelector('#back-link');
-                    if (backBtn) backBtn.onclick = showAllEntries;
+                    if (backBtn) {
+                        if (isAboutPage) {
+                            backBtn.onclick = hideAbout;
+                        } else {
+                            backBtn.onclick = showAllEntries;
+                        }
+                    }
 
-                    // About link remains a placeholder for now
+                    const aboutBtn = navContainer.querySelector('#about-link');
+                    if (aboutBtn) {
+                        aboutBtn.onclick = showAbout;
+                        aboutBtn.removeAttribute('target');
+                    }
                 }
 
                 function fetchAndRenderList() {
