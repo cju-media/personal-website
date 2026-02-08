@@ -1,3 +1,55 @@
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+    #the-list-page-wrapper {
+        font-family: sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        color: #333;
+    }
+
+    #the-list-page-wrapper .font1 { font-family: Arial, sans-serif; }
+    #the-list-page-wrapper .font2 { font-family: Times New Roman, serif; }
+    #the-list-page-wrapper .font3 { font-family: Courier New, monospace; }
+    #the-list-page-wrapper .font4 { font-family: essay-text, monospace; }
+    #the-list-page-wrapper .font5 { font-family: 'Playfair Display', serif; }
+    #the-list-page-wrapper .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
+
+    #the-list-page-wrapper h1 {
+        font-size: calc(2.5vw + 20px);
+        text-align: center;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    #the-list-page-wrapper .glitch-span {
+        display: inline-block;
+        width: 0.8em;
+        text-align: center;
+        vertical-align: bottom;
+        line-height: 1.2;
+    }
+
+    #the-list-content {
+        line-height: 1.6;
+        font-size: 1.1rem;
+    }
+
+    #the-list-content a {
+        color: #0000EE !important;
+        text-decoration: underline !important;
+    }
+
+    #the-list-content .list-highlight {
+        font-weight: bold;
+        color: #000;
+        /* Custom decoration for ++ syntax */
+    }
+</style>
+
 <div id="the-list-page-wrapper">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
@@ -38,45 +90,60 @@
             max-width: 800px;
         }
 
-        #the-list-page-wrapper .span-class {
-            display: inline-block;
-            width: 1.2em;
-            text-align: center;
-            vertical-align: bottom;
-            line-height: 1.2;
+<script>
+(function() {
+    function initTheList() {
+        // --- Glitch Logic ---
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+        const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+        const katakanaMap = {
+            'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+            'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+            'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+        };
+
+        const wrapper = document.getElementById('the-list-page-wrapper');
+        if (!wrapper) return;
+
+        function changeFontRandomly(span) {
+            if (!span.dataset.original) {
+                span.dataset.original = span.innerText;
+            }
+            // Skip spaces
+            if (!span.innerText.trim()) return;
+
+            fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+            const randomIndex = Math.floor(Math.random() * fontClasses.length);
+            span.classList.add(fontClasses[randomIndex]);
+
+            if (Math.random() < 0.05) {
+                const originalChar = span.dataset.original.toUpperCase();
+                if (katakanaMap[originalChar]) {
+                    span.innerText = katakanaMap[originalChar];
+                }
+            } else {
+                span.innerText = span.dataset.original;
+            }
+
+            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+            setTimeout(() => changeFontRandomly(span), interval);
         }
 
-        /* Content Styles */
-        #the-list-page-wrapper #list-content {
-            width: 100%;
-            max-width: 800px;
-            text-align: left;
-            line-height: 1.6;
-            font-size: 1.1rem;
+        function changeColorRandomly(span) {
+            if (!span.innerText.trim()) return;
+            const randomColorIndex = Math.floor(Math.random() * colors.length);
+            span.style.color = colors[randomColorIndex];
+            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+            setTimeout(() => changeColorRandomly(span), interval);
         }
 
-        #the-list-page-wrapper #list-content ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        #the-list-page-wrapper #list-content li {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        #the-list-page-wrapper #list-content li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #333;
-        }
-
-        /* Checkbox styling from markdown */
-        #the-list-page-wrapper input[type="checkbox"] {
-            margin-right: 10px;
-        }
+        const spans = wrapper.querySelectorAll('.glitch-span');
+        spans.forEach(span => {
+            changeFontRandomly(span);
+            changeColorRandomly(span);
+        });
 
         #the-list-page-wrapper .loading {
             font-family: monospace;
@@ -104,131 +171,51 @@
         <span class="span-class">T</span>
     </h1>
 
-    <div id="list-content">
-        <div class="loading">Loading list...</div>
-    </div>
+        function loadMarked(callback) {
+            if (window.marked) {
+                callback();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
 
-    <script>
-        (function() {
-            function initTheList() {
-                // Prevent double initialization
-                if (window.theListInitialized) return;
-                window.theListInitialized = true;
+        function parseCustomSyntax(markdown) {
+            // Remove the title from markdown if it exists, since we have our own header
+            // "The List" is the first line usually.
+            let cleanMd = markdown.replace(/^#\s+The List\s*$/m, '');
 
-                const wrapper = document.getElementById('the-list-page-wrapper');
-                if (!wrapper) return;
+            // Replace ++text++ with <span class="list-highlight">text</span>
+            // Note: This regex might need adjustment if ++ wraps newlines
+            cleanMd = cleanMd.replace(/\+\+(.*?)\+\+/gs, '<span class="list-highlight">$1</span>');
+            return cleanMd;
+        }
 
-                // Glitch Logic
-                const Glitch = {
-                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
-                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
-                    katakanaMap: {
-                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
-                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
-                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
-                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
-                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'ク', 'Y': 'ヤ', 'Z': 'ズ'
-                    },
-
-                    start(span) {
-                        if (!span.dataset.original) {
-                            span.dataset.original = span.innerText;
-                        }
-                        this.loopFont(span);
-                        this.loopColor(span);
-                    },
-
-                    loopFont(span) {
-                        const tick = () => {
-                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
-                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
-                            span.classList.add(this.fontClasses[randomIndex]);
-
-                            if (Math.random() < 0.05) {
-                                const originalChar = span.dataset.original.toUpperCase();
-                                if (this.katakanaMap[originalChar]) {
-                                    span.innerText = this.katakanaMap[originalChar];
-                                }
-                            } else {
-                                span.innerText = span.dataset.original;
-                            }
-
-                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-                            setTimeout(tick, interval);
-                        };
-                        tick();
-                    },
-
-                    loopColor(span) {
-                        const tick = () => {
-                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
-                            span.style.color = this.colors[randomColorIndex];
-                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
-                            setTimeout(tick, interval);
-                        };
-                        tick();
-                    }
-                };
-
-                // Initialize Title Glitch
-                const titleSpans = wrapper.querySelectorAll('.glitch-title .span-class');
-                titleSpans.forEach(span => {
-                    if (span.innerHTML === '&nbsp;') return;
-                    Glitch.start(span);
+        function fetchAndRender() {
+            fetch(markdownUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(text => {
+                    const processedMarkdown = parseCustomSyntax(text);
+                    contentDiv.innerHTML = marked.parse(processedMarkdown);
+                })
+                .catch(error => {
+                    console.error('Error loading The List:', error);
+                    contentDiv.innerHTML = '<p>Error loading content.</p>';
                 });
+        }
 
-                // Load Marked.js and Fetch Content
-                const contentContainer = wrapper.querySelector('#list-content');
-                const listUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/personal/list/list.md';
+        loadMarked(fetchAndRender);
+    }
 
-                function loadMarked(callback) {
-                    if (window.marked) {
-                        callback();
-                        return;
-                    }
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-                    script.onload = callback;
-                    script.onerror = () => {
-                        contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading markdown parser.</div>';
-                    };
-                    document.head.appendChild(script);
-                }
-
-                function fetchAndRenderList() {
-                    fetch(listUrl)
-                        .then(response => {
-                            if (!response.ok) throw new Error("Network response was not ok");
-                            return response.text();
-                        })
-                        .then(markdown => {
-                            // Simple text glitch support: ++text++
-                            // We can use a custom renderer or just replace after parsing
-                            // Let's rely on standard markdown for now as per request.
-                            // However, we need to remove the title from markdown if we are displaying it separately
-                            // Or keep it. The user's list.md has "# THE LIST"
-
-                            // Let's strip the first H1 if it matches "THE LIST" to avoid duplication
-                            let md = markdown;
-                            // Regex to remove '# THE LIST' at start
-                            md = md.replace(/^#\s*THE LIST\s*/i, '');
-
-                            contentContainer.innerHTML = marked.parse(md);
-                        })
-                        .catch(error => {
-                            console.error('Error loading list:', error);
-                            contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading list content.</div>';
-                        });
-                }
-
-                loadMarked(fetchAndRenderList);
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initTheList);
-            } else {
-                initTheList();
-            }
-        })();
-    </script>
-</div>
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTheList);
+    } else {
+        initTheList();
+    }
+})();
+</script>
