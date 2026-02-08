@@ -89,6 +89,37 @@
             text-align: center;
         }
 
+        /* Filter Styles */
+        #max-patches-page-wrapper #filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #max-patches-page-wrapper .filter-button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        #max-patches-page-wrapper .filter-button:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        #max-patches-page-wrapper .filter-button.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
         /* Mobile / Vertical Styles */
         @media (max-width: 768px) {
             #max-patches-page-wrapper .content-wrapper {
@@ -120,6 +151,7 @@
             font-size: 1.2rem;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px; /* Add margin since gap handles flex items but loaded dynamically */
         }
 
         #max-patches-page-wrapper .repo-button:hover {
@@ -177,7 +209,17 @@
         </div>
 
         <div id="button-container">
-            <div class="loading">Loading Max patches...</div>
+            <div id="filter-container">
+                <button class="filter-button" data-filter="max">Max</button>
+                <button class="filter-button" data-filter="msp">MSP</button>
+                <button class="filter-button" data-filter="jitter">Jitter</button>
+                <button class="filter-button" data-filter="rnbo">RNBO</button>
+                <button class="filter-button" data-filter="pieces">Pieces</button>
+                <button class="filter-button" data-filter="abstractions">Abstractions</button>
+            </div>
+            <div id="repo-list">
+                <div class="loading">Loading Max patches...</div>
+            </div>
         </div>
     </div>
 
@@ -273,8 +315,95 @@
                     Glitch.start(span);
                 });
 
+                // --- Filter & Repo Logic ---
+
+                let allRepos = [];
+                const activeFilters = new Set();
+                const repoListContainer = wrapper.querySelector('#repo-list');
+
+                // Filter Buttons
+                const filterButtons = wrapper.querySelectorAll('.filter-button');
+                filterButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filter = btn.dataset.filter;
+                        if (activeFilters.has(filter)) {
+                            activeFilters.delete(filter);
+                            btn.classList.remove('active');
+                        } else {
+                            activeFilters.add(filter);
+                            btn.classList.add('active');
+                        }
+                        renderRepos();
+                    });
+                });
+
+                function renderRepos() {
+                    repoListContainer.innerHTML = '';
+
+                    // Filter Logic: OR (Union)
+                    // If no filters selected, show all.
+                    // If filters selected, show repo if it has ANY of the selected tags.
+                    const filteredRepos = allRepos.filter(repo => {
+                        if (activeFilters.size === 0) return true;
+                        if (!repo.topics || repo.topics.length === 0) return false;
+                        // Check if any topic matches any active filter
+                        return repo.topics.some(topic => activeFilters.has(topic));
+                    });
+
+                    if (filteredRepos.length === 0) {
+                        repoListContainer.innerHTML = '<div class="loading">No patches found matching filters.</div>';
+                        return;
+                    }
+
+                    filteredRepos.forEach(repo => {
+                        const link = document.createElement('a');
+                        link.href = repo.html_url;
+                        link.className = 'repo-button';
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+
+                        // Build spans for button text
+                        const text = repo.name.replace(/-/g, ' ');
+                        const words = text.split(' ');
+
+                        words.forEach((word, index) => {
+                            const wordSpan = document.createElement('span');
+                            wordSpan.className = 'word-wrapper';
+
+                            for (let char of word) {
+                                const span = document.createElement('span');
+                                span.textContent = char;
+                                span.className = 'button-char';
+                                // Pre-set original for Glitch object logic
+                                span.dataset.original = char;
+                                wordSpan.appendChild(span);
+                            }
+
+                            link.appendChild(wordSpan);
+
+                            // Add space after word if not the last one
+                            if (index < words.length - 1) {
+                                const space = document.createTextNode(' ');
+                                link.appendChild(space);
+                            }
+                        });
+
+                        // Interactive Glitch on Hover
+                        link.addEventListener('mouseenter', () => {
+                            const chars = link.querySelectorAll('.button-char');
+                            chars.forEach(span => Glitch.start(span, false)); // false = disable color glitch
+                        });
+
+                        link.addEventListener('mouseleave', () => {
+                            const chars = link.querySelectorAll('.button-char');
+                            chars.forEach(span => Glitch.stop(span));
+                        });
+
+                        repoListContainer.appendChild(link);
+                    });
+                }
+
                 // Fetch GitHub Repos
-                const container = wrapper.querySelector('#button-container');
                 const apiUrl = 'https://api.github.com/search/repositories?q=user:cju-media+language:Max';
 
                 fetch(apiUrl)
@@ -285,69 +414,23 @@
                         return response.json();
                     })
                     .then(data => {
-                        container.innerHTML = ''; // Clear loading message
-
                         // Data is in data.items for search API
                         let repos = data.items;
 
                         if (!repos || repos.length === 0) {
-                            container.innerHTML = '<div class="loading">No Max patches found.</div>';
+                            repoListContainer.innerHTML = '<div class="loading">No Max patches found.</div>';
                             return;
                         }
 
                         // Sort alphabetically
                         repos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
-                        repos.forEach(repo => {
-                            const link = document.createElement('a');
-                            link.href = repo.html_url;
-                            link.className = 'repo-button';
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-
-                            // Build spans for button text
-                            const text = repo.name.replace(/-/g, ' ');
-                            const words = text.split(' ');
-
-                            words.forEach((word, index) => {
-                                const wordSpan = document.createElement('span');
-                                wordSpan.className = 'word-wrapper';
-
-                                for (let char of word) {
-                                    const span = document.createElement('span');
-                                    span.textContent = char;
-                                    span.className = 'button-char';
-                                    // Pre-set original for Glitch object logic
-                                    span.dataset.original = char;
-                                    wordSpan.appendChild(span);
-                                }
-
-                                link.appendChild(wordSpan);
-
-                                // Add space after word if not the last one
-                                if (index < words.length - 1) {
-                                    const space = document.createTextNode(' ');
-                                    link.appendChild(space);
-                                }
-                            });
-
-                            // Interactive Glitch on Hover
-                            link.addEventListener('mouseenter', () => {
-                                const chars = link.querySelectorAll('.button-char');
-                                chars.forEach(span => Glitch.start(span, false)); // false = disable color glitch
-                            });
-
-                            link.addEventListener('mouseleave', () => {
-                                const chars = link.querySelectorAll('.button-char');
-                                chars.forEach(span => Glitch.stop(span));
-                            });
-
-                            container.appendChild(link);
-                        });
+                        allRepos = repos;
+                        renderRepos();
                     })
                     .catch(error => {
                         console.error('Error fetching Max patches:', error);
-                        container.innerHTML = `<div class="loading" style="color: red;">Error loading Max patches. Please try again later.</div>`;
+                        repoListContainer.innerHTML = `<div class="loading" style="color: red;">Error loading Max patches. Please try again later.</div>`;
                     });
             }
 
