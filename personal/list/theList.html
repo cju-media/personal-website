@@ -301,6 +301,7 @@
 
                     if (aboutContentCached) {
                         aboutContainer.innerHTML = aboutContentCached;
+                        setLinksTargetBlank(aboutContainer);
                         updateNavForAbout();
                     } else {
                         aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
@@ -313,6 +314,7 @@
                             .then(markdown => {
                                 aboutContentCached = marked.parse(markdown);
                                 aboutContainer.innerHTML = aboutContentCached;
+                                setLinksTargetBlank(aboutContainer);
                             })
                             .catch(error => {
                                 console.error('Error loading about:', error);
@@ -367,6 +369,13 @@
                     }
                 }
 
+                function setLinksTargetBlank(container) {
+                    const links = container.querySelectorAll('a');
+                    links.forEach(link => {
+                        link.setAttribute('target', '_blank');
+                    });
+                }
+
                 function fetchAndRenderList() {
                     fetch(listUrl)
                         .then(response => {
@@ -380,6 +389,7 @@
                             // Downgrade H1 to H2
                             md = md.replace(/^#\s/gm, '## ');
                             contentContainer.innerHTML = marked.parse(md);
+                            setLinksTargetBlank(contentContainer);
                             setupEntries();
                             bindNavEvents();
                         })
