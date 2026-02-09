@@ -52,6 +52,12 @@
             loadPatcher();
         };
 
+        // Exposed error handler
+        window.rnboError = function() {
+            statusDiv.textContent = 'Error: Failed to load RNBO library.';
+            statusDiv.style.color = 'red';
+        };
+
         async function loadPatcher() {
             try {
                 // Fetch the exported patcher from GitHub repo
@@ -120,5 +126,5 @@
     </script>
 
     <!-- Load RNBO Library -->
-    <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/latest/rnbo.min.js" onload="if(window.initSoundArtist) window.initSoundArtist();"></script>
+    <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js" onload="if(window.initSoundArtist) window.initSoundArtist();" onerror="if(window.rnboError) window.rnboError();"></script>
 </div>
