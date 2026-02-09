@@ -73,18 +73,6 @@
             color: #333;
         }
 
-        #the-list-page-wrapper #list-content h2 {
-            font-size: 2.5rem;
-            margin-top: 60px;
-            margin-bottom: 20px;
-        }
-
-        #the-list-page-wrapper #list-content h3 {
-            font-size: 2rem;
-            margin-top: 40px;
-            margin-bottom: 15px;
-        }
-
         /* Checkbox styling from markdown */
         #the-list-page-wrapper input[type="checkbox"] {
             margin-right: 10px;
@@ -295,12 +283,13 @@
 
                 function showAbout(e) {
                     if (e) e.preventDefault();
-
+                    
                     contentContainer.style.display = 'none';
                     aboutContainer.style.display = 'block';
 
                     if (aboutContentCached) {
                         aboutContainer.innerHTML = aboutContentCached;
+                        setLinksTargetBlank(aboutContainer);
                         updateNavForAbout();
                     } else {
                         aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
@@ -313,6 +302,7 @@
                             .then(markdown => {
                                 aboutContentCached = marked.parse(markdown);
                                 aboutContainer.innerHTML = aboutContentCached;
+                                setLinksTargetBlank(aboutContainer);
                             })
                             .catch(error => {
                                 console.error('Error loading about:', error);
@@ -367,6 +357,13 @@
                     }
                 }
 
+                function setLinksTargetBlank(container) {
+                    const links = container.querySelectorAll('a');
+                    links.forEach(link => {
+                        link.setAttribute('target', '_blank');
+                    });
+                }
+
                 function fetchAndRenderList() {
                     fetch(listUrl)
                         .then(response => {
@@ -380,6 +377,7 @@
                             // Downgrade H1 to H2
                             md = md.replace(/^#\s/gm, '## ');
                             contentContainer.innerHTML = marked.parse(md);
+                            setLinksTargetBlank(contentContainer);
                             setupEntries();
                             bindNavEvents();
                         })
