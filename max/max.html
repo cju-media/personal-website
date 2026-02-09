@@ -319,6 +319,7 @@
                 let allRepos = [];
                 const activeFilters = new Set();
                 const repoListContainer = wrapper.querySelector('#repo-list');
+                const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstractions'];
 
                 // Filter Buttons
                 const filterButtons = wrapper.querySelectorAll('.filter-button');
@@ -340,7 +341,7 @@
                     repoListContainer.innerHTML = '';
 
                     // Filter Logic: OR (Union)
-                    // If no filters selected, show all.
+                    // If no filters selected, show all fetched (which are already pre-filtered to be Max-relevant).
                     // If filters selected, show repo if it has ANY of the selected tags.
                     const filteredRepos = allRepos.filter(repo => {
                         if (activeFilters.size === 0) return true;
@@ -402,8 +403,9 @@
                     });
                 }
 
-                // Fetch GitHub Repos
-                const apiUrl = 'https://api.github.com/search/repositories?q=user:cju-media+language:Max';
+                // Fetch GitHub Repos (Fetch ALL user repos then filter)
+                // Using per_page=100 to get maximum items. Pagination might be needed if > 100 repos.
+                const apiUrl = 'https://api.github.com/users/cju-media/repos?per_page=100';
 
                 fetch(apiUrl)
                     .then(response => {
@@ -413,18 +415,31 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Data is in data.items for search API
-                        let repos = data.items;
+                        // 'data' is the array of repos directly for users/repos endpoint
+                        let repos = data;
 
                         if (!repos || repos.length === 0) {
+                            repoListContainer.innerHTML = '<div class="loading">No repositories found.</div>';
+                            return;
+                        }
+
+                        // Filter client-side for Max-relevant repos
+                        // Include if language is 'Max' OR has one of the target topics
+                        const relevantRepos = repos.filter(repo => {
+                            const isMaxLanguage = repo.language === 'Max';
+                            const hasTopic = repo.topics && repo.topics.some(t => targetTopics.includes(t));
+                            return isMaxLanguage || hasTopic;
+                        });
+
+                        if (relevantRepos.length === 0) {
                             repoListContainer.innerHTML = '<div class="loading">No Max patches found.</div>';
                             return;
                         }
 
                         // Sort alphabetically
-                        repos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+                        relevantRepos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
-                        allRepos = repos;
+                        allRepos = relevantRepos;
                         renderRepos();
                     })
                     .catch(error => {
