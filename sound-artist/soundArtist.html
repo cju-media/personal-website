@@ -15,6 +15,7 @@
             border: none;
             border-radius: 5px;
             margin-top: 20px;
+            margin-right: 10px;
         }
         #sound-artist-page-wrapper button:disabled {
             background-color: #999;
@@ -31,6 +32,9 @@
     <h1>Sound Artist</h1>
     <p>RNBO Patch</p>
     <button id="start-audio" disabled>Loading Library...</button>
+    <br>
+    <button id="play-sample" disabled>Play Random Sample</button>
+    <button id="play-oscillator" disabled>Play Oscillator</button>
     <div id="status">Initializing...</div>
 
     <script>
@@ -39,16 +43,29 @@
         if (!wrapper) return;
 
         const startBtn = wrapper.querySelector('#start-audio');
+        const playSampleBtn = wrapper.querySelector('#play-sample');
+        const playOscBtn = wrapper.querySelector('#play-oscillator');
         const statusDiv = wrapper.querySelector('#status');
+
         let audioContext;
         let device;
         let patcherData;
 
-        const REPO_BASE = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/';
+        const REPO_ROOT = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/';
+        const EXPORT_URL = REPO_ROOT + 'rnbo-export/sound-artist.export.json';
+        const ASSETS_URL = REPO_ROOT + 'assets/';
+
+        const SAMPLE_ASSETS = [
+            'epno.aiff',
+            'eroica.aiff',
+            'isthatyou.aiff',
+            'sacre.aiff',
+            'snare.aiff'
+        ];
 
         // Exposed init function for onload callback
         window.initSoundArtist = function() {
-            startBtn.textContent = 'Start Sound';
+            startBtn.textContent = 'Start Audio Engine';
             startBtn.disabled = false;
             statusDiv.textContent = 'Library loaded. Fetching patch...';
             loadPatcher();
@@ -62,10 +79,7 @@
 
         async function loadPatcher() {
             try {
-                // Fetch the exported patcher from GitHub repo
-                const rawUrl = REPO_BASE + 'sound-artist.export.json';
-
-                const response = await fetch(rawUrl);
+                const response = await fetch(EXPORT_URL);
                 if (!response.ok) {
                     throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
                 }
@@ -77,26 +91,16 @@
             }
         }
 
-        async function loadDependency(id, filename, context) {
+        async function loadBuffer(url) {
             try {
-                // Construct URL for the audio file in the repo
-                // Assuming dependencies are flat in the rnbo-export folder or managed relative to it
-                // Based on dependencies.json memory, the file might be absolute in the export metadata,
-                // but we need to fetch it from our repo.
-                // The filename in externalDataRefs is usually just the name like "anton.aif"
-                const fileUrl = REPO_BASE + filename;
-
-                const response = await fetch(fileUrl);
+                const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error(`Failed to load dependency ${filename}: ${response.statusText}`);
+                    throw new Error(`Failed to load audio file: ${response.statusText}`);
                 }
-
                 const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await context.decodeAudioData(arrayBuffer);
-
-                return audioBuffer;
+                return await audioContext.decodeAudioData(arrayBuffer);
             } catch (err) {
-                console.error(`Error loading dependency ${filename}:`, err);
+                console.error("Buffer load error:", err);
                 throw err;
             }
         }
@@ -124,35 +128,16 @@
                     statusDiv.textContent = 'Creating device...';
                     device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
 
-                    // Handle External Data Refs (Buffers)
-                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
-                        statusDiv.textContent = 'Loading samples...';
-
-                        for (const ref of patcherData.desc.externalDataRefs) {
-                            if (ref.type === 'Float32Buffer' || ref.tag === 'buffer~') {
-                                try {
-                                    // Use the 'file' property as the filename to fetch
-                                    // Note: ref.file might contain a full local path from export, we only want the basename
-                                    const filename = ref.file.split('/').pop();
-                                    const buffer = await loadDependency(ref.id, filename, audioContext);
-
-                                    // Set the buffer on the device
-                                    await device.setDataBuffer(ref.id, buffer);
-                                    console.log(`Loaded buffer: ${ref.id} from ${filename}`);
-                                } catch (e) {
-                                    console.warn(`Skipping buffer ${ref.id}:`, e);
-                                    statusDiv.textContent += ` (Warning: failed to load ${ref.id})`;
-                                }
-                            }
-                        }
-                    }
-
                     // Connect device to output
                     device.node.connect(audioContext.destination);
 
-                    statusDiv.textContent = 'Audio running.';
-                    startBtn.textContent = 'Audio Active';
+                    statusDiv.textContent = 'Audio Engine Running.';
+                    startBtn.textContent = 'Audio Engine Active';
                     startBtn.disabled = true;
+
+                    // Enable controls
+                    playSampleBtn.disabled = false;
+                    playOscBtn.disabled = false;
                 }
 
             } catch (err) {
@@ -161,7 +146,38 @@
             }
         }
 
+        async function playRandomSample() {
+            if (!device || !audioContext) return;
+
+            const randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
+            const url = ASSETS_URL + randomFile;
+
+            statusDiv.textContent = `Loading sample: ${randomFile}...`;
+
+            try {
+                const buffer = await loadBuffer(url);
+                // Set the buffer on the device with id "sound" (as defined in dependencies.json/export)
+                await device.setDataBuffer("sound", buffer);
+                statusDiv.textContent = `Playing: ${randomFile}`;
+                console.log(`Loaded and set buffer: ${randomFile}`);
+            } catch (err) {
+                statusDiv.textContent = `Error loading ${randomFile}`;
+            }
+        }
+
+        function playOscillator() {
+            if (!device) return;
+            console.log("Play Oscillator clicked. (Functionality depends on patch implementation)");
+            statusDiv.textContent = "Play Oscillator triggered (Check console/patch)";
+            // Placeholder: The current export JSON does not list parameters.
+            // If the patch had a parameter named 'osc_on', we would do:
+            // const param = device.parameters.find(p => p.id === 'osc_on');
+            // if (param) param.value = 1;
+        }
+
         startBtn.addEventListener('click', startAudio);
+        playSampleBtn.addEventListener('click', playRandomSample);
+        playOscBtn.addEventListener('click', playOscillator);
 
         // Check if RNBO is already loaded (if script ran before this one)
         if (typeof RNBO !== 'undefined') {
