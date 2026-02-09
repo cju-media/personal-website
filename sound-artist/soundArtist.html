@@ -80,6 +80,10 @@
         async function loadPatcher() {
             try {
                 const response = await fetch(EXPORT_URL);
+                const rawUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json';
+                
+                const response = await fetch(rawUrl);
+
                 if (!response.ok) {
                     throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
                 }
@@ -127,10 +131,14 @@
                 if (patcherData && !device) {
                     statusDiv.textContent = 'Creating device...';
                     device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
-
+                    
                     // Connect device to output
                     device.node.connect(audioContext.destination);
-
+                    
+                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
+                        console.log('External data refs:', patcherData.desc.externalDataRefs);
+                    }
+                    
                     statusDiv.textContent = 'Audio Engine Running.';
                     startBtn.textContent = 'Audio Engine Active';
                     startBtn.disabled = true;
@@ -138,6 +146,9 @@
                     // Enable controls
                     playSampleBtn.disabled = false;
                     playOscBtn.disabled = false;
+                    statusDiv.textContent = 'Audio running.';
+                    startBtn.textContent = 'Audio Active';
+                    startBtn.disabled = true; 
                 }
 
             } catch (err) {
