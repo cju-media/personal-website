@@ -9,16 +9,60 @@
             "modernui": 1
         },
         "classnamespace": "box",
-        "rect": [ 722.0, 533.0, 1000.0, 780.0 ],
+        "rect": [ 1071.0, 654.0, 1000.0, 780.0 ],
         "boxes": [
             {
                 "box": {
-                    "id": "obj-2",
+                    "id": "obj-11",
                     "maxclass": "newobj",
                     "numinlets": 2,
                     "numoutlets": 0,
-                    "patching_rect": [ 353.0, 249.0, 35.0, 22.0 ],
+                    "patching_rect": [ 350.0, 219.0, 35.0, 22.0 ],
                     "text": "dac~"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-9",
+                    "maxclass": "toggle",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "int" ],
+                    "parameter_enable": 0,
+                    "patching_rect": [ 623.0, 127.0, 24.0, 24.0 ]
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-10",
+                    "maxclass": "message",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 623.0, 160.0, 77.0, 22.0 ],
+                    "text": "playWave $1"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-8",
+                    "maxclass": "toggle",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "int" ],
+                    "parameter_enable": 0,
+                    "patching_rect": [ 533.0, 127.0, 24.0, 24.0 ]
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-6",
+                    "maxclass": "message",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 538.0, 160.0, 79.0, 22.0 ],
+                    "text": "playSamp $1"
                 }
             },
             {
@@ -49,7 +93,18 @@
                     },
                     "outlettype": [ "signal", "signal", "list" ],
                     "patching_rect": [ 360.0, 171.0, 106.0, 22.0 ],
-                    "rnboattrcache": {                    },
+                    "rnboattrcache": {
+                        "playSamp": {
+                            "label": "playSamp",
+                            "isEnum": 0,
+                            "parsestring": ""
+                        },
+                        "playWave": {
+                            "label": "playWave",
+                            "isEnum": 0,
+                            "parsestring": ""
+                        }
+                    },
                     "rnboversion": "1.4.2",
                     "saved_attribute_attributes": {
                         "valueof": {
@@ -75,6 +130,12 @@
                         "subtype": "Undefined",
                         "embed": 1,
                         "snapshot": {
+                            "playWave": {
+                                "value": 0.0
+                            },
+                            "playSamp": {
+                                "value": 0.0
+                            },
                             "__presetid": "sound-artist"
                         },
                         "snapshotlist": {
@@ -90,6 +151,12 @@
                                     "subtype": "",
                                     "embed": 0,
                                     "snapshot": {
+                                        "playWave": {
+                                            "value": 0.0
+                                        },
+                                        "playSamp": {
+                                            "value": 0.0
+                                        },
                                         "__presetid": "sound-artist"
                                     },
                                     "fileref": {
@@ -111,14 +178,38 @@
         "lines": [
             {
                 "patchline": {
-                    "destination": [ "obj-2", 1 ],
+                    "destination": [ "obj-11", 1 ],
                     "source": [ "obj-1", 1 ]
                 }
             },
             {
                 "patchline": {
-                    "destination": [ "obj-2", 0 ],
+                    "destination": [ "obj-11", 0 ],
                     "source": [ "obj-1", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-1", 0 ],
+                    "source": [ "obj-10", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-1", 0 ],
+                    "source": [ "obj-6", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-6", 0 ],
+                    "source": [ "obj-8", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-10", 0 ],
+                    "source": [ "obj-9", 0 ]
                 }
             }
         ],
