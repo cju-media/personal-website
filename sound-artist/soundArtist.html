@@ -65,13 +65,13 @@
                 
                 const response = await fetch(rawUrl);
                 if (!response.ok) {
-                    throw new Error(`Failed to load patch: ${response.statusText}`);
+                    throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
                 }
                 patcherData = await response.json();
                 statusDiv.textContent = 'Patch fetched. Ready to start.';
             } catch (err) {
                 console.error(err);
-                statusDiv.textContent = 'Error loading patch: ' + err.message;
+                statusDiv.textContent = 'Fetch Error: ' + err.message;
             }
         }
 
@@ -126,5 +126,5 @@
     </script>
 
     <!-- Load RNBO Library -->
-    <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js" onload="if(window.initSoundArtist) window.initSoundArtist();" onerror="if(window.rnboError) window.rnboError();"></script>
+    <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js" crossorigin="anonymous" onload="if(window.initSoundArtist) window.initSoundArtist();" onerror="if(window.rnboError) window.rnboError();"></script>
 </div>
