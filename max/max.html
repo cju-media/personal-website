@@ -135,6 +135,8 @@
         /* Button Styles */
         #max-patches-page-wrapper .repo-button {
             display: flex; /* Centering content */
+            flex-wrap: wrap;
+            gap: 0.4em;
             align-items: center;
             justify-content: center;
             padding: 15px 20px;
@@ -212,7 +214,7 @@
             <button class="filter-button" data-filter="jitter">Jitter</button>
             <button class="filter-button" data-filter="rnbo">RNBO</button>
             <button class="filter-button" data-filter="pieces">Pieces</button>
-            <button class="filter-button" data-filter="abstractions">Abstractions</button>
+            <button class="filter-button" data-filter="abstraction">Abstraction</button>
         </div>
 
         <div id="repo-list">
@@ -317,7 +319,7 @@
                 let allRepos = [];
                 const activeFilters = new Set();
                 const repoListContainer = wrapper.querySelector('#repo-list');
-                const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstractions'];
+                const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstraction'];
 
                 // Filter Buttons
                 const filterButtons = wrapper.querySelectorAll('.filter-button');
@@ -361,7 +363,7 @@
                         link.rel = 'noopener noreferrer';
 
                         // Build spans for button text
-                        const text = repo.name.replace(/-/g, ' ');
+                        const text = repo.name.replace(/[-_]/g, ' ');
                         const words = text.split(' ');
 
                         words.forEach((word, index) => {
@@ -378,12 +380,6 @@
                             }
 
                             link.appendChild(wordSpan);
-
-                            // Add space after word if not the last one
-                            if (index < words.length - 1) {
-                                const space = document.createTextNode(' ');
-                                link.appendChild(space);
-                            }
                         });
 
                         // Interactive Glitch on Hover
