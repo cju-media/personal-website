@@ -1,11 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <p>Hello world!</p>
-</body>
-</html>
+<div id="sound-artist-page-wrapper">
+    <style>
+        #sound-artist-page-wrapper {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            color: inherit;
+        }
+        #sound-artist-page-wrapper button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #sound-artist-page-wrapper button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        #sound-artist-page-wrapper button:hover:not(:disabled) {
+            background-color: #555;
+        }
+        #sound-artist-page-wrapper #status {
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+    <h1>Sound Artist</h1>
+    <p>RNBO Patch</p>
+    <button id="start-audio" disabled>Loading Library...</button>
+    <div id="status">Initializing...</div>
+
+    <script>
+    (function() {
+        const wrapper = document.getElementById('sound-artist-page-wrapper');
+        if (!wrapper) return;
+
+        const startBtn = wrapper.querySelector('#start-audio');
+        const statusDiv = wrapper.querySelector('#status');
+        let audioContext;
+        let device;
+        let patcherData;
+
+        // Exposed init function for onload callback
+        window.initSoundArtist = function() {
+            startBtn.textContent = 'Start Sound';
+            startBtn.disabled = false;
+            statusDiv.textContent = 'Library loaded. Fetching patch...';
+            loadPatcher();
+        };
+
+        async function loadPatcher() {
+            try {
+                // Fetch the exported patcher from GitHub repo
+                const rawUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json';
+                
+                const response = await fetch(rawUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to load patch: ${response.statusText}`);
+                }
+                patcherData = await response.json();
+                statusDiv.textContent = 'Patch fetched. Ready to start.';
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Error loading patch: ' + err.message;
+            }
+        }
+
+        async function startAudio() {
+            try {
+                if (typeof RNBO === 'undefined') {
+                    throw new Error('RNBO library not loaded.');
+                }
+
+                if (!audioContext) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                }
+
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                if (!patcherData) {
+                    await loadPatcher();
+                }
+
+                if (patcherData && !device) {
+                    statusDiv.textContent = 'Creating device...';
+                    device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
+                    
+                    // Connect device to output
+                    device.node.connect(audioContext.destination);
+                    
+                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
+                        console.log('External data refs:', patcherData.desc.externalDataRefs);
+                    }
+                    
+                    statusDiv.textContent = 'Audio running.';
+                    startBtn.textContent = 'Audio Active';
+                    startBtn.disabled = true; 
+                }
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Audio Error: ' + err.message;
+            }
+        }
+
+        startBtn.addEventListener('click', startAudio);
+        
+        // Check if RNBO is already loaded (if script ran before this one)
+        if (typeof RNBO !== 'undefined') {
+            window.initSoundArtist();
+        }
+    })();
+    </script>
+
+    <!-- Load RNBO Library -->
+    <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/latest/rnbo.min.js" onload="if(window.initSoundArtist) window.initSoundArtist();"></script>
+</div>
