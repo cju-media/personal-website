@@ -44,6 +44,8 @@
         let device;
         let patcherData;
 
+        const REPO_BASE = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/';
+
         // Exposed init function for onload callback
         window.initSoundArtist = function() {
             startBtn.textContent = 'Start Sound';
@@ -61,7 +63,7 @@
         async function loadPatcher() {
             try {
                 // Fetch the exported patcher from GitHub repo
-                const rawUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json';
+                const rawUrl = REPO_BASE + 'sound-artist.export.json';
 
                 const response = await fetch(rawUrl);
                 if (!response.ok) {
@@ -72,6 +74,30 @@
             } catch (err) {
                 console.error(err);
                 statusDiv.textContent = 'Fetch Error: ' + err.message;
+            }
+        }
+
+        async function loadDependency(id, filename, context) {
+            try {
+                // Construct URL for the audio file in the repo
+                // Assuming dependencies are flat in the rnbo-export folder or managed relative to it
+                // Based on dependencies.json memory, the file might be absolute in the export metadata,
+                // but we need to fetch it from our repo.
+                // The filename in externalDataRefs is usually just the name like "anton.aif"
+                const fileUrl = REPO_BASE + filename;
+
+                const response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to load dependency ${filename}: ${response.statusText}`);
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await context.decodeAudioData(arrayBuffer);
+
+                return audioBuffer;
+            } catch (err) {
+                console.error(`Error loading dependency ${filename}:`, err);
+                throw err;
             }
         }
 
@@ -98,12 +124,31 @@
                     statusDiv.textContent = 'Creating device...';
                     device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
 
+                    // Handle External Data Refs (Buffers)
+                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
+                        statusDiv.textContent = 'Loading samples...';
+
+                        for (const ref of patcherData.desc.externalDataRefs) {
+                            if (ref.type === 'Float32Buffer' || ref.tag === 'buffer~') {
+                                try {
+                                    // Use the 'file' property as the filename to fetch
+                                    // Note: ref.file might contain a full local path from export, we only want the basename
+                                    const filename = ref.file.split('/').pop();
+                                    const buffer = await loadDependency(ref.id, filename, audioContext);
+
+                                    // Set the buffer on the device
+                                    await device.setDataBuffer(ref.id, buffer);
+                                    console.log(`Loaded buffer: ${ref.id} from ${filename}`);
+                                } catch (e) {
+                                    console.warn(`Skipping buffer ${ref.id}:`, e);
+                                    statusDiv.textContent += ` (Warning: failed to load ${ref.id})`;
+                                }
+                            }
+                        }
+                    }
+
                     // Connect device to output
                     device.node.connect(audioContext.destination);
-
-                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
-                        console.log('External data refs:', patcherData.desc.externalDataRefs);
-                    }
 
                     statusDiv.textContent = 'Audio running.';
                     startBtn.textContent = 'Audio Active';
