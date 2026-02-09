@@ -39,23 +39,23 @@
 
     <script>
     (function() {
-        const wrapper = document.getElementById('sound-artist-page-wrapper');
+        var wrapper = document.getElementById('sound-artist-page-wrapper');
         if (!wrapper) return;
 
-        const startBtn = wrapper.querySelector('#start-audio');
-        const playSampleBtn = wrapper.querySelector('#play-sample');
-        const playOscBtn = wrapper.querySelector('#play-oscillator');
-        const statusDiv = wrapper.querySelector('#status');
+        var startBtn = wrapper.querySelector('#start-audio');
+        var playSampleBtn = wrapper.querySelector('#play-sample');
+        var playOscBtn = wrapper.querySelector('#play-oscillator');
+        var statusDiv = wrapper.querySelector('#status');
 
-        let audioContext;
-        let device;
-        let patcherData;
+        var audioContext;
+        var device;
+        var patcherData;
 
-        const REPO_ROOT = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/';
-        const EXPORT_URL = REPO_ROOT + 'rnbo-export/sound-artist.export.json';
-        const ASSETS_URL = REPO_ROOT + 'assets/';
+        var REPO_ROOT = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/';
+        var EXPORT_URL = REPO_ROOT + 'rnbo-export/sound-artist.export.json';
+        var ASSETS_URL = REPO_ROOT + 'assets/';
 
-        const SAMPLE_ASSETS = [
+        var SAMPLE_ASSETS = [
             'epno.aiff',
             'eroica.aiff',
             'isthatyou.aiff',
@@ -79,15 +79,11 @@
 
         async function loadPatcher() {
             try {
-                const response = await fetch(EXPORT_URL);
-                const rawUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json';
-                
-                const response = await fetch(rawUrl);
-
-                if (!response.ok) {
-                    throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
+                var patcherResponse = await fetch(EXPORT_URL);
+                if (!patcherResponse.ok) {
+                    throw new Error(`Failed to load patch: ${patcherResponse.status} ${patcherResponse.statusText}`);
                 }
-                patcherData = await response.json();
+                patcherData = await patcherResponse.json();
                 statusDiv.textContent = 'Patch fetched. Ready to start.';
             } catch (err) {
                 console.error(err);
@@ -97,11 +93,11 @@
 
         async function loadBuffer(url) {
             try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Failed to load audio file: ${response.statusText}`);
+                var audioResponse = await fetch(url);
+                if (!audioResponse.ok) {
+                    throw new Error(`Failed to load audio file: ${audioResponse.statusText}`);
                 }
-                const arrayBuffer = await response.arrayBuffer();
+                var arrayBuffer = await audioResponse.arrayBuffer();
                 return await audioContext.decodeAudioData(arrayBuffer);
             } catch (err) {
                 console.error("Buffer load error:", err);
@@ -116,7 +112,7 @@
                 }
 
                 if (!audioContext) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    var AudioContext = window.AudioContext || window.webkitAudioContext;
                     audioContext = new AudioContext();
                 }
 
@@ -131,14 +127,10 @@
                 if (patcherData && !device) {
                     statusDiv.textContent = 'Creating device...';
                     device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
-                    
+
                     // Connect device to output
                     device.node.connect(audioContext.destination);
-                    
-                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
-                        console.log('External data refs:', patcherData.desc.externalDataRefs);
-                    }
-                    
+
                     statusDiv.textContent = 'Audio Engine Running.';
                     startBtn.textContent = 'Audio Engine Active';
                     startBtn.disabled = true;
@@ -146,9 +138,6 @@
                     // Enable controls
                     playSampleBtn.disabled = false;
                     playOscBtn.disabled = false;
-                    statusDiv.textContent = 'Audio running.';
-                    startBtn.textContent = 'Audio Active';
-                    startBtn.disabled = true; 
                 }
 
             } catch (err) {
@@ -160,13 +149,13 @@
         async function playRandomSample() {
             if (!device || !audioContext) return;
 
-            const randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
-            const url = ASSETS_URL + randomFile;
+            var randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
+            var url = ASSETS_URL + randomFile;
 
             statusDiv.textContent = `Loading sample: ${randomFile}...`;
 
             try {
-                const buffer = await loadBuffer(url);
+                var buffer = await loadBuffer(url);
                 // Set the buffer on the device with id "sound" (as defined in dependencies.json/export)
                 await device.setDataBuffer("sound", buffer);
                 statusDiv.textContent = `Playing: ${randomFile}`;
