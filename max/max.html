@@ -15,6 +15,7 @@
             background-color: transparent; /* Inherit from Squarespace */
             padding: 60px 20px 20px 20px;
             box-sizing: border-box;
+            width: 100%;
         }
 
         /* Glitch font classes */
@@ -47,24 +48,23 @@
             line-height: 1.2;
         }
 
-        /* Layout Styles */
+        /* Layout Styles - Updated for Grid */
         #max-patches-page-wrapper .content-wrapper {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
-            max-width: 1000px;
-            gap: 40px;
-            padding: 20px;
+            max-width: 1200px; /* Wider for grid */
+            gap: 30px; /* Space between text, filters, grid */
         }
 
         #max-patches-page-wrapper #text-container {
-            flex: 1;
+            width: 100%;
+            max-width: 800px; /* Limit reading width */
             text-align: left;
-            /* font-family: 'Playfair Display', serif; */
-            /* font-size: 1.2rem; */
             line-height: 1.6;
             color: inherit; /* Inherit text color */
+            margin-bottom: 20px;
         }
 
         #max-patches-page-wrapper #text-container a {
@@ -81,14 +81,6 @@
             text-decoration: none;
         }
 
-        #max-patches-page-wrapper #button-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
-        }
-
         /* Filter Styles */
         #max-patches-page-wrapper #filter-container {
             display: flex;
@@ -96,6 +88,7 @@
             gap: 10px;
             justify-content: center;
             margin-bottom: 20px;
+            width: 100%;
         }
 
         #max-patches-page-wrapper .filter-button {
@@ -120,27 +113,30 @@
             border-color: #333;
         }
 
+        /* Repo Grid Styles */
+        #max-patches-page-wrapper #repo-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            width: 100%;
+        }
+
         /* Mobile / Vertical Styles */
         @media (max-width: 768px) {
-            #max-patches-page-wrapper .content-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-
             #max-patches-page-wrapper #text-container {
-                text-align: center;
-                margin-bottom: 20px;
+                text-align: center; /* Center text on mobile */
             }
 
-            #max-patches-page-wrapper #button-container {
-                width: 100%;
-                max-width: 600px;
+            #max-patches-page-wrapper #repo-list {
+                grid-template-columns: 1fr; /* Single column on mobile */
             }
         }
 
         /* Button Styles */
         #max-patches-page-wrapper .repo-button {
-            display: block;
+            display: flex; /* Centering content */
+            align-items: center;
+            justify-content: center;
             padding: 15px 20px;
             background-color: #333;
             color: #fff;
@@ -151,13 +147,14 @@
             font-size: 1.2rem;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 15px; /* Add margin since gap handles flex items but loaded dynamically */
+            min-height: 60px; /* Ensure consistent height */
         }
 
         #max-patches-page-wrapper .repo-button:hover {
             background-color: #555;
             transform: scale(1.02);
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            z-index: 1; /* Bring to front on hover */
         }
 
         /* Button Character Styles - to prevent jitter */
@@ -178,6 +175,8 @@
             font-family: monospace;
             color: #666;
             font-size: 1.2rem;
+            text-align: center;
+            grid-column: 1 / -1; /* Span all columns */
         }
     </style>
 
@@ -208,17 +207,16 @@
             </p>
         </div>
 
-        <div id="button-container">
-            <div id="filter-container">
-                <button class="filter-button" data-filter="msp">MSP</button>
-                <button class="filter-button" data-filter="jitter">Jitter</button>
-                <button class="filter-button" data-filter="rnbo">RNBO</button>
-                <button class="filter-button" data-filter="pieces">Pieces</button>
-                <button class="filter-button" data-filter="abstractions">Abstractions</button>
-            </div>
-            <div id="repo-list">
-                <div class="loading">Loading Max patches...</div>
-            </div>
+        <div id="filter-container">
+            <button class="filter-button" data-filter="msp">MSP</button>
+            <button class="filter-button" data-filter="jitter">Jitter</button>
+            <button class="filter-button" data-filter="rnbo">RNBO</button>
+            <button class="filter-button" data-filter="pieces">Pieces</button>
+            <button class="filter-button" data-filter="abstractions">Abstractions</button>
+        </div>
+
+        <div id="repo-list">
+            <div class="loading">Loading Max patches...</div>
         </div>
     </div>
 
@@ -438,7 +436,7 @@
 
                         // Sort alphabetically
                         relevantRepos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-
+                        
                         allRepos = relevantRepos;
                         renderRepos();
                     })
