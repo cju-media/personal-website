@@ -72,7 +72,80 @@
     <canvas id="pondCanvas"></canvas>
 </div>
 
-<script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
+
+<style>
+    /* Force the Squarespace container to allow full-screen breakout */
+    .sqs-block-code .sqs-block-content {
+        position: static !important;
+    }
+
+    #pond-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #05070a;
+        z-index: 9999; 
+        overflow: hidden;
+    }
+
+    #pondCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    #focus-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: pointer;
+        transition: opacity 2s ease;
+        visibility: hidden;
+        opacity: 0;
+    }
+    
+    #focus-text { 
+        font-family: monospace;
+        letter-spacing: 0.8em;
+        color: #3b82f6; 
+        font-size: 1rem;
+        border: 1px solid #1e3a8a;
+        padding: 20px 40px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    #loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10001;
+        font-family: monospace; 
+        color: #1e3a8a;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        pointer-events: none;
+    }
+</style>
+
+<div id="pond-wrapper">
+    <div id="loading-indicator">INITIALIZING POND...</div>
+    <div id="focus-overlay">
+        <div id="focus-text">CLICK TO FOCUS</div>
+    </div>
+    <canvas id="pondCanvas"></canvas>
+</div>
 
 <script>
     (function() {
@@ -129,6 +202,12 @@
             const overlay = document.getElementById('focus-overlay');
 
             try {
+                // Check if RNBO is ready from header
+                if (typeof RNBO === "undefined") {
+                    setTimeout(init, 100);
+                    return;
+                }
+
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
                 const cacheBuster = `?t=${new Date().getTime()}`;
@@ -172,6 +251,7 @@
 
                     if (Math.random() > 0.85) ripples.push(new Ripple(x, y));
 
+                    // Linear mapping for freq (100-1000) and sampRate (0.1-4)
                     if (freqParam) freqParam.value = 100 + ((x / window.innerWidth) * 900);
                     if (sampParam) {
                         const yPercent = 1 - (y / window.innerHeight);
@@ -185,7 +265,6 @@
             }
         }
 
-        // Squarespace safe execution
         if (document.readyState === "complete" || document.readyState === "interactive") {
             init();
         } else {
