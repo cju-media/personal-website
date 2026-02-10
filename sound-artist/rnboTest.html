@@ -131,16 +131,16 @@
                 this.x = x; this.y = y;
                 this.r = 0;
                 this.opacity = 0.4;
+                this.strength = 1.0;
             }
             update() {
                 this.r += 2.5;
+                this.strength -= 0.005;
+                this.opacity -= 0.002;
             }
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(59, 130, 246, ${this.opacity})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                // Invisible ripples - no drawing here
+                // Logic is handled in drawWaves
             }
         }
 
@@ -162,16 +162,39 @@
                     let y = baseY + Math.sin(x * 0.01 - time * 2 + i) * 15;
 
                     // Mouse interaction
-                    const dist = Math.hypot(x - mouseX, y - mouseY);
+                    const distMouse = Math.hypot(x - mouseX, y - mouseY);
                     const influenceRadius = 200;
 
-                    if (dist < influenceRadius) {
-                        const power = (influenceRadius - dist) / influenceRadius;
-                        // Add disruption: noise/jitter or just offset
-                        // Let's add a secondary higher frequency wave based on mouse proximity
+                    if (distMouse < influenceRadius) {
+                        const power = (influenceRadius - distMouse) / influenceRadius;
                         y += Math.sin(x * 0.1 + time * 10) * 30 * power;
-                        // And pull towards mouse slightly? Or push away?
-                        // y += (mouseY - y) * 0.1 * power; // Attract
+                    }
+
+                    // Ripple interaction (Smooth Push)
+                    for (let j = 0; j < ripples.length; j++) {
+                        const r = ripples[j];
+                        if (r.strength <= 0) continue;
+
+                        const dx = x - r.x;
+                        const dy = y - r.y;
+                        const dist = Math.hypot(dx, dy);
+
+                        // If point is near the ripple's current radius (wavefront)
+                        const distFromWavefront = dist - r.r;
+                        const waveWidth = 50; // Width of the "push" effect
+
+                        if (Math.abs(distFromWavefront) < waveWidth) {
+                            // Smooth Gaussian-like bump
+                            // const intensity = Math.exp(-Math.pow(distFromWavefront, 2) / (2 * Math.pow(waveWidth/2, 2)));
+
+                            // Or cosine bump for a defined width
+                            const normalized = distFromWavefront / waveWidth; // -1 to 1
+                            const intensity = (Math.cos(normalized * Math.PI) + 1) / 2; // 0 to 1 smooth bell curve
+
+                            // Push the wave up/down based on strength
+                            // Negative offset pushes 'up' visually if strength is positive
+                            y -= intensity * 40 * r.strength;
+                        }
                     }
 
                     if (x === 0) ctx.moveTo(x, y);
@@ -189,8 +212,8 @@
 
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
-                ripples[i].draw();
-                if (ripples[i].r > maxDiagonal) ripples.splice(i, 1);
+                ripples[i].draw(); // No-op visually, but good for structure if we re-add debugging
+                if (ripples[i].r > maxDiagonal || ripples[i].opacity <= 0) ripples.splice(i, 1);
             }
             requestAnimationFrame(animate);
         }
@@ -203,12 +226,24 @@
 
             if (!isRunning) return;
 
+            // Only add ripple occasionally on move, but always track mouse
             if (Math.random() > 0.85) ripples.push(new Ripple(clientX, clientY));
 
             if (freqParam) freqParam.value = 100 + ((clientX / window.innerWidth) * 900);
             if (sampParam) {
                 const yPercent = 1 - (clientY / window.innerHeight);
                 sampParam.value = 0.1 + (yPercent * 3.9);
+            }
+        }
+
+        // Add explicit click handler to guarantee ripple on click/tap
+        function handleClick(e) {
+            if (!isRunning) return;
+            // For touch events, use the first touch point
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x !== undefined && y !== undefined) {
+                ripples.push(new Ripple(x, y));
             }
         }
 
@@ -265,6 +300,7 @@
 
                 // MOUSE SUPPORT
                 window.addEventListener('mousemove', (e) => handleInteraction(e.clientX, e.clientY));
+                window.addEventListener('click', handleClick); // Added click listener
 
                 // MOBILE SUPPORT: Touch tracking
                 window.addEventListener('touchmove', (e) => {
@@ -272,6 +308,14 @@
                         handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
                     }
                 }, { passive: false });
+
+                // Allow tap to create ripple without moving
+                 window.addEventListener('touchstart', (e) => {
+                     if (isRunning && e.touches.length > 0) {
+                         handleClick(e);
+                     }
+                 }, { passive: false });
+
 
             } catch (err) {
                 console.error("Pond Init Error:", err);
