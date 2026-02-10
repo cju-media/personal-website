@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>RNBO Web Player - Sound Artist</title>
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
@@ -25,7 +29,7 @@
     </div>
 
     <script>
-        const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/37b6a3325ec1c5c41a9ac9bf7c519fa4f31bed9d/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
+        const BASE_PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/37b6a3325ec1c5c41a9ac9bf7c519fa4f31bed9d/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
         
         let context;
         let device;
@@ -34,7 +38,6 @@
             const statusText = document.getElementById("status");
             const startBtn = document.getElementById("start-btn");
 
-            // Double check that RNBO is actually loaded
             if (typeof RNBO === "undefined") {
                 statusText.innerText = "Error: RNBO library not loaded from CDN.";
                 return;
@@ -44,8 +47,12 @@
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
 
-                statusText.innerText = "Downloading patch from GitHub...";
-                const response = await fetch(PATCH_URL);
+                statusText.innerText = "Downloading patch (Cache-Busting active)...";
+                
+                // HARD CACHE BREAKER: Append unique timestamp to the URL
+                const cacheBuster = `?t=${new Date().getTime()}`;
+                const response = await fetch(BASE_PATCH_URL + cacheBuster);
+                
                 if (!response.ok) throw new Error("Could not fetch the patch file.");
                 const patcher = await response.json();
 
@@ -77,8 +84,6 @@
             }
         }
 
-        // FIX: Wait for the window to finish loading (including the CDN script) 
-        // before running the init function.
         window.addEventListener("load", init);
     </script>
 </body>

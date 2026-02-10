@@ -1794,12 +1794,6 @@
         "lines": [
             {
                 "patchline": {
-                    "destination": [ "obj-8", 0 ],
-                    "source": [ "obj-1", 0 ]
-                }
-            },
-            {
-                "patchline": {
                     "destination": [ "obj-2", 0 ],
                     "source": [ "obj-13", 0 ]
                 }
