@@ -7,38 +7,40 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <title>RNBO Web Player - Sound Artist</title>
+    <title>RNBO Web Player - Mouse Control</title>
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; }
-        .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 320px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; overflow: hidden; }
+        .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 320px; z-index: 10; }
         h1 { margin-bottom: 0.5rem; font-weight: 300; letter-spacing: 1px; }
         
-        /* Slider Styling */
-        .controls { margin: 2rem 0; text-align: left; }
-        label { display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: #007bff; }
-        .val-display { float: right; color: #007bff; font-family: monospace; }
+        /* Frequency Display Box */
+        .freq-display-box { background: #000; border: 1px solid #007bff; border-radius: 4px; padding: 15px; margin: 2rem 0; font-family: 'Courier New', Courier, monospace; }
+        .freq-label { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+        #freq-val { color: #007bff; font-size: 2rem; font-weight: bold; }
 
         button { width: 100%; padding: 12px 24px; font-size: 1.1rem; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: background 0.2s; }
         button:hover:not(:disabled) { background: #0056b3; }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
         #status { margin-top: 1.5rem; font-family: monospace; font-size: 0.85rem; color: #aaa; }
+        
+        .hint { margin-top: 10px; font-size: 0.7rem; color: #555; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <h1>RNBO Engine</h1>
-        <p style="color: #888; margin-bottom: 1rem;">Sound Artist Export</p>
+        <p style="color: #888; margin-bottom: 1rem;">Mouse X → Frequency</p>
         
-        <div class="controls">
-            <label for="freq-slider">Frequency <span id="freq-val" class="val-display">440Hz</span></label>
-            <input type="range" id="freq-slider" min="100" max="1000" step="1" value="440" disabled>
+        <div class="freq-display-box">
+            <div class="freq-label">Current Frequency</div>
+            <div id="freq-val">---</div>
         </div>
 
         <button id="start-btn" disabled>Loading Patch...</button>
         <div id="status">Initializing...</div>
+        <p class="hint">Move mouse left/right after starting</p>
     </div>
 
     <script>
@@ -46,15 +48,15 @@
         
         let context;
         let device;
+        let isRunning = false;
 
         async function init() {
             const statusText = document.getElementById("status");
             const startBtn = document.getElementById("start-btn");
-            const freqSlider = document.getElementById("freq-slider");
-            const freqVal = document.getElementById("freq-val");
+            const freqValDisplay = document.getElementById("freq-val");
 
             if (typeof RNBO === "undefined") {
-                statusText.innerText = "Error: RNBO library not loaded from CDN.";
+                statusText.innerText = "Error: RNBO library not loaded.";
                 return;
             }
 
@@ -62,35 +64,32 @@
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
 
-                statusText.innerText = "Downloading patch (Cache-Busting active)...";
                 const cacheBuster = `?t=${new Date().getTime()}`;
                 const response = await fetch(BASE_PATCH_URL + cacheBuster);
-                
-                if (!response.ok) throw new Error("Could not fetch the patch file.");
                 const patcher = await response.json();
 
-                statusText.innerText = "Instantiating RNBO device...";
                 device = await RNBO.createDevice({ context, patcher });
-
                 device.node.connect(context.destination);
 
-                // --- PARAMETER CONTROL LOGIC ---
                 const freqParam = device.parametersById.get("freq");
 
-                if (freqParam) {
-                    freqSlider.disabled = false;
-                    // Update RNBO when slider moves
-                    freqSlider.oninput = (e) => {
-                        const val = parseFloat(e.target.value);
-                        freqParam.value = val;
-                        freqVal.innerText = val + "Hz";
-                    };
-                    // Set initial value
-                    freqParam.value = freqSlider.value;
-                } else {
-                    console.warn("Parameter 'freq' not found in this patch.");
-                    freqVal.innerText = "Not Found";
-                }
+                // MOUSE TRACKING LOGIC
+                window.addEventListener('mousemove', (e) => {
+                    if (!isRunning || !freqParam) return;
+
+                    // 1. Calculate percentage of mouse X position across the window
+                    const xPercent = e.clientX / window.innerWidth;
+                    
+                    // 2. Map 0.0 - 1.0 to 100 - 1000 range
+                    const minFreq = 100;
+                    const maxFreq = 1000;
+                    const newFreq = minFreq + (xPercent * (maxFreq - minFreq));
+
+                    // 3. Update RNBO and Display (Clamp for safety)
+                    const clampedFreq = Math.max(minFreq, Math.min(maxFreq, newFreq));
+                    freqParam.value = clampedFreq;
+                    freqValDisplay.innerText = Math.round(clampedFreq) + "Hz";
+                });
 
                 statusText.innerText = "Patch loaded successfully.";
                 startBtn.disabled = false;
@@ -101,17 +100,18 @@
                         await context.resume();
                     }
                     
-                    if (startBtn.innerText === "Start Audio") {
-                        startBtn.innerText = "Audio Running";
-                        startBtn.style.background = "#28a745";
-                        statusText.innerText = "Playing...";
-                    }
+                    isRunning = true;
+                    startBtn.innerText = "Audio Running";
+                    startBtn.style.background = "#28a745";
+                    statusText.innerText = "Move your mouse to play...";
+                    
+                    // Set initial display
+                    if (freqParam) freqValDisplay.innerText = Math.round(freqParam.value) + "Hz";
                 };
 
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Error loading patch. Check the console.";
-                statusText.style.color = "#ff4d4d";
+                statusText.innerText = "Error loading patch.";
             }
         }
 
