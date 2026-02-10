@@ -92,6 +92,26 @@
         letter-spacing: 2px;
         pointer-events: none;
     }
+
+    #dev-bypass {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 20000;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 5px 10px;
+        font-family: monospace;
+        font-size: 12px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: opacity 0.3s;
+    }
+    #dev-bypass:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.1);
+    }
 </style>
 
 <div id="pond-wrapper">
@@ -100,6 +120,7 @@
     <div id="focus-overlay">
         <div id="focus-text">TAP TO FOCUS</div>
     </div>
+    <button id="dev-bypass">DEV MODE</button>
     <canvas id="pondCanvas"></canvas>
 </div>
 
@@ -110,6 +131,7 @@
 
         let context, device, isRunning = false;
         let freqParam, sampParam;
+        let devMode = false;
 
         const canvas = document.getElementById('pondCanvas');
         const ctx = canvas.getContext('2d');
@@ -230,8 +252,8 @@
             if (!isRunning) return;
 
             // Update Audio Params
-            if (freqParam) freqParam.value = 100 + ((clientX / window.innerWidth) * 900);
-            if (sampParam) {
+            if (!devMode && freqParam) freqParam.value = 100 + ((clientX / window.innerWidth) * 900);
+            if (!devMode && sampParam) {
                 const yPercent = 1 - (clientY / window.innerHeight);
                 sampParam.value = 0.1 + (yPercent * 3.9);
             }
@@ -250,42 +272,79 @@
             const loading = document.getElementById('loading-indicator');
             const overlay = document.getElementById('focus-overlay');
             const backBtn = document.getElementById('back-button');
+            const devBtn = document.getElementById('dev-bypass');
 
-            try {
-                if (typeof RNBO === "undefined") {
-                    setTimeout(init, 100);
-                    return;
-                }
+            // Dev Bypass Handler
+            let initStarted = false;
 
-                const WAContext = window.AudioContext || window.webkitAudioContext;
-                context = new WAContext();
-                const cacheBuster = `?t=${new Date().getTime()}`;
+            function enableDevMode() {
+                // Remove early return to allow override anytime
+                devMode = true;
+                // initStarted = true; // Optional: mark as started so real init doesn't double up, but if it's already running, devMode flag protects us.
 
-                const apiResponse = await fetch(REPO_API_URL);
-                const files = await apiResponse.json();
-                const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
-                const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-
-                const patchResponse = await fetch(PATCH_URL + cacheBuster);
-                const patcher = await patchResponse.json();
-                device = await RNBO.createDevice({ context, patcher });
-                device.node.connect(context.destination);
-
-                const fileResponse = await fetch(choice.download_url + cacheBuster);
-                const arrayBuffer = await fileResponse.arrayBuffer();
-                const audioBuffer = await context.decodeAudioData(arrayBuffer);
-                await device.setDataBuffer("sound", audioBuffer);
-
-                freqParam = device.parametersById.get("freq");
-                sampParam = device.parametersById.get("sampRate");
-
+                console.log("DEV MODE ENABLED: Bypassing RNBO/Audio");
                 loading.style.display = 'none';
                 overlay.style.visibility = 'visible';
                 overlay.style.opacity = '1';
+                devBtn.style.display = 'none'; // Hide button after use
+            }
 
-                // Handle both Click and Touch to start audio
+            devBtn.addEventListener('click', enableDevMode);
+
+            try {
+                // Wait briefly to see if user clicks dev mode, but don't block
+                // (Actually we can just proceed. If dev mode is clicked, we short circuit)
+
+                // Real Init
+                if (typeof RNBO === "undefined") {
+                    // Poll for RNBO load unless dev mode
+                    const checkRNBO = () => {
+                        if (devMode) return; // Stop polling if dev mode active
+                        if (typeof RNBO !== "undefined") {
+                             if (!initStarted) startRealInit();
+                        } else {
+                            setTimeout(checkRNBO, 100);
+                        }
+                    };
+                    checkRNBO();
+                } else {
+                    if (!initStarted) startRealInit();
+                }
+
+                async function startRealInit() {
+                    if (devMode) return;
+                    initStarted = true;
+
+                    const WAContext = window.AudioContext || window.webkitAudioContext;
+                    context = new WAContext();
+                    const cacheBuster = `?t=${new Date().getTime()}`;
+
+                    const apiResponse = await fetch(REPO_API_URL);
+                    const files = await apiResponse.json();
+                    const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
+                    const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+
+                    const patchResponse = await fetch(PATCH_URL + cacheBuster);
+                    const patcher = await patchResponse.json();
+                    device = await RNBO.createDevice({ context, patcher });
+                    device.node.connect(context.destination);
+
+                    const fileResponse = await fetch(choice.download_url + cacheBuster);
+                    const arrayBuffer = await fileResponse.arrayBuffer();
+                    const audioBuffer = await context.decodeAudioData(arrayBuffer);
+                    await device.setDataBuffer("sound", audioBuffer);
+
+                    freqParam = device.parametersById.get("freq");
+                    sampParam = device.parametersById.get("sampRate");
+
+                    loading.style.display = 'none';
+                    overlay.style.visibility = 'visible';
+                    overlay.style.opacity = '1';
+                }
+
+                // Handle both Click and Touch to start audio (or mock start)
                 const startAudio = async () => {
-                    if (context.state === 'suspended') await context.resume();
+                    if (!devMode && context && context.state === 'suspended') await context.resume();
                     isRunning = true;
                     overlay.style.opacity = '0';
                     setTimeout(() => {
@@ -303,8 +362,6 @@
                     if (Date.now() - lastTouchTime < 1000) return;
                     handleInteraction(e.clientX, e.clientY);
                 });
-                // REMOVED GLOBAL CLICK LISTENER to prevent ghost clicks on mobile
-                // window.addEventListener('click', handleClick);
 
                 window.addEventListener('mouseleave', () => {
                     isInteracting = false;
@@ -340,8 +397,11 @@
 
 
             } catch (err) {
-                console.error("Pond Init Error:", err);
-                loading.innerText = "ERROR LOADING POND";
+                // If error occurs and not in dev mode, show error
+                if (!devMode) {
+                    console.error("Pond Init Error:", err);
+                    loading.innerText = "ERROR LOADING POND";
+                }
             }
         }
 
