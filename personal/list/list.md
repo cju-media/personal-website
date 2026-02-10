@@ -1,7 +1,10 @@
-## 2-8-26
-Bad Bunny halftime convinced me of American pride. Not for the USA but for all of the continent, North and South. The US has co-opted American Pride from the rest of the continent. We should celebrate the beautiful tapestry that makes up our diverse continent, the same way Europe does with their common denominator of whiteness. The Americas our united in our rejection of European domination and that should be celebrated. Spanish dialects in South America are so diverse that mutual understanding is sometimes hard. That is beautiful. 
+## 2-9-26
+Got some great drone footage along the LA river. Did a ton of website work again.
 
-*[Study for Player Piano #11](https://youtu.be/AfmVJmQKdj4?si=smpW2-67p3e_UE-F)
+## 2-8-26
+[Bad Bunny halftime](https://youtu.be/G6FuWd4wNd8?si=PzoiMgJExn3lSqyA) convinced me of American pride. Not for the USA but for all of the continent, North and South. The US has co-opted American Pride from the rest of the continent. We should celebrate the beautiful tapestry that makes up our diverse continent, the same way Europe does with their common denominator of whiteness. The Americas our united in our rejection of European domination and that should be celebrated. Spanish dialects in South America are so diverse that mutual understanding is sometimes hard. That is beautiful. 
+
+*[Study for Player Piano #11](https://youtu.be/AfmVJmQKdj4?si=smpW2-67p3e_UE-F)*
 Unison syncopation. Groovy in a way. Asymmetrical stabs. Sounds cool.
 
 ## 2-7-26  
