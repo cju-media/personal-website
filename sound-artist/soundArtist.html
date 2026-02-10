@@ -82,7 +82,7 @@
                 const response = await fetch(EXPORT_URL);
                 const rawUrl = 'https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json';
                 
-                const response = await fetch(rawUrl);
+                // const response = await fetch(rawUrl);
 
                 if (!response.ok) {
                     throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
