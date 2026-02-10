@@ -36,3 +36,6 @@ This repository contains HTML fragments and scripts intended to be injected into
   * **Desktop:** Flex row (Text Left | Content Right)
   * **Mobile (<768px):** Flex column (Text Top | Content Bottom)
 * Use a wrapper class (e.g., `.content-wrapper`) to manage this layout switch via media queries.
+
+## 5. File Restrictions
+* **Never edit files containing the title "export.json".**
