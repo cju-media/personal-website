@@ -115,6 +115,7 @@
         const ctx = canvas.getContext('2d');
         let ripples = [];
         let maxDiagonal = 0;
+        let mouseX = -1000, mouseY = -1000;
 
         function setCanvasSize() {
             canvas.width = window.innerWidth;
@@ -143,9 +144,49 @@
             }
         }
 
+        function drawWaves() {
+            const time = performance.now() * 0.001;
+            const waveCount = 8; // Number of horizontal lines
+            const spacing = canvas.height / (waveCount + 1);
+
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.25)'; // Subtle blue
+
+            for (let i = 0; i < waveCount; i++) {
+                ctx.beginPath();
+                const baseY = spacing * (i + 1);
+
+                // Draw line across width
+                for (let x = 0; x <= canvas.width; x += 5) {
+                    // Base sine wave traveling left to right (-time)
+                    let y = baseY + Math.sin(x * 0.01 - time * 2 + i) * 15;
+
+                    // Mouse interaction
+                    const dist = Math.hypot(x - mouseX, y - mouseY);
+                    const influenceRadius = 200;
+
+                    if (dist < influenceRadius) {
+                        const power = (influenceRadius - dist) / influenceRadius;
+                        // Add disruption: noise/jitter or just offset
+                        // Let's add a secondary higher frequency wave based on mouse proximity
+                        y += Math.sin(x * 0.1 + time * 10) * 30 * power;
+                        // And pull towards mouse slightly? Or push away?
+                        // y += (mouseY - y) * 0.1 * power; // Attract
+                    }
+
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
         function animate() {
             ctx.fillStyle = 'rgba(5, 7, 10, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawWaves();
+
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
                 ripples[i].draw();
@@ -157,6 +198,9 @@
 
         // SHARED INPUT HANDLER (Touch & Mouse)
         function handleInteraction(clientX, clientY) {
+            mouseX = clientX;
+            mouseY = clientY;
+
             if (!isRunning) return;
 
             if (Math.random() > 0.85) ripples.push(new Ripple(clientX, clientY));
