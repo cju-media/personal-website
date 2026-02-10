@@ -13,7 +13,6 @@
         background-color: #3b82f6; /* Blue background */
         z-index: 9999; 
         overflow: hidden;
-        /* Prevent mobile "pull-to-refresh" */
         touch-action: none;
     }
 
@@ -22,7 +21,7 @@
         top: 30px;
         left: 30px;
         z-index: 10002;
-        color: rgba(255, 255, 255, 0.7); /* Light Grey */
+        color: rgba(255, 255, 255, 0.7); 
         font-family: monospace;
         text-decoration: none;
         letter-spacing: 3px;
@@ -57,7 +56,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(59, 130, 246, 0.95); /* Blue overlay */
+        background: rgba(59, 130, 246, 0.95);
         display: flex;
         flex-direction: column;
         align-items: center; justify-content: center;
@@ -71,7 +70,7 @@
     #focus-text { 
         font-family: monospace;
         letter-spacing: 0.8em;
-        color: rgba(255, 255, 255, 0.7); /* Light Grey */
+        color: rgba(255, 255, 255, 0.7);
         font-size: 1rem;
         border: 1px solid rgba(255, 255, 255, 0.7);
         padding: 20px 40px;
@@ -87,7 +86,7 @@
         transform: translate(-50%, -50%);
         z-index: 10001;
         font-family: monospace; 
-        color: rgba(255, 255, 255, 0.7); /* Light Grey */
+        color: rgba(255, 255, 255, 0.7);
         font-size: 0.8rem;
         letter-spacing: 2px;
         pointer-events: none;
@@ -108,10 +107,6 @@
         border-radius: 4px;
         transition: opacity 0.3s;
     }
-    #dev-bypass:hover {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.1);
-    }
 </style>
 
 <div id="pond-wrapper">
@@ -125,291 +120,211 @@
 </div>
 
 <script>
-    (function() {
-        const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
-        const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
+(function() {
+    const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
+    const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
 
-        let context, device, isRunning = false;
-        let freqParam, sampParam;
-        let devMode = false;
+    let context, device, isRunning = false;
+    let freqParam, sampParam;
+    let devMode = false;
 
-        const canvas = document.getElementById('pondCanvas');
-        const ctx = canvas.getContext('2d');
-        let ripples = [];
-        let maxDiagonal = 0;
+    const canvas = document.getElementById('pondCanvas');
+    const ctx = canvas.getContext('2d');
+    let ripples = [];
+    let maxDiagonal = 0;
 
-        // Interaction State
-        let isInteracting = false;
-        let currentX = 0;
-        let currentY = 0;
-        let frameCounter = 0;
-        let lastTouchTime = 0;
+    let currentX = 0, currentY = 0;
+    let lastRippleTime = 0; 
+    let lastTouchTime = 0;
 
-        function setCanvasSize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            maxDiagonal = Math.sqrt(canvas.width**2 + canvas.height**2);
+    const ambientAmp = 12; 
+    // Subtle power (10% scale relative to the 'huge' displacement)
+    const rippleMaxPower = ambientAmp * 1.1; 
+
+    function setCanvasSize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        maxDiagonal = Math.sqrt(canvas.width**2 + canvas.height**2);
+    }
+    window.addEventListener('resize', setCanvasSize);
+    setCanvasSize();
+
+    class Ripple {
+        constructor(x, y) {
+            this.x = x; 
+            this.y = y;
+            this.radius = 0;
+            this.strength = 0; 
+            this.maxReached = false;
+            this.velocity = 2.5; 
         }
-
-        window.addEventListener('resize', setCanvasSize);
-        setCanvasSize();
-
-        class Ripple {
-            constructor(x, y) {
-                this.x = x; this.y = y;
-                this.r = 0;
-                this.opacity = 0.4;
-                this.strength = 1.0;
-            }
-            update() {
-                this.r += 2.5;
-                this.strength -= 0.005;
-                this.opacity -= 0.002;
-            }
-            draw() {
-                // Invisible ripples - logic handled in drawWaves
+        update() {
+            this.radius += this.velocity;
+            if (!this.maxReached) {
+                this.strength += 0.2; // Quick ramp up
+                if (this.strength >= 1.0) {
+                    this.strength = 1.0;
+                    this.maxReached = true;
+                }
+            } else {
+                this.strength *= 0.992; 
             }
         }
+    }
 
-        function drawWaves() {
-            const time = performance.now() * 0.001;
-            const waveCount = 8; // Number of horizontal lines
-            const spacing = canvas.height / (waveCount + 1);
+    function drawWaves() {
+        const time = performance.now() * 0.001;
+        const waveCount = 12; 
+        const spacing = canvas.height / (waveCount + 1);
 
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.999)'; // Light Grey Waves
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)'; 
 
-            for (let i = 0; i < waveCount; i++) {
-                ctx.beginPath();
-                const baseY = spacing * (i + 1);
+        for (let i = 0; i < waveCount; i++) {
+            ctx.beginPath();
+            const baseY = spacing * (i + 1);
 
-                // Draw line across width
-                for (let x = 0; x <= canvas.width; x += 5) {
-                    // Base sine wave traveling left to right (-time)
-                    let y = baseY + Math.sin(x * 0.01 - time * 2 + i) * 15;
+            for (let x = 0; x <= canvas.width; x += 5) {
+                let yOffset = Math.sin(x * 0.01 - time * 2 + i) * ambientAmp;
 
-                    // Ripple interaction (Smooth Push)
-                    for (let j = 0; j < ripples.length; j++) {
-                        const r = ripples[j];
-                        if (r.strength <= 0) continue;
+                for (let j = 0; j < ripples.length; j++) {
+                    const r = ripples[j];
+                    const dx = x - r.x;
+                    const dy = baseY - r.y; 
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-                        const dx = x - r.x;
-                        const dy = y - r.y;
-                        const dist = Math.hypot(dx, dy);
+                    const distFromWavefront = distance - r.radius;
+                    const waveWidth = 120; 
 
-                        // If point is near the ripple's current radius (wavefront)
-                        const distFromWavefront = dist - r.r;
-                        const waveWidth = 50; // Width of the "push" effect
-
-                        if (Math.abs(distFromWavefront) < waveWidth) {
-                            // Cosine bump for a defined width
-                            const normalized = distFromWavefront / waveWidth; // -1 to 1
-                            const intensity = (Math.cos(normalized * Math.PI) + 1) / 2; // 0 to 1 smooth bell curve
-
-                            // Push the wave up/down based on strength
-                            y -= intensity * 40 * r.strength;
-                        }
+                    if (Math.abs(distFromWavefront) < waveWidth) {
+                        const normalized = distFromWavefront / waveWidth; 
+                        const envelope = (Math.cos(normalized * Math.PI) + 1) / 2;
+                        
+                        // DIRECTIONAL PUSH: Moves away from mouse center
+                        const direction = dy < 0 ? -1 : 1;
+                        
+                        yOffset += (envelope * rippleMaxPower * r.strength) * direction;
                     }
-
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
                 }
-                ctx.stroke();
+
+                const finalY = baseY + yOffset;
+                if (x === 0) ctx.moveTo(x, finalY);
+                else ctx.lineTo(x, finalY);
+            }
+            ctx.stroke();
+        }
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.4)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        drawWaves();
+
+        for (let i = ripples.length - 1; i >= 0; i--) {
+            ripples[i].update();
+            if (ripples[i].strength < 0.01 || ripples[i].radius > maxDiagonal) {
+                ripples.splice(i, 1);
             }
         }
+        requestAnimationFrame(animate);
+    }
 
-        function animate() {
-            // Trail effect: clear with semi-transparent blue
-            ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function handleInteraction(clientX, clientY) {
+        currentX = clientX;
+        currentY = clientY;
 
-            // Constant Ripple Generation Logic
-            if (isRunning && isInteracting) {
-                frameCounter++;
-                // Spawn ripple every 5 frames (~12 times/sec at 60fps)
-                if (frameCounter % 5 === 0) {
-                    ripples.push(new Ripple(currentX, currentY));
-                }
+        if (isRunning) {
+            const now = Date.now();
+            // POLLING: New ripple every 0.1 seconds (100ms)
+            if (now - lastRippleTime > 100) {
+                ripples.push(new Ripple(currentX, currentY));
+                lastRippleTime = now;
             }
 
-            drawWaves();
-
-            for (let i = ripples.length - 1; i >= 0; i--) {
-                ripples[i].update();
-                ripples[i].draw(); // No-op visually
-                if (ripples[i].r > maxDiagonal || ripples[i].opacity <= 0) ripples.splice(i, 1);
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // SHARED INPUT HANDLER (Touch & Mouse)
-        function handleInteraction(clientX, clientY) {
-            currentX = clientX;
-            currentY = clientY;
-            isInteracting = true;
-
-            if (!isRunning) return;
-
-            // Update Audio Params
             if (!devMode && freqParam) freqParam.value = 100 + ((clientX / window.innerWidth) * 900);
             if (!devMode && sampParam) {
                 const yPercent = 1 - (clientY / window.innerHeight);
                 sampParam.value = 0.1 + (yPercent * 3.9);
             }
         }
+    }
 
-        // Handle Click just for initialization or immediate feedback if needed
-        function handleClick(e) {
-             const x = e.clientX || (e.touches && e.touches[0].clientX);
-             const y = e.clientY || (e.touches && e.touches[0].clientY);
-             if (x !== undefined && y !== undefined) {
-                 handleInteraction(x, y);
-             }
-        }
+    async function init() {
+        const loading = document.getElementById('loading-indicator');
+        const overlay = document.getElementById('focus-overlay');
+        const devBtn = document.getElementById('dev-bypass');
 
-        async function init() {
-            const loading = document.getElementById('loading-indicator');
-            const overlay = document.getElementById('focus-overlay');
-            const backBtn = document.getElementById('back-button');
-            const devBtn = document.getElementById('dev-bypass');
+        devBtn.addEventListener('click', () => {
+            devMode = true;
+            loading.style.display = 'none';
+            overlay.style.visibility = 'visible';
+            overlay.style.opacity = '1';
+        });
 
-            // Dev Bypass Handler
-            let initStarted = false;
+        async function setupRNBO() {
+            if (devMode) return;
+            try {
+                const WAContext = window.AudioContext || window.webkitAudioContext;
+                context = new WAContext();
+                const patchResponse = await fetch(PATCH_URL);
+                const patcher = await patchResponse.json();
+                device = await RNBO.createDevice({ context, patcher });
+                device.node.connect(context.destination);
 
-            function enableDevMode() {
-                // Remove early return to allow override anytime
-                devMode = true;
-                // initStarted = true; // Optional: mark as started so real init doesn't double up, but if it's already running, devMode flag protects us.
+                const apiResponse = await fetch(REPO_API_URL);
+                const files = await apiResponse.json();
+                const audioFiles = files.filter(f => f.name.match(/\.(wav|mp3)$/i));
+                const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+                
+                const fileResponse = await fetch(choice.download_url);
+                const arrayBuffer = await fileResponse.arrayBuffer();
+                const audioBuffer = await context.decodeAudioData(arrayBuffer);
+                await device.setDataBuffer("sound", audioBuffer);
 
-                console.log("DEV MODE ENABLED: Bypassing RNBO/Audio");
+                freqParam = device.parametersById.get("freq");
+                sampParam = device.parametersById.get("sampRate");
+
                 loading.style.display = 'none';
                 overlay.style.visibility = 'visible';
                 overlay.style.opacity = '1';
-                devBtn.style.display = 'none'; // Hide button after use
-            }
-
-            devBtn.addEventListener('click', enableDevMode);
-
-            try {
-                // Wait briefly to see if user clicks dev mode, but don't block
-                // (Actually we can just proceed. If dev mode is clicked, we short circuit)
-
-                // Real Init
-                if (typeof RNBO === "undefined") {
-                    // Poll for RNBO load unless dev mode
-                    const checkRNBO = () => {
-                        if (devMode) return; // Stop polling if dev mode active
-                        if (typeof RNBO !== "undefined") {
-                             if (!initStarted) startRealInit();
-                        } else {
-                            setTimeout(checkRNBO, 100);
-                        }
-                    };
-                    checkRNBO();
-                } else {
-                    if (!initStarted) startRealInit();
-                }
-
-                async function startRealInit() {
-                    if (devMode) return;
-                    initStarted = true;
-
-                    const WAContext = window.AudioContext || window.webkitAudioContext;
-                    context = new WAContext();
-                    const cacheBuster = `?t=${new Date().getTime()}`;
-
-                    const apiResponse = await fetch(REPO_API_URL);
-                    const files = await apiResponse.json();
-                    const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
-                    const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-
-                    const patchResponse = await fetch(PATCH_URL + cacheBuster);
-                    const patcher = await patchResponse.json();
-                    device = await RNBO.createDevice({ context, patcher });
-                    device.node.connect(context.destination);
-
-                    const fileResponse = await fetch(choice.download_url + cacheBuster);
-                    const arrayBuffer = await fileResponse.arrayBuffer();
-                    const audioBuffer = await context.decodeAudioData(arrayBuffer);
-                    await device.setDataBuffer("sound", audioBuffer);
-
-                    freqParam = device.parametersById.get("freq");
-                    sampParam = device.parametersById.get("sampRate");
-
-                    loading.style.display = 'none';
-                    overlay.style.visibility = 'visible';
-                    overlay.style.opacity = '1';
-                }
-
-                // Handle both Click and Touch to start audio (or mock start)
-                const startAudio = async () => {
-                    if (!devMode && context && context.state === 'suspended') await context.resume();
-                    isRunning = true;
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        overlay.style.visibility = 'hidden';
-                        backBtn.classList.add('visible');
-                    }, 2000);
-                };
-
-                overlay.addEventListener('click', startAudio);
-                overlay.addEventListener('touchstart', startAudio);
-
-                // MOUSE SUPPORT
-                window.addEventListener('mousemove', (e) => {
-                    // Prevent ghost mouse moves on mobile from re-enabling interaction
-                    if (Date.now() - lastTouchTime < 1000) return;
-                    handleInteraction(e.clientX, e.clientY);
-                });
-
-                window.addEventListener('mouseleave', () => {
-                    isInteracting = false;
-                    console.log("mouse off");
-                });
-
-                // MOBILE SUPPORT: Touch tracking
-                window.addEventListener('touchmove', (e) => {
-                    if (e.touches.length > 0) {
-                        e.preventDefault(); // Prevent scrolling
-                        lastTouchTime = Date.now();
-                        handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
-                    }
-                }, { passive: false });
-
-                window.addEventListener('touchstart', (e) => {
-                     if (e.touches.length > 0) {
-                         lastTouchTime = Date.now();
-                         handleClick(e);
-                     }
-                 }, { passive: false });
-
-                window.addEventListener('touchend', (e) => {
-                    if (e.touches.length === 0) {
-                        isInteracting = false;
-                    }
-                });
-
-                window.addEventListener('touchcancel', (e) => {
-                    if (e.touches.length === 0) {
-                        isInteracting = false;
-                    }
-                });
-
-
-            } catch (err) {
-                // If error occurs and not in dev mode, show error
-                if (!devMode) {
-                    console.error("Pond Init Error:", err);
-                    loading.innerText = "ERROR LOADING POND";
-                }
+            } catch (e) {
+                loading.innerText = "AUDIO LOAD ERROR";
             }
         }
 
-        if (document.readyState === "complete" || document.readyState === "interactive") {
-            init();
-        } else {
-            document.addEventListener("DOMContentLoaded", init);
+        if (typeof RNBO !== "undefined") setupRNBO();
+        else {
+            const check = setInterval(() => {
+                if (typeof RNBO !== "undefined") {
+                    setupRNBO();
+                    clearInterval(check);
+                }
+            }, 100);
         }
-    })();
+
+        overlay.addEventListener('mousedown', (e) => {
+            isRunning = true;
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.visibility = 'hidden', 1000);
+            handleInteraction(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (Date.now() - lastTouchTime < 1000) return;
+            handleInteraction(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                e.preventDefault();
+                lastTouchTime = Date.now();
+                handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+    }
+
+    requestAnimationFrame(animate);
+    init();
+})();
 </script>
