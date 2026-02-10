@@ -10,7 +10,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: #05070a;
+        background-color: #3b82f6; /* Blue background */
         z-index: 9999; 
         overflow: hidden;
         /* Prevent mobile "pull-to-refresh" */
@@ -22,7 +22,7 @@
         top: 30px;
         left: 30px;
         z-index: 10002;
-        color: #1e3a8a;
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-family: monospace;
         text-decoration: none;
         letter-spacing: 3px;
@@ -40,8 +40,8 @@
     }
 
     #back-button:hover {
-        color: #3b82f6;
-        border: 1px solid #1e3a8a;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.7);
         opacity: 1;
     }
 
@@ -57,7 +57,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.95);
+        background: rgba(59, 130, 246, 0.95); /* Blue overlay */
         display: flex;
         flex-direction: column;
         align-items: center; justify-content: center;
@@ -71,9 +71,9 @@
     #focus-text { 
         font-family: monospace;
         letter-spacing: 0.8em;
-        color: #3b82f6; 
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-size: 1rem;
-        border: 1px solid #1e3a8a;
+        border: 1px solid rgba(255, 255, 255, 0.7);
         padding: 20px 40px;
         text-transform: uppercase;
         pointer-events: none;
@@ -87,7 +87,7 @@
         transform: translate(-50%, -50%);
         z-index: 10001;
         font-family: monospace; 
-        color: #1e3a8a;
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-size: 0.8rem;
         letter-spacing: 2px;
         pointer-events: none;
@@ -139,8 +139,7 @@
                 this.opacity -= 0.002;
             }
             draw() {
-                // Invisible ripples - no drawing here
-                // Logic is handled in drawWaves
+                // Invisible ripples - logic handled in drawWaves
             }
         }
 
@@ -150,7 +149,7 @@
             const spacing = canvas.height / (waveCount + 1);
 
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(59, 130, 246, 0.25)'; // Subtle blue
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)'; // Light Grey Waves
 
             for (let i = 0; i < waveCount; i++) {
                 ctx.beginPath();
@@ -160,15 +159,6 @@
                 for (let x = 0; x <= canvas.width; x += 5) {
                     // Base sine wave traveling left to right (-time)
                     let y = baseY + Math.sin(x * 0.01 - time * 2 + i) * 15;
-
-                    // Mouse interaction
-                    const distMouse = Math.hypot(x - mouseX, y - mouseY);
-                    const influenceRadius = 200;
-
-                    if (distMouse < influenceRadius) {
-                        const power = (influenceRadius - distMouse) / influenceRadius;
-                        y += Math.sin(x * 0.1 + time * 10) * 30 * power;
-                    }
 
                     // Ripple interaction (Smooth Push)
                     for (let j = 0; j < ripples.length; j++) {
@@ -184,10 +174,7 @@
                         const waveWidth = 50; // Width of the "push" effect
 
                         if (Math.abs(distFromWavefront) < waveWidth) {
-                            // Smooth Gaussian-like bump
-                            // const intensity = Math.exp(-Math.pow(distFromWavefront, 2) / (2 * Math.pow(waveWidth/2, 2)));
-
-                            // Or cosine bump for a defined width
+                            // Cosine bump for a defined width
                             const normalized = distFromWavefront / waveWidth; // -1 to 1
                             const intensity = (Math.cos(normalized * Math.PI) + 1) / 2; // 0 to 1 smooth bell curve
 
@@ -205,14 +192,15 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(5, 7, 10, 0.2)';
+            // Trail effect: clear with semi-transparent blue
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             drawWaves();
 
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
-                ripples[i].draw(); // No-op visually, but good for structure if we re-add debugging
+                ripples[i].draw(); // No-op visually
                 if (ripples[i].r > maxDiagonal || ripples[i].opacity <= 0) ripples.splice(i, 1);
             }
             requestAnimationFrame(animate);
