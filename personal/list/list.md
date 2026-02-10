@@ -1,5 +1,10 @@
+## 2-9-26
+I did some cool drone work and autistically worked on my website. Had a nice viewer in stream keep us entertained. Its never a bad time streaming. I figure I do not have much to say. I guess a daily goal is to have something substantial to say everyday to make life worth it.
+
+Did some cool [RNBO work](https://cju.media/rnbotest-1) too. Want to build something for my website AND test some things for a potential webdev project for a coworker. Trying to pull files dynamically from a repo to load in rnbo for user interactivity reasons.
+
 ## 2-8-26
-Bad Bunny halftime convinced me of American pride. Not for the USA but for all of the continent, North and South. The US has co-opted American Pride from the rest of the continent. We should celebrate the beautiful tapestry that makes up our diverse continent, the same way Europe does with their common denominator of whiteness. The Americas our united in our rejection of European domination and that should be celebrated. Spanish dialects in South America are so diverse that mutual understanding is sometimes hard. That is beautiful.
+[Bad Bunny halftime](https://www.youtube.com/watch?v=G6FuWd4wNd8) convinced me of American pride. Not for the USA but for all of the continent, North and South. The US has co-opted American Pride from the rest of the continent. We should celebrate the beautiful tapestry that makes up our diverse continent, the same way Europe does with their common denominator of whiteness. The Americas our united in our rejection of European domination and that should be celebrated. Spanish dialects in South America are so diverse that mutual understanding is sometimes hard. That is beautiful.
 
 *[Study for Player Piano #11](https://youtu.be/AfmVJmQKdj4?si=smpW2-67p3e_UE-F)
 Unison syncopation. Groovy in a way. Asymmetrical stabs. Sounds cool.
