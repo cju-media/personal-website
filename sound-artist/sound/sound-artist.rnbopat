@@ -9,7 +9,7 @@
             "modernui": 1
         },
         "classnamespace": "rnbo",
-        "rect": [ 1150.0, 447.0, 1000.0, 780.0 ],
+        "rect": [ 1294.0, 537.0, 1000.0, 780.0 ],
         "default_fontname": "Lato",
         "title": "sound-artist",
         "boxes": [
@@ -104,13 +104,13 @@
                     "numinlets": 3,
                     "numoutlets": 3,
                     "outlettype": [ "signal", "signal", "signal" ],
-                    "patching_rect": [ 606.0, 271.0, 143.0, 23.0 ],
+                    "patching_rect": [ 410.5, 245.0, 143.0, 23.0 ],
                     "rnbo_classname": "groove~",
                     "rnbo_extra_attributes": {
                         "synctype": "relative",
                         "syncmode": "phase"
                     },
-                    "rnbo_serial": 2,
+                    "rnbo_serial": 3,
                     "rnbo_uniqueid": "groove~_obj-14",
                     "rnboinfo": {
                         "needsInstanceInfo": 1,
@@ -1228,7 +1228,7 @@
                     "numinlets": 1,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 540.0, 220.0, 56.0, 23.0 ],
+                    "patching_rect": [ 508.0, 193.0, 56.0, 23.0 ],
                     "rnbo_classname": "loadbang",
                     "rnbo_serial": 1,
                     "rnbo_uniqueid": "loadbang_obj-13",
@@ -1428,12 +1428,12 @@
                     "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "signal" ],
-                    "patching_rect": [ 600.0, 179.0, 40.0, 23.0 ],
+                    "patching_rect": [ 444.0, 177.0, 40.0, 23.0 ],
                     "rnbo_classname": "sig~",
                     "rnbo_extra_attributes": {
                         "unit": "ms"
                     },
-                    "rnbo_serial": 1,
+                    "rnbo_serial": 4,
                     "rnbo_uniqueid": "sig~_obj-8",
                     "text": "sig~ 1"
                 }
@@ -1445,17 +1445,16 @@
                     "numinlets": 1,
                     "numoutlets": 3,
                     "outlettype": [ "", "", "" ],
-                    "patching_rect": [ 666.0, 115.0, 83.0, 23.0 ],
+                    "patching_rect": [ 666.0, 115.0, 162.0, 23.0 ],
                     "rnbo_classname": "buffer~",
                     "rnbo_extra_attributes": {
                         "meta": "",
                         "fill": "",
                         "type": "",
                         "samplerate": 0.0,
-                        "file": "",
                         "preset": 0
                     },
-                    "rnbo_serial": 1,
+                    "rnbo_serial": 5,
                     "rnbo_uniqueid": "buffer~_obj-3",
                     "rnboinfo": {
                         "needsInstanceInfo": 1,
@@ -1752,7 +1751,7 @@
                         "versionId": -72996304,
                         "changesPatcherIO": 0
                     },
-                    "text": "buffer~ sound"
+                    "text": "buffer~ sound @file anton.aif"
                 }
             }
         ],

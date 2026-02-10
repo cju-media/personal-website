@@ -7,15 +7,18 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <title>RNBO Web Player - Sound Artist</title>
+    <title>RNBO Web Player - Dual Axis Control</title>
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; overflow: hidden; }
         .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 340px; z-index: 10; }
         h1 { margin-bottom: 0.5rem; font-weight: 300; letter-spacing: 1px; }
-        .freq-display-box { background: #000; border: 1px solid #007bff; border-radius: 4px; padding: 15px; margin: 1.5rem 0; font-family: 'Courier New', Courier, monospace; }
-        .freq-label { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        #freq-val { color: #007bff; font-size: 1.8rem; font-weight: bold; }
+        
+        .display-container { display: flex; gap: 10px; margin: 1.5rem 0; }
+        .readout { flex: 1; background: #000; border: 1px solid #007bff; border-radius: 4px; padding: 10px; font-family: 'Courier New', Courier, monospace; }
+        .label { color: #888; font-size: 0.6rem; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .val { color: #007bff; font-size: 1.2rem; font-weight: bold; }
+
         button { width: 100%; padding: 14px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: all 0.2s; }
         button:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
@@ -26,50 +29,46 @@
 
     <div class="card">
         <h1>RNBO Engine</h1>
-        <div class="freq-display-box">
-            <div class="freq-label">Mouse X Frequency</div>
-            <div id="freq-val">---</div>
+        <div class="display-container">
+            <div class="readout">
+                <div class="label">X: Freq</div>
+                <div id="freq-val" class="val">---</div>
+            </div>
+            <div class="readout">
+                <div class="label">Y: Param</div>
+                <div id="param-val" class="val">---</div>
+            </div>
         </div>
         <button id="start-btn" disabled>Scanning Assets...</button>
         <div id="status">Ready</div>
     </div>
 
     <script>
-        // GitHub API endpoint to list the contents of the assets directory
         const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
         const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
 
         let context, device, isRunning = false;
-        let selectedAudioURL = "";
-        let selectedFileName = "";
+        let selectedAudioURL = "", selectedFileName = "";
 
         async function init() {
             const statusText = document.getElementById("status");
             const startBtn = document.getElementById("start-btn");
             const freqValDisplay = document.getElementById("freq-val");
+            const paramValDisplay = document.getElementById("param-val");
 
             try {
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
                 const cacheBuster = `?t=${new Date().getTime()}`;
 
-                // 1. DYNAMICALLY FIND FILES: Use GitHub API to get the list of files in the directory
-                statusText.innerText = "Scanning GitHub assets...";
                 const apiResponse = await fetch(REPO_API_URL);
                 const files = await apiResponse.json();
+                const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
                 
-                // Filter for audio files (aiff, wav, mp3)
-                const audioFiles = files.filter(file => file.name.match(/\.(aiff|wav|mp3)$/i));
-                
-                if (audioFiles.length === 0) throw new Error("No audio files found in assets folder.");
-
-                // Pick a random one
                 const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
                 selectedAudioURL = choice.download_url + cacheBuster;
                 selectedFileName = choice.name;
 
-                // 2. Load the Patch
-                statusText.innerText = "Loading RNBO patch...";
                 const patchResponse = await fetch(PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
                 device = await RNBO.createDevice({ context, patcher });
@@ -80,26 +79,40 @@
                 startBtn.innerText = "Start Audio";
 
                 const freqParam = device.parametersById.get("freq");
+                const yParam = device.parametersById.get("param"); // Accessing "param"
+
                 window.addEventListener('mousemove', (e) => {
-                    if (!isRunning || !freqParam) return;
-                    const xPercent = e.clientX / window.innerWidth;
-                    const clampedFreq = Math.max(100, Math.min(1000, 100 + (xPercent * 900)));
-                    freqParam.value = clampedFreq;
-                    freqValDisplay.innerText = Math.round(clampedFreq) + "Hz";
+                    if (!isRunning) return;
+
+                    // X-AXIS: Freq (100 to 1000)
+                    if (freqParam) {
+                        const xPercent = e.clientX / window.innerWidth;
+                        const freqValue = 100 + (xPercent * 900);
+                        freqParam.value = freqValue;
+                        freqValDisplay.innerText = Math.round(freqValue) + "Hz";
+                    }
+
+                    // Y-AXIS: Param (Bottom: 0.1 to Top: 4)
+                    if (yParam) {
+                        // Invert Y: (1.0 at top, 0.0 at bottom)
+                        const yPercent = 1 - (e.clientY / window.innerHeight);
+                        const paramValue = 0.1 + (yPercent * (4 - 0.1));
+                        yParam.value = paramValue;
+                        paramValDisplay.innerText = paramValue.toFixed(2);
+                    }
                 });
 
                 startBtn.onclick = async () => {
                     if (context.state === 'suspended') await context.resume();
                     
-                    // 3. LOAD ON START: Fetch and decode the chosen file now
-                    statusText.innerText = `Loading & Decoding ${selectedFileName}...`;
+                    statusText.innerText = "Loading audio...";
                     startBtn.disabled = true;
 
                     const fileResponse = await fetch(selectedAudioURL);
                     const arrayBuffer = await fileResponse.arrayBuffer();
                     const audioBuffer = await context.decodeAudioData(arrayBuffer);
 
-                    // Map to the "sound" buffer
+                    // Map decoded buffer to "sound"
                     await device.setDataBuffer("sound", audioBuffer);
 
                     isRunning = true;
@@ -107,12 +120,11 @@
                     startBtn.innerText = "Audio Running";
                     startBtn.style.background = "#28a745";
                     statusText.innerText = `Playing: ${selectedFileName}`;
-                    if (freqParam) freqValDisplay.innerText = Math.round(freqParam.value) + "Hz";
                 };
 
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Failed to load directory or patch.";
+                statusText.innerText = "Init failed.";
             }
         }
 
