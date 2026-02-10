@@ -9,10 +9,363 @@
             "modernui": 1
         },
         "classnamespace": "rnbo",
-        "rect": [ 1365.0, 631.0, 1000.0, 780.0 ],
+        "rect": [ 1150.0, 447.0, 1000.0, 780.0 ],
         "default_fontname": "Lato",
         "title": "sound-artist",
         "boxes": [
+            {
+                "box": {
+                    "id": "obj-20",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 379.0, 307.0, 40.0, 23.0 ],
+                    "rnbo_classname": "*~",
+                    "rnbo_serial": 5,
+                    "rnbo_uniqueid": "*~_obj-20",
+                    "text": "*~ 0.5"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-19",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 321.0, 307.0, 40.0, 23.0 ],
+                    "rnbo_classname": "*~",
+                    "rnbo_serial": 4,
+                    "rnbo_uniqueid": "*~_obj-19",
+                    "text": "*~ 0.5"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-18",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 378.0, 270.0, 29.5, 23.0 ],
+                    "rnbo_classname": "*~",
+                    "rnbo_serial": 3,
+                    "rnbo_uniqueid": "*~_obj-18",
+                    "text": "*~"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-17",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 321.0, 270.0, 29.5, 23.0 ],
+                    "rnbo_classname": "*~",
+                    "rnbo_serial": 2,
+                    "rnbo_uniqueid": "*~_obj-17",
+                    "text": "*~"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-16",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 376.0, 211.0, 33.0, 23.0 ],
+                    "rnbo_classname": "abs~",
+                    "rnbo_serial": 2,
+                    "rnbo_uniqueid": "abs~_obj-16",
+                    "text": "abs~"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-15",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "signal" ],
+                    "patching_rect": [ 321.0, 211.0, 33.0, 23.0 ],
+                    "rnbo_classname": "abs~",
+                    "rnbo_serial": 1,
+                    "rnbo_uniqueid": "abs~_obj-15",
+                    "text": "abs~"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-14",
+                    "maxclass": "newobj",
+                    "numinlets": 3,
+                    "numoutlets": 3,
+                    "outlettype": [ "signal", "signal", "signal" ],
+                    "patching_rect": [ 606.0, 271.0, 97.0, 23.0 ],
+                    "rnbo_classname": "groove~",
+                    "rnbo_extra_attributes": {
+                        "synctype": "relative",
+                        "syncmode": "phase"
+                    },
+                    "rnbo_serial": 2,
+                    "rnbo_uniqueid": "groove~_obj-14",
+                    "rnboinfo": {
+                        "needsInstanceInfo": 1,
+                        "argnames": {
+                            "rate": {
+                                "attrOrProp": 1,
+                                "digest": "Playback rate.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "inlet": 1,
+                                "type": "number",
+                                "defaultValue": "1"
+                            },
+                            "jumpto": {
+                                "attrOrProp": 1,
+                                "digest": "Jump to position (ms) and start playback.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 0,
+                                "attachable": 1,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "number",
+                                "defaultValue": "-1"
+                            },
+                            "begin": {
+                                "attrOrProp": 1,
+                                "digest": "Loop min (ms).",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "inlet": 1,
+                                "type": "number",
+                                "defaultValue": "0"
+                            },
+                            "end": {
+                                "attrOrProp": 1,
+                                "digest": "Loop max (ms).",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "inlet": 1,
+                                "type": "number",
+                                "defaultValue": "-1"
+                            },
+                            "out1": {
+                                "attrOrProp": 1,
+                                "digest": "The sample output.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 0,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "outlet": 1,
+                                "type": "signal"
+                            },
+                            "out2": {
+                                "attrOrProp": 1,
+                                "digest": "The sample output.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 0,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "outlet": 1,
+                                "type": "signal"
+                            },
+                            "sync": {
+                                "attrOrProp": 1,
+                                "digest": "Sync output (phase, samples, ms)",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 0,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "outlet": 1,
+                                "type": "signal"
+                            },
+                            "loop": {
+                                "attrOrProp": 1,
+                                "digest": "The word loop, followed by a `0` or `1`, disables/enables looping.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 1,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "number",
+                                "defaultValue": "1"
+                            },
+                            "crossfade": {
+                                "attrOrProp": 1,
+                                "digest": "Enable an attempted crossfade on loop jumpback. The fade depends on available sample material (ms).",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 1,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "number",
+                                "defaultValue": "0"
+                            },
+                            "stop": {
+                                "attrOrProp": 1,
+                                "digest": "Stops the playback of the buffer.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "attachable": 1,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "bang"
+                            },
+                            "buffer": {
+                                "attrOrProp": 1,
+                                "digest": "If multiple buffer names are declared to be used, this sets the currently active buffer using an index [0 based].",
+                                "isalias": 0,
+                                "aliases": [],
+                                "attachable": 1,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "number",
+                                "defaultValue": "0"
+                            },
+                            "buffername": {
+                                "attrOrProp": 2,
+                                "digest": "Buffer to use",
+                                "defaultarg": 1,
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "symbol",
+                                "mandatory": 1
+                            },
+                            "channels": {
+                                "attrOrProp": 2,
+                                "digest": "Number of channels to read.",
+                                "defaultarg": 2,
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "type": "number",
+                                "defaultValue": "1"
+                            },
+                            "syncmode": {
+                                "attrOrProp": 2,
+                                "digest": "Determines if the sync outlet reports phase (0..1), samples or milliseconds.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "enum": [ "phase", "samples", "ms" ],
+                                "type": "enum",
+                                "defaultValue": "phase"
+                            },
+                            "synctype": {
+                                "attrOrProp": 2,
+                                "digest": "Set the sync signal to be relative to the loop length or absolute to the clip length.",
+                                "isalias": 0,
+                                "aliases": [],
+                                "settable": 1,
+                                "attachable": 0,
+                                "isparam": 0,
+                                "deprecated": 0,
+                                "touched": 0,
+                                "enum": [ "relative", "absolute" ],
+                                "type": "enum",
+                                "defaultValue": "relative"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "name": "rate",
+                                "type": [ "bang", "auto" ],
+                                "digest": "Playback rate.",
+                                "hot": 1,
+                                "docked": 0
+                            },
+                            {
+                                "name": "begin",
+                                "type": "auto",
+                                "digest": "Loop min (ms).",
+                                "docked": 0
+                            },
+                            {
+                                "name": "end",
+                                "type": "auto",
+                                "digest": "Loop max (ms).",
+                                "docked": 0
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "out1",
+                                "type": "signal",
+                                "digest": "The sample output.",
+                                "docked": 0
+                            },
+                            {
+                                "name": "out2",
+                                "type": "signal",
+                                "digest": "The sample output.",
+                                "docked": 0
+                            },
+                            {
+                                "name": "sync",
+                                "type": "signal",
+                                "digest": "Sync output (phase, samples, ms)",
+                                "docked": 0
+                            }
+                        ],
+                        "helpname": "groove~",
+                        "aliasOf": "groove~",
+                        "classname": "groove~",
+                        "operator": 0,
+                        "versionId": -147380827,
+                        "changesPatcherIO": 0
+                    },
+                    "text": "groove~ sound 2"
+                }
+            },
             {
                 "box": {
                     "id": "obj-5",
@@ -20,7 +373,7 @@
                     "numinlets": 2,
                     "numoutlets": 2,
                     "outlettype": [ "signal", "signal" ],
-                    "patching_rect": [ 376.0, 158.0, 66.0, 23.0 ],
+                    "patching_rect": [ 376.0, 152.0, 66.0, 23.0 ],
                     "rnbo_classname": "cycle~",
                     "rnbo_extra_attributes": {
                         "index": "freq",
@@ -888,7 +1241,7 @@
                     "maxclass": "newobj",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 376.0, 206.0, 43.0, 23.0 ],
+                    "patching_rect": [ 378.0, 341.0, 43.0, 23.0 ],
                     "rnbo_classname": "out~",
                     "rnbo_extra_attributes": {
                         "comment": "",
@@ -981,7 +1334,7 @@
                     "maxclass": "newobj",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 321.0, 206.0, 43.0, 23.0 ],
+                    "patching_rect": [ 321.0, 341.0, 43.0, 23.0 ],
                     "rnbo_classname": "out~",
                     "rnbo_extra_attributes": {
                         "comment": "",
@@ -1075,7 +1428,7 @@
                     "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "signal" ],
-                    "patching_rect": [ 278.0, 120.0, 40.0, 23.0 ],
+                    "patching_rect": [ 600.0, 179.0, 40.0, 23.0 ],
                     "rnbo_classname": "sig~",
                     "rnbo_extra_attributes": {
                         "unit": "ms"
@@ -1092,7 +1445,7 @@
                     "numinlets": 1,
                     "numoutlets": 3,
                     "outlettype": [ "", "", "" ],
-                    "patching_rect": [ 642.0, 115.0, 83.0, 23.0 ],
+                    "patching_rect": [ 666.0, 115.0, 83.0, 23.0 ],
                     "rnbo_classname": "buffer~",
                     "rnbo_extra_attributes": {
                         "file": "",
@@ -1406,22 +1759,76 @@
         "lines": [
             {
                 "patchline": {
+                    "destination": [ "obj-17", 1 ],
+                    "source": [ "obj-14", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-18", 1 ],
+                    "source": [ "obj-14", 1 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-17", 0 ],
+                    "source": [ "obj-15", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-18", 0 ],
+                    "source": [ "obj-16", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-19", 0 ],
+                    "source": [ "obj-17", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-20", 0 ],
+                    "source": [ "obj-18", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-9", 0 ],
+                    "source": [ "obj-19", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-10", 0 ],
+                    "source": [ "obj-20", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-5", 0 ],
                     "source": [ "obj-4", 0 ]
                 }
             },
             {
                 "patchline": {
-                    "destination": [ "obj-10", 0 ],
+                    "destination": [ "obj-15", 0 ],
+                    "order": 1,
+                    "source": [ "obj-5", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-16", 0 ],
                     "order": 0,
                     "source": [ "obj-5", 0 ]
                 }
             },
             {
                 "patchline": {
-                    "destination": [ "obj-9", 0 ],
-                    "order": 1,
-                    "source": [ "obj-5", 0 ]
+                    "destination": [ "obj-14", 0 ],
+                    "source": [ "obj-8", 0 ]
                 }
             }
         ]
