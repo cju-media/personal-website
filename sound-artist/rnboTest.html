@@ -139,8 +139,7 @@
                 this.opacity -= 0.002;
             }
             draw() {
-                // Invisible ripples - no drawing here
-                // Logic is handled in drawWaves
+                // Invisible ripples - logic handled in drawWaves
             }
         }
 
@@ -161,15 +160,6 @@
                     // Base sine wave traveling left to right (-time)
                     let y = baseY + Math.sin(x * 0.01 - time * 2 + i) * 15;
 
-                    // Mouse interaction
-                    const distMouse = Math.hypot(x - mouseX, y - mouseY);
-                    const influenceRadius = 200;
-
-                    if (distMouse < influenceRadius) {
-                        const power = (influenceRadius - distMouse) / influenceRadius;
-                        y += Math.sin(x * 0.1 + time * 10) * 30 * power;
-                    }
-
                     // Ripple interaction (Smooth Push)
                     for (let j = 0; j < ripples.length; j++) {
                         const r = ripples[j];
@@ -184,10 +174,7 @@
                         const waveWidth = 50; // Width of the "push" effect
 
                         if (Math.abs(distFromWavefront) < waveWidth) {
-                            // Smooth Gaussian-like bump
-                            // const intensity = Math.exp(-Math.pow(distFromWavefront, 2) / (2 * Math.pow(waveWidth/2, 2)));
-
-                            // Or cosine bump for a defined width
+                            // Cosine bump for a defined width
                             const normalized = distFromWavefront / waveWidth; // -1 to 1
                             const intensity = (Math.cos(normalized * Math.PI) + 1) / 2; // 0 to 1 smooth bell curve
 
@@ -212,7 +199,7 @@
 
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
-                ripples[i].draw(); // No-op visually, but good for structure if we re-add debugging
+                ripples[i].draw(); // No-op visually
                 if (ripples[i].r > maxDiagonal || ripples[i].opacity <= 0) ripples.splice(i, 1);
             }
             requestAnimationFrame(animate);
