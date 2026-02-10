@@ -278,10 +278,8 @@
             let initStarted = false;
 
             function enableDevMode() {
-                // Remove early return to allow override anytime
                 devMode = true;
-                // initStarted = true; // Optional: mark as started so real init doesn't double up, but if it's already running, devMode flag protects us.
-
+                // Don't modify initStarted logic, just enable devMode override
                 console.log("DEV MODE ENABLED: Bypassing RNBO/Audio");
                 loading.style.display = 'none';
                 overlay.style.visibility = 'visible';
@@ -291,11 +289,67 @@
 
             devBtn.addEventListener('click', enableDevMode);
 
+            // ATTACH LISTENERS OUTSIDE TRY/CATCH
+            // This ensures interaction logic is ready even if Fetch/RNBO fails (e.g. local file)
+
+            // Handle both Click and Touch to start audio (or mock start)
+            const startAudio = async () => {
+                if (!devMode && context && context.state === 'suspended') await context.resume();
+                isRunning = true;
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.visibility = 'hidden';
+                    backBtn.classList.add('visible');
+                }, 2000);
+            };
+
+            overlay.addEventListener('click', startAudio);
+            overlay.addEventListener('touchstart', startAudio);
+
+            // MOUSE SUPPORT
+            window.addEventListener('mousemove', (e) => {
+                // Prevent ghost mouse moves on mobile from re-enabling interaction
+                if (Date.now() - lastTouchTime < 1000) return;
+                handleInteraction(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('mouseleave', () => {
+                isInteracting = false;
+            });
+
+            // MOBILE SUPPORT: Touch tracking
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    e.preventDefault(); // Prevent scrolling
+                    lastTouchTime = Date.now();
+                    handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchstart', (e) => {
+                 if (e.touches.length > 0) {
+                     lastTouchTime = Date.now();
+                     handleClick(e);
+                 }
+             }, { passive: false });
+
+            window.addEventListener('touchend', (e) => {
+                if (e.touches.length === 0) {
+                    isInteracting = false;
+                }
+            });
+
+            window.addEventListener('touchcancel', (e) => {
+                if (e.touches.length === 0) {
+                    isInteracting = false;
+                }
+            });
+
+            // REAL INIT LOGIC (Wrapped in Try/Catch)
             try {
                 // Wait briefly to see if user clicks dev mode, but don't block
                 // (Actually we can just proceed. If dev mode is clicked, we short circuit)
 
-                // Real Init
                 if (typeof RNBO === "undefined") {
                     // Poll for RNBO load unless dev mode
                     const checkRNBO = () => {
@@ -341,60 +395,6 @@
                     overlay.style.visibility = 'visible';
                     overlay.style.opacity = '1';
                 }
-
-                // Handle both Click and Touch to start audio (or mock start)
-                const startAudio = async () => {
-                    if (!devMode && context && context.state === 'suspended') await context.resume();
-                    isRunning = true;
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        overlay.style.visibility = 'hidden';
-                        backBtn.classList.add('visible');
-                    }, 2000);
-                };
-
-                overlay.addEventListener('click', startAudio);
-                overlay.addEventListener('touchstart', startAudio);
-
-                // MOUSE SUPPORT
-                window.addEventListener('mousemove', (e) => {
-                    // Prevent ghost mouse moves on mobile from re-enabling interaction
-                    if (Date.now() - lastTouchTime < 1000) return;
-                    handleInteraction(e.clientX, e.clientY);
-                });
-
-                window.addEventListener('mouseleave', () => {
-                    isInteracting = false;
-                });
-
-                // MOBILE SUPPORT: Touch tracking
-                window.addEventListener('touchmove', (e) => {
-                    if (e.touches.length > 0) {
-                        e.preventDefault(); // Prevent scrolling
-                        lastTouchTime = Date.now();
-                        handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
-                    }
-                }, { passive: false });
-
-                window.addEventListener('touchstart', (e) => {
-                     if (e.touches.length > 0) {
-                         lastTouchTime = Date.now();
-                         handleClick(e);
-                     }
-                 }, { passive: false });
-
-                window.addEventListener('touchend', (e) => {
-                    if (e.touches.length === 0) {
-                        isInteracting = false;
-                    }
-                });
-
-                window.addEventListener('touchcancel', (e) => {
-                    if (e.touches.length === 0) {
-                        isInteracting = false;
-                    }
-                });
-
 
             } catch (err) {
                 // If error occurs and not in dev mode, show error
