@@ -22,7 +22,7 @@
         top: 30px;
         left: 30px;
         z-index: 10002;
-        color: #05070a; /* Dark text */
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-family: monospace;
         text-decoration: none;
         letter-spacing: 3px;
@@ -40,8 +40,8 @@
     }
 
     #back-button:hover {
-        color: #1e3a8a;
-        border: 1px solid #05070a;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.7);
         opacity: 1;
     }
 
@@ -71,9 +71,9 @@
     #focus-text { 
         font-family: monospace;
         letter-spacing: 0.8em;
-        color: #05070a; /* Dark text */
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-size: 1rem;
-        border: 1px solid #05070a;
+        border: 1px solid rgba(255, 255, 255, 0.7);
         padding: 20px 40px;
         text-transform: uppercase;
         pointer-events: none;
@@ -87,7 +87,7 @@
         transform: translate(-50%, -50%);
         z-index: 10001;
         font-family: monospace; 
-        color: #05070a; /* Dark text */
+        color: rgba(255, 255, 255, 0.7); /* Light Grey */
         font-size: 0.8rem;
         letter-spacing: 2px;
         pointer-events: none;
@@ -149,7 +149,7 @@
             const spacing = canvas.height / (waveCount + 1);
 
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(5, 7, 10, 0.25)'; // Dark lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)'; // Light Grey Waves
 
             for (let i = 0; i < waveCount; i++) {
                 ctx.beginPath();
