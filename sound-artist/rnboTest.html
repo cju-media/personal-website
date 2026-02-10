@@ -25,7 +25,6 @@
     </div>
 
     <script>
-        // Directly pointing to your GitHub Raw URL to bypass CORS issues
         const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/37b6a3325ec1c5c41a9ac9bf7c519fa4f31bed9d/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
         
         let context;
@@ -35,29 +34,30 @@
             const statusText = document.getElementById("status");
             const startBtn = document.getElementById("start-btn");
 
+            // Double check that RNBO is actually loaded
+            if (typeof RNBO === "undefined") {
+                statusText.innerText = "Error: RNBO library not loaded from CDN.";
+                return;
+            }
+
             try {
-                // 1. Setup Web Audio Context
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
 
-                // 2. Fetch the patch from GitHub
                 statusText.innerText = "Downloading patch from GitHub...";
                 const response = await fetch(PATCH_URL);
                 if (!response.ok) throw new Error("Could not fetch the patch file.");
                 const patcher = await response.json();
 
-                // 3. Instantiate the RNBO device
                 statusText.innerText = "Instantiating RNBO device...";
                 device = await RNBO.createDevice({ context, patcher });
 
-                // 4. Connect to speakers
                 device.node.connect(context.destination);
 
                 statusText.innerText = "Patch loaded successfully.";
                 startBtn.disabled = false;
                 startBtn.innerText = "Start Audio";
 
-                // 5. Interaction to enable audio
                 startBtn.onclick = async () => {
                     if (context.state === 'suspended') {
                         await context.resume();
@@ -77,7 +77,9 @@
             }
         }
 
-        init();
+        // FIX: Wait for the window to finish loading (including the CDN script) 
+        // before running the init function.
+        window.addEventListener("load", init);
     </script>
 </body>
 </html>
