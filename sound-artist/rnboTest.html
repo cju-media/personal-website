@@ -13,45 +13,32 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; overflow: hidden; }
         .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 340px; z-index: 10; }
         h1 { margin-bottom: 0.5rem; font-weight: 300; letter-spacing: 1px; }
-        
         .freq-display-box { background: #000; border: 1px solid #007bff; border-radius: 4px; padding: 15px; margin: 1.5rem 0; font-family: 'Courier New', Courier, monospace; }
         .freq-label { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
         #freq-val { color: #007bff; font-size: 1.8rem; font-weight: bold; }
-
         button { width: 100%; padding: 14px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: all 0.2s; }
         button:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
-        
         #status { margin-top: 1.5rem; font-family: monospace; font-size: 0.8rem; color: #666; min-height: 1.2em; }
-        .hint { margin-top: 12px; font-size: 0.7rem; color: #444; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <h1>RNBO Engine</h1>
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Personal Website Experiment</p>
-        
         <div class="freq-display-box">
             <div class="freq-label">Mouse X Frequency</div>
             <div id="freq-val">---</div>
         </div>
-
         <button id="start-btn" disabled>Initialising...</button>
         <div id="status">Ready to load assets</div>
-        <p class="hint">Move mouse left/right to modulate frequency</p>
     </div>
 
     <script>
-        // Updated with filenames from your screenshot
-        const AUDIO_ASSETS = [
-            "epno.aiff",
-            "eroica.aiff",
-            "isthatyou.aiff",
-            "sacre.aiff",
-            "snare.aiff"
-        ];
-
+        // Assets from your screenshot
+        const AUDIO_ASSETS = ["epno.aiff", "eroica.aiff", "isthatyou.aiff", "sacre.aiff", "snare.aiff"];
+        
+        // Links as requested (main branch)
         const BASE_PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
         const ASSETS_BASE_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/assets/";
 
@@ -64,39 +51,41 @@
             const startBtn = document.getElementById("start-btn");
             const freqValDisplay = document.getElementById("freq-val");
 
-            if (typeof RNBO === "undefined") {
-                statusText.innerText = "Error: RNBO library not found.";
-                return;
-            }
-
             try {
+                // Initialize Web Audio Context
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
 
+                // Generate timestamp for cache-busting
                 const cacheBuster = `?t=${new Date().getTime()}`;
-
-                // Select random file and build full URL
+                
+                // Select a random file
                 const randomFile = AUDIO_ASSETS[Math.floor(Math.random() * AUDIO_ASSETS.length)];
                 const audioFileURL = ASSETS_BASE_URL + randomFile + cacheBuster;
 
-                statusText.innerText = "Fetching RNBO Patch...";
+                // 1. Fetch and Load RNBO Patch
+                statusText.innerText = "Downloading patch...";
                 const patchResponse = await fetch(BASE_PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
-
+                
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                // Load the chosen file into the "sound" buffer
-                statusText.innerText = `Loading ${randomFile}...`;
-                await device.loadDataFromURL(audioFileURL, "sound");
+                // 2. Fetch and Decode Audio for the "sound" buffer
+                statusText.innerText = `Decoding ${randomFile}...`;
+                const fileResponse = await fetch(audioFileURL);
+                const arrayBuffer = await fileResponse.arrayBuffer();
+                const audioBuffer = await context.decodeAudioData(arrayBuffer);
 
-                statusText.innerText = `Ready with ${randomFile}`;
+                // 3. Set the data into the buffer named "sound"
+                await device.setDataBuffer("sound", audioBuffer);
+
+                statusText.innerText = `Ready with: ${randomFile}`;
                 startBtn.disabled = false;
                 startBtn.innerText = "Start Audio";
 
-                const freqParam = device.parametersById.get("freq");
-
                 // Mouse Frequency Mapping (100Hz - 1000Hz)
+                const freqParam = device.parametersById.get("freq");
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning || !freqParam) return;
                     
@@ -116,14 +105,14 @@
                     isRunning = true;
                     startBtn.innerText = "Audio Running";
                     startBtn.style.background = "#28a745";
-                    statusText.innerText = `Currently Playing: ${randomFile}`;
+                    statusText.innerText = `Playing: ${randomFile}`;
                     
                     if (freqParam) freqValDisplay.innerText = Math.round(freqParam.value) + "Hz";
                 };
 
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Load failed. Check file paths.";
+                statusText.innerText = "Load failed. Check file names/paths.";
                 statusText.style.color = "#ff4d4d";
             }
         }
