@@ -7,28 +7,42 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <title>RNBO Web Player - Dual Axis Control</title>
+    <title>RNBO Web Player - Click to Focus</title>
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; overflow: hidden; }
-        .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 340px; z-index: 10; }
-        h1 { margin-bottom: 0.5rem; font-weight: 300; letter-spacing: 1px; }
+        :root { --accent: #007bff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #000; color: white; margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
         
-        .display-container { display: flex; gap: 10px; margin: 1.5rem 0; }
-        .readout { flex: 1; background: #000; border: 1px solid #007bff; border-radius: 4px; padding: 10px; font-family: 'Courier New', Courier, monospace; }
-        .label { color: #888; font-size: 0.6rem; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .val { color: #007bff; font-size: 1.2rem; font-weight: bold; }
+        /* The Blur Overlay */
+        #focus-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100; cursor: pointer; transition: opacity 1s ease, visibility 1s;
+        }
+        
+        #focus-text { font-family: monospace; letter-spacing: 0.5em; color: var(--accent); font-size: 1.2rem; transition: letter-spacing 0.5s; }
+        #focus-overlay:hover #focus-text { letter-spacing: 0.8em; color: white; }
 
-        button { width: 100%; padding: 14px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: all 0.2s; }
-        button:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
-        button:disabled { background: #444; color: #888; cursor: not-allowed; }
-        #status { margin-top: 1.5rem; font-family: monospace; font-size: 0.8rem; color: #666; min-height: 1.2em; }
+        /* The Content (Starts blurry/hidden behind overlay) */
+        .card { text-align: center; width: 340px; }
+        .display-container { display: flex; gap: 10px; margin: 1.5rem 0; }
+        .readout { flex: 1; background: #111; border: 1px solid #333; border-radius: 4px; padding: 10px; font-family: monospace; }
+        .label { color: #555; font-size: 0.6rem; text-transform: uppercase; margin-bottom: 5px; }
+        .val { color: var(--accent); font-size: 1.2rem; font-weight: bold; }
+        #status { font-family: monospace; font-size: 0.7rem; color: #444; }
     </style>
 </head>
 <body>
 
+    <div id="focus-overlay">
+        <div id="focus-text">CLICK TO FOCUS</div>
+        <div id="status" style="margin-top: 20px;">Scanning assets...</div>
+    </div>
+
     <div class="card">
-        <h1>RNBO Engine</h1>
+        <h1 style="font-weight: 200; letter-spacing: 3px;">SYSTEM ACTIVE</h1>
         <div class="display-container">
             <div class="readout">
                 <div class="label">X: Freq</div>
@@ -39,8 +53,6 @@
                 <div id="samp-val" class="val">---</div>
             </div>
         </div>
-        <button id="start-btn" disabled>Scanning Assets...</button>
-        <div id="status">Ready</div>
     </div>
 
     <script>
@@ -52,7 +64,7 @@
 
         async function init() {
             const statusText = document.getElementById("status");
-            const startBtn = document.getElementById("start-btn");
+            const overlay = document.getElementById("focus-overlay");
             const freqValDisplay = document.getElementById("freq-val");
             const sampValDisplay = document.getElementById("samp-val");
 
@@ -61,67 +73,59 @@
                 context = new WAContext();
                 const cacheBuster = `?t=${new Date().getTime()}`;
 
-                // 1. Scan GitHub Assets
+                // 1. Scan Assets
                 const apiResponse = await fetch(REPO_API_URL);
                 const files = await apiResponse.json();
                 const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
-                
                 const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
                 selectedAudioURL = choice.download_url + cacheBuster;
                 selectedFileName = choice.name;
 
-                // 2. Load Patch
+                // 2. Load RNBO Device
                 const patchResponse = await fetch(PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                statusText.innerText = `Selected: ${selectedFileName}`;
-                startBtn.disabled = false;
-                startBtn.innerText = "Start Audio";
+                statusText.innerText = "Ready to engage.";
 
+                // 3. Mouse Logic
                 const freqParam = device.parametersById.get("freq");
                 const sampParam = device.parametersById.get("sampRate");
 
-                // Dual-Axis Mouse Listener
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning) return;
-
-                    // X-Axis -> freq (100 to 1000)
+                    
                     if (freqParam) {
-                        const xPercent = e.clientX / window.innerWidth;
-                        const freqValue = 100 + (xPercent * 900);
-                        freqParam.value = freqValue;
-                        freqValDisplay.innerText = Math.round(freqValue) + "Hz";
+                        const xValue = 100 + ((e.clientX / window.innerWidth) * 900);
+                        freqParam.value = xValue;
+                        freqValDisplay.innerText = Math.round(xValue) + "Hz";
                     }
-
-                    // Y-Axis -> sampRate (Bottom 0.1 to Top 4.0)
                     if (sampParam) {
-                        const yPercent = 1 - (e.clientY / window.innerHeight); // Flip Y
-                        const sampValue = 0.1 + (yPercent * (4.0 - 0.1));
-                        sampParam.value = sampValue;
-                        sampValDisplay.innerText = sampValue.toFixed(2);
+                        const yPercent = 1 - (e.clientY / window.innerHeight);
+                        const yValue = 0.1 + (yPercent * 3.9);
+                        sampParam.value = yValue;
+                        sampValDisplay.innerText = yValue.toFixed(2);
                     }
                 });
 
-                startBtn.onclick = async () => {
+                // 4. Click to Focus Logic
+                overlay.onclick = async () => {
                     if (context.state === 'suspended') await context.resume();
                     
-                    statusText.innerText = "Loading audio...";
-                    startBtn.disabled = true;
-
+                    statusText.innerText = `Engaging ${selectedFileName}...`;
+                    
+                    // Fetch and decode chosen file
                     const fileResponse = await fetch(selectedAudioURL);
                     const arrayBuffer = await fileResponse.arrayBuffer();
                     const audioBuffer = await context.decodeAudioData(arrayBuffer);
 
-                    // Load decoded data into "sound" buffer
+                    // Set decoded data to "sound" buffer
                     await device.setDataBuffer("sound", audioBuffer);
 
                     isRunning = true;
-                    startBtn.disabled = false;
-                    startBtn.innerText = "Audio Running";
-                    startBtn.style.background = "#28a745";
-                    statusText.innerText = `Playing: ${selectedFileName}`;
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.visibility = "hidden", 1000);
                 };
 
             } catch (err) {
