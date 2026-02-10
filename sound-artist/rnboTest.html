@@ -35,10 +35,7 @@
     </div>
 
     <script>
-        // Assets from your screenshot
         const AUDIO_ASSETS = ["epno.aiff", "eroica.aiff", "isthatyou.aiff", "sacre.aiff", "snare.aiff"];
-        
-        // Links as requested (main branch)
         const BASE_PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
         const ASSETS_BASE_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/assets/";
 
@@ -52,18 +49,14 @@
             const freqValDisplay = document.getElementById("freq-val");
 
             try {
-                // Initialize Web Audio Context
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
 
-                // Generate timestamp for cache-busting
                 const cacheBuster = `?t=${new Date().getTime()}`;
-                
-                // Select a random file
                 const randomFile = AUDIO_ASSETS[Math.floor(Math.random() * AUDIO_ASSETS.length)];
                 const audioFileURL = ASSETS_BASE_URL + randomFile + cacheBuster;
 
-                // 1. Fetch and Load RNBO Patch
+                // 1. Fetch Patch
                 statusText.innerText = "Downloading patch...";
                 const patchResponse = await fetch(BASE_PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
@@ -71,49 +64,45 @@
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                // 2. Fetch and Decode Audio for the "sound" buffer
-                statusText.innerText = `Decoding ${randomFile}...`;
+                // 2. Manual Audio Fetching
+                statusText.innerText = `Fetching ${randomFile}...`;
                 const fileResponse = await fetch(audioFileURL);
                 const arrayBuffer = await fileResponse.arrayBuffer();
+
+                // 3. Decoding for RNBO
+                statusText.innerText = `Decoding ${randomFile}...`;
                 const audioBuffer = await context.decodeAudioData(arrayBuffer);
 
-                // 3. Set the data into the buffer named "sound"
+                // 4. Set Data Buffer
+                // This maps the decoded audio to the "sound" buffer in Max
                 await device.setDataBuffer("sound", audioBuffer);
 
                 statusText.innerText = `Ready with: ${randomFile}`;
                 startBtn.disabled = false;
                 startBtn.innerText = "Start Audio";
 
-                // Mouse Frequency Mapping (100Hz - 1000Hz)
                 const freqParam = device.parametersById.get("freq");
+
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning || !freqParam) return;
-                    
                     const xPercent = e.clientX / window.innerWidth;
-                    const newFreq = 100 + (xPercent * 900);
-                    const clampedFreq = Math.max(100, Math.min(1000, newFreq));
-                    
+                    const clampedFreq = Math.max(100, Math.min(1000, 100 + (xPercent * 900)));
                     freqParam.value = clampedFreq;
                     freqValDisplay.innerText = Math.round(clampedFreq) + "Hz";
                 });
 
                 startBtn.onclick = async () => {
-                    if (context.state === 'suspended') {
-                        await context.resume();
-                    }
-                    
+                    if (context.state === 'suspended') await context.resume();
                     isRunning = true;
                     startBtn.innerText = "Audio Running";
                     startBtn.style.background = "#28a745";
                     statusText.innerText = `Playing: ${randomFile}`;
-                    
                     if (freqParam) freqValDisplay.innerText = Math.round(freqParam.value) + "Hz";
                 };
 
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Load failed. Check file names/paths.";
-                statusText.style.color = "#ff4d4d";
+                statusText.innerText = "Load failed. Check file names.";
             }
         }
 
