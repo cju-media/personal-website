@@ -30,18 +30,18 @@
             <div class="freq-label">Mouse X Frequency</div>
             <div id="freq-val">---</div>
         </div>
-        <button id="start-btn" disabled>Initialising...</button>
-        <div id="status">Ready to load assets</div>
+        <button id="start-btn" disabled>Scanning Assets...</button>
+        <div id="status">Ready</div>
     </div>
 
     <script>
-        const AUDIO_ASSETS = ["epno.aiff", "eroica.aiff", "isthatyou.aiff", "sacre.aiff", "snare.aiff"];
-        const BASE_PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json"; 
-        const ASSETS_BASE_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/assets/";
+        // GitHub API endpoint to list the contents of the assets directory
+        const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
+        const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
 
-        let context;
-        let device;
-        let isRunning = false;
+        let context, device, isRunning = false;
+        let selectedAudioURL = "";
+        let selectedFileName = "";
 
         async function init() {
             const statusText = document.getElementById("status");
@@ -51,38 +51,35 @@
             try {
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
-
                 const cacheBuster = `?t=${new Date().getTime()}`;
-                const randomFile = AUDIO_ASSETS[Math.floor(Math.random() * AUDIO_ASSETS.length)];
-                const audioFileURL = ASSETS_BASE_URL + randomFile + cacheBuster;
 
-                // 1. Fetch Patch
-                statusText.innerText = "Downloading patch...";
-                const patchResponse = await fetch(BASE_PATCH_URL + cacheBuster);
-                const patcher = await patchResponse.json();
+                // 1. DYNAMICALLY FIND FILES: Use GitHub API to get the list of files in the directory
+                statusText.innerText = "Scanning GitHub assets...";
+                const apiResponse = await fetch(REPO_API_URL);
+                const files = await apiResponse.json();
                 
+                // Filter for audio files (aiff, wav, mp3)
+                const audioFiles = files.filter(file => file.name.match(/\.(aiff|wav|mp3)$/i));
+                
+                if (audioFiles.length === 0) throw new Error("No audio files found in assets folder.");
+
+                // Pick a random one
+                const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+                selectedAudioURL = choice.download_url + cacheBuster;
+                selectedFileName = choice.name;
+
+                // 2. Load the Patch
+                statusText.innerText = "Loading RNBO patch...";
+                const patchResponse = await fetch(PATCH_URL + cacheBuster);
+                const patcher = await patchResponse.json();
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                // 2. Manual Audio Fetching
-                statusText.innerText = `Fetching ${randomFile}...`;
-                const fileResponse = await fetch(audioFileURL);
-                const arrayBuffer = await fileResponse.arrayBuffer();
-
-                // 3. Decoding for RNBO
-                statusText.innerText = `Decoding ${randomFile}...`;
-                const audioBuffer = await context.decodeAudioData(arrayBuffer);
-
-                // 4. Set Data Buffer
-                // This maps the decoded audio to the "sound" buffer in Max
-                await device.setDataBuffer("sound", audioBuffer);
-
-                statusText.innerText = `Ready with: ${randomFile}`;
+                statusText.innerText = `Selected: ${selectedFileName}`;
                 startBtn.disabled = false;
                 startBtn.innerText = "Start Audio";
 
                 const freqParam = device.parametersById.get("freq");
-
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning || !freqParam) return;
                     const xPercent = e.clientX / window.innerWidth;
@@ -93,16 +90,29 @@
 
                 startBtn.onclick = async () => {
                     if (context.state === 'suspended') await context.resume();
+                    
+                    // 3. LOAD ON START: Fetch and decode the chosen file now
+                    statusText.innerText = `Loading & Decoding ${selectedFileName}...`;
+                    startBtn.disabled = true;
+
+                    const fileResponse = await fetch(selectedAudioURL);
+                    const arrayBuffer = await fileResponse.arrayBuffer();
+                    const audioBuffer = await context.decodeAudioData(arrayBuffer);
+
+                    // Map to the "sound" buffer
+                    await device.setDataBuffer("sound", audioBuffer);
+
                     isRunning = true;
+                    startBtn.disabled = false;
                     startBtn.innerText = "Audio Running";
                     startBtn.style.background = "#28a745";
-                    statusText.innerText = `Playing: ${randomFile}`;
+                    statusText.innerText = `Playing: ${selectedFileName}`;
                     if (freqParam) freqValDisplay.innerText = Math.round(freqParam.value) + "Hz";
                 };
 
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Load failed. Check file names.";
+                statusText.innerText = "Failed to load directory or patch.";
             }
         }
 
