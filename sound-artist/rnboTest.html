@@ -177,7 +177,7 @@
             const spacing = canvas.height / (waveCount + 1);
 
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)'; // Light Grey Waves
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.999)'; // Light Grey Waves
 
             for (let i = 0; i < waveCount; i++) {
                 ctx.beginPath();
@@ -365,6 +365,7 @@
 
                 window.addEventListener('mouseleave', () => {
                     isInteracting = false;
+                    console.log("mouse off");
                 });
 
                 // MOBILE SUPPORT: Touch tracking
