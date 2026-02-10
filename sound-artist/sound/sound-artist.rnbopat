@@ -1194,14 +1194,14 @@
                     "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "signal" ],
-                    "patching_rect": [ 184.0, 101.0, 40.0, 23.0 ],
+                    "patching_rect": [ 278.0, 120.0, 40.0, 23.0 ],
                     "rnbo_classname": "sig~",
                     "rnbo_extra_attributes": {
                         "unit": "ms"
                     },
-                    "rnbo_serial": 2,
+                    "rnbo_serial": 3,
                     "rnbo_uniqueid": "sig~_obj-8",
-                    "text": "sig~ 0"
+                    "text": "sig~ 1"
                 }
             },
             {
