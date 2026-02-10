@@ -20,7 +20,7 @@
                     "numinlets": 2,
                     "numoutlets": 2,
                     "outlettype": [ "signal", "signal" ],
-                    "patching_rect": [ 391.0, 170.0, 66.0, 23.0 ],
+                    "patching_rect": [ 376.0, 158.0, 66.0, 23.0 ],
                     "rnbo_classname": "cycle~",
                     "rnbo_extra_attributes": {
                         "index": "freq",
@@ -39,7 +39,7 @@
                     "numinlets": 2,
                     "numoutlets": 2,
                     "outlettype": [ "", "" ],
-                    "patching_rect": [ 371.0, 101.0, 193.0, 23.0 ],
+                    "patching_rect": [ 376.0, 123.0, 212.0, 23.0 ],
                     "rnbo_classname": "param",
                     "rnbo_extra_attributes": {
                         "sendinit": 1,
@@ -56,8 +56,8 @@
                         "meta": "",
                         "steps": 0.0
                     },
-                    "rnbo_serial": 5,
-                    "rnbo_uniqueid": "playWave",
+                    "rnbo_serial": 6,
+                    "rnbo_uniqueid": "freq",
                     "rnboinfo": {
                         "needsInstanceInfo": 1,
                         "argnames": {
@@ -74,7 +74,7 @@
                                 "touched": 0,
                                 "inlet": 1,
                                 "type": "number",
-                                "defaultValue": "0"
+                                "defaultValue": "100"
                             },
                             "normalizedvalue": {
                                 "attrOrProp": 1,
@@ -446,8 +446,8 @@
                         "versionId": -1661410411,
                         "changesPatcherIO": 0
                     },
-                    "text": "param playWave 0 @min 0 @max 1",
-                    "varname": "playWave"
+                    "text": "param freq 100 @min 100 @max 1000",
+                    "varname": "freq"
                 }
             },
             {
@@ -888,7 +888,7 @@
                     "maxclass": "newobj",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 257.0, 223.0, 43.0, 23.0 ],
+                    "patching_rect": [ 376.0, 206.0, 43.0, 23.0 ],
                     "rnbo_classname": "out~",
                     "rnbo_extra_attributes": {
                         "comment": "",
@@ -981,7 +981,7 @@
                     "maxclass": "newobj",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 197.0, 223.0, 43.0, 23.0 ],
+                    "patching_rect": [ 321.0, 206.0, 43.0, 23.0 ],
                     "rnbo_classname": "out~",
                     "rnbo_extra_attributes": {
                         "comment": "",
@@ -1092,7 +1092,7 @@
                     "numinlets": 1,
                     "numoutlets": 3,
                     "outlettype": [ "", "", "" ],
-                    "patching_rect": [ 572.0, 148.0, 83.0, 23.0 ],
+                    "patching_rect": [ 642.0, 115.0, 83.0, 23.0 ],
                     "rnbo_classname": "buffer~",
                     "rnbo_extra_attributes": {
                         "file": "",
@@ -1404,6 +1404,12 @@
             }
         ],
         "lines": [
+            {
+                "patchline": {
+                    "destination": [ "obj-5", 0 ],
+                    "source": [ "obj-4", 0 ]
+                }
+            },
             {
                 "patchline": {
                     "destination": [ "obj-10", 0 ],

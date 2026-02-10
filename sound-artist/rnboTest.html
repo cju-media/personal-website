@@ -11,9 +11,16 @@
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212; color: white; margin: 0; }
-        .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; }
+        .card { background: #1e1e1e; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #333; width: 320px; }
         h1 { margin-bottom: 0.5rem; font-weight: 300; letter-spacing: 1px; }
-        button { padding: 12px 24px; font-size: 1.1rem; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: background 0.2s; }
+        
+        /* Slider Styling */
+        .controls { margin: 2rem 0; text-align: left; }
+        label { display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #007bff; }
+        .val-display { float: right; color: #007bff; font-family: monospace; }
+
+        button { width: 100%; padding: 12px 24px; font-size: 1.1rem; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; transition: background 0.2s; }
         button:hover:not(:disabled) { background: #0056b3; }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
         #status { margin-top: 1.5rem; font-family: monospace; font-size: 0.85rem; color: #aaa; }
@@ -23,7 +30,13 @@
 
     <div class="card">
         <h1>RNBO Engine</h1>
-        <p style="color: #888; margin-bottom: 2rem;">Sound Artist Export</p>
+        <p style="color: #888; margin-bottom: 1rem;">Sound Artist Export</p>
+        
+        <div class="controls">
+            <label for="freq-slider">Frequency <span id="freq-val" class="val-display">440Hz</span></label>
+            <input type="range" id="freq-slider" min="100" max="1000" step="1" value="440" disabled>
+        </div>
+
         <button id="start-btn" disabled>Loading Patch...</button>
         <div id="status">Initializing...</div>
     </div>
@@ -37,6 +50,8 @@
         async function init() {
             const statusText = document.getElementById("status");
             const startBtn = document.getElementById("start-btn");
+            const freqSlider = document.getElementById("freq-slider");
+            const freqVal = document.getElementById("freq-val");
 
             if (typeof RNBO === "undefined") {
                 statusText.innerText = "Error: RNBO library not loaded from CDN.";
@@ -48,8 +63,6 @@
                 context = new WAContext();
 
                 statusText.innerText = "Downloading patch (Cache-Busting active)...";
-                
-                // HARD CACHE BREAKER: Append unique timestamp to the URL
                 const cacheBuster = `?t=${new Date().getTime()}`;
                 const response = await fetch(BASE_PATCH_URL + cacheBuster);
                 
@@ -60,6 +73,24 @@
                 device = await RNBO.createDevice({ context, patcher });
 
                 device.node.connect(context.destination);
+
+                // --- PARAMETER CONTROL LOGIC ---
+                const freqParam = device.parametersById.get("freq");
+
+                if (freqParam) {
+                    freqSlider.disabled = false;
+                    // Update RNBO when slider moves
+                    freqSlider.oninput = (e) => {
+                        const val = parseFloat(e.target.value);
+                        freqParam.value = val;
+                        freqVal.innerText = val + "Hz";
+                    };
+                    // Set initial value
+                    freqParam.value = freqSlider.value;
+                } else {
+                    console.warn("Parameter 'freq' not found in this patch.");
+                    freqVal.innerText = "Not Found";
+                }
 
                 statusText.innerText = "Patch loaded successfully.";
                 startBtn.disabled = false;
