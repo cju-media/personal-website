@@ -28,7 +28,7 @@
         padding: 10px;
         border: 1px solid transparent;
         transition: all 0.5s ease;
-        opacity: 0; /* Hidden until focused */
+        opacity: 0;
         pointer-events: none;
     }
 
@@ -94,7 +94,6 @@
 
 <div id="pond-wrapper">
     <a href="/" id="back-button">< BACK</a>
-
     <div id="loading-indicator">INITIALIZING POND...</div>
     <div id="focus-overlay">
         <div id="focus-text">CLICK TO FOCUS</div>
@@ -113,10 +112,13 @@
         const canvas = document.getElementById('pondCanvas');
         const ctx = canvas.getContext('2d');
         let ripples = [];
+        let maxDiagonal = 0;
 
         function setCanvasSize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            // Calculate diagonal to know when a ripple is truly off-screen
+            maxDiagonal = Math.sqrt(canvas.width**2 + canvas.height**2);
         }
 
         window.addEventListener('resize', setCanvasSize);
@@ -125,11 +127,11 @@
         class Ripple {
             constructor(x, y) {
                 this.x = x; this.y = y;
-                this.r = 0; this.opacity = 0.6;
+                this.r = 0;
+                this.opacity = 0.4; // Fixed subtle opacity
             }
             update() {
-                this.r += 2.0;
-                this.opacity -= 0.007;
+                this.r += 2.5; // Constant expansion
             }
             draw() {
                 ctx.beginPath();
@@ -141,12 +143,18 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(5, 7, 10, 0.1)';
+            // Keep the background dark but allow lines to persist
+            ctx.fillStyle = 'rgba(5, 7, 10, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
                 ripples[i].draw();
-                if (ripples[i].opacity <= 0) ripples.splice(i, 1);
+                
+                // Remove only when radius exceeds the screen diagonal
+                if (ripples[i].r > maxDiagonal) {
+                    ripples.splice(i, 1);
+                }
             }
             requestAnimationFrame(animate);
         }
@@ -196,7 +204,7 @@
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         overlay.style.visibility = 'hidden';
-                        backBtn.classList.add('visible'); // Show back button after reveal
+                        backBtn.classList.add('visible');
                     }, 2000);
                 };
 
@@ -206,6 +214,7 @@
                     const x = e.clientX;
                     const y = e.clientY;
 
+                    // Create ripples based on movement
                     if (Math.random() > 0.85) ripples.push(new Ripple(x, y));
 
                     if (freqParam) freqParam.value = 100 + ((x / window.innerWidth) * 900);
