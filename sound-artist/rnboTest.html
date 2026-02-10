@@ -1,67 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Pond - Sound Artist</title>
-    <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
-    <style>
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            overflow: hidden; background-color: #05070a; 
-            display: flex; align-items: center; justify-content: center;
-        }
-        /* Canvas scales to fill the entire viewport */
-        canvas { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
+<style>
+    /* Force the Squarespace container to allow full-screen breakout */
+    .sqs-block-code .sqs-block-content {
+        position: static !important;
+    }
 
-        #focus-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; cursor: pointer; transition: opacity 2s ease;
-            visibility: hidden; opacity: 0;
-        }
-        
-        #focus-text { 
-            font-family: monospace; letter-spacing: 0.8em; color: #3b82f6; 
-            font-size: 1rem; border: 1px solid #1e3a8a; padding: 20px 40px;
-            text-transform: uppercase;
-        }
+    #pond-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #05070a;
+        z-index: 9999; /* Ensure it sits above Squarespace UI */
+        overflow: hidden;
+    }
 
-        #loading-indicator {
-            position: fixed; z-index: 101; font-family: monospace; 
-            color: #1e3a8a; font-size: 0.8rem; letter-spacing: 2px;
-        }
-    </style>
-</head>
-<body>
+    #pondCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
 
+    #focus-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: pointer;
+        transition: opacity 2s ease;
+        visibility: hidden;
+        opacity: 0;
+    }
+    
+    #focus-text { 
+        font-family: monospace;
+        letter-spacing: 0.8em;
+        color: #3b82f6; 
+        font-size: 1rem;
+        border: 1px solid #1e3a8a;
+        padding: 20px 40px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    #loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10001;
+        font-family: monospace; 
+        color: #1e3a8a;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        pointer-events: none;
+    }
+</style>
+
+<div id="pond-wrapper">
     <div id="loading-indicator">INITIALIZING POND...</div>
-
     <div id="focus-overlay">
         <div id="focus-text">CLICK TO FOCUS</div>
     </div>
-
     <canvas id="pondCanvas"></canvas>
+</div>
 
-    <script>
+<script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
+
+<script>
+    (function() {
         const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
         const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
 
         let context, device, isRunning = false;
         let freqParam, sampParam;
 
-        // --- CANVAS SCALING & RIPPLES ---
         const canvas = document.getElementById('pondCanvas');
         const ctx = canvas.getContext('2d');
         let ripples = [];
 
         function setCanvasSize() {
-            // Scale internal resolution to match display size
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
+
         window.addEventListener('resize', setCanvasSize);
         setCanvasSize();
 
@@ -86,7 +115,6 @@
         function animate() {
             ctx.fillStyle = 'rgba(5, 7, 10, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             for (let i = ripples.length - 1; i >= 0; i--) {
                 ripples[i].update();
                 ripples[i].draw();
@@ -96,7 +124,6 @@
         }
         animate();
 
-        // --- RNBO & ASSET LOADING ---
         async function init() {
             const loading = document.getElementById('loading-indicator');
             const overlay = document.getElementById('focus-overlay');
@@ -106,22 +133,21 @@
                 context = new WAContext();
                 const cacheBuster = `?t=${new Date().getTime()}`;
 
-                // 1. Fetch assets via GitHub API
                 const apiResponse = await fetch(REPO_API_URL);
                 const files = await apiResponse.json();
                 const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
                 const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
 
-                // 2. Load RNBO Device
                 const patchResponse = await fetch(PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                // 3. Load & Decode Audio into Buffer
                 const fileResponse = await fetch(choice.download_url + cacheBuster);
                 const arrayBuffer = await fileResponse.arrayBuffer();
                 const audioBuffer = await context.decodeAudioData(arrayBuffer);
+                
+                // Using setDataBuffer for cross-version stability
                 await device.setDataBuffer("sound", audioBuffer);
 
                 freqParam = device.parametersById.get("freq");
@@ -138,39 +164,32 @@
                     setTimeout(() => overlay.style.visibility = 'hidden', 2000);
                 };
 
-                // --- SCALED MOUSE TRACKING ---
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning) return;
 
-                    // Get mouse position relative to canvas
-                    const rect = canvas.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
+                    const x = e.clientX;
+                    const y = e.clientY;
 
-                    // Create ripple at canvas coordinates
-                    if (Math.random() > 0.85) {
-                        ripples.push(new Ripple(x, y));
-                    }
+                    if (Math.random() > 0.85) ripples.push(new Ripple(x, y));
 
-                    // Map to DSP Parameters
-                    if (freqParam) {
-                        const freqVal = 100 + ((x / canvas.width) * 900);
-                        freqParam.value = freqVal;
-                    }
+                    if (freqParam) freqParam.value = 100 + ((x / window.innerWidth) * 900);
                     if (sampParam) {
-                        const yPercent = 1 - (y / canvas.height);
-                        const sampVal = 0.1 + (yPercent * 3.9);
-                        sampParam.value = sampVal;
+                        const yPercent = 1 - (y / window.innerHeight);
+                        sampParam.value = 0.1 + (yPercent * 3.9);
                     }
                 });
 
             } catch (err) {
-                console.error(err);
-                loading.innerText = "ERROR LOADING SYSTEM";
+                console.error("Pond Init Error:", err);
+                loading.innerText = "ERROR LOADING POND";
             }
         }
 
-        window.addEventListener("load", init);
-    </script>
-</body>
-</html>
+        // Squarespace safe execution
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            init();
+        } else {
+            document.addEventListener("DOMContentLoaded", init);
+        }
+    })();
+</script>
