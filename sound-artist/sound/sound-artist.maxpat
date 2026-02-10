@@ -13,16 +13,6 @@
         "boxes": [
             {
                 "box": {
-                    "id": "obj-11",
-                    "maxclass": "newobj",
-                    "numinlets": 2,
-                    "numoutlets": 0,
-                    "patching_rect": [ 350.0, 219.0, 35.0, 22.0 ],
-                    "text": "dac~"
-                }
-            },
-            {
-                "box": {
                     "id": "obj-9",
                     "maxclass": "toggle",
                     "numinlets": 1,
@@ -92,15 +82,15 @@
                         ]
                     },
                     "outlettype": [ "signal", "signal", "list" ],
-                    "patching_rect": [ 360.0, 171.0, 106.0, 22.0 ],
+                    "patching_rect": [ 322.5, 171.0, 106.0, 22.0 ],
                     "rnboattrcache": {
                         "playSamp": {
                             "label": "playSamp",
                             "isEnum": 0,
                             "parsestring": ""
                         },
-                        "playWave": {
-                            "label": "playWave",
+                        "freq": {
+                            "label": "freq",
                             "isEnum": 0,
                             "parsestring": ""
                         }
@@ -130,8 +120,8 @@
                         "subtype": "Undefined",
                         "embed": 1,
                         "snapshot": {
-                            "playWave": {
-                                "value": 0.0
+                            "freq": {
+                                "value": 100.0
                             },
                             "playSamp": {
                                 "value": 0.0
@@ -151,8 +141,8 @@
                                     "subtype": "",
                                     "embed": 0,
                                     "snapshot": {
-                                        "playWave": {
-                                            "value": 0.0
+                                        "freq": {
+                                            "value": 100.0
                                         },
                                         "playSamp": {
                                             "value": 0.0
@@ -176,18 +166,6 @@
             }
         ],
         "lines": [
-            {
-                "patchline": {
-                    "destination": [ "obj-11", 1 ],
-                    "source": [ "obj-1", 1 ]
-                }
-            },
-            {
-                "patchline": {
-                    "destination": [ "obj-11", 0 ],
-                    "source": [ "obj-1", 0 ]
-                }
-            },
             {
                 "patchline": {
                     "destination": [ "obj-1", 0 ],

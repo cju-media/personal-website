@@ -91,7 +91,7 @@
       "architecture": "x64",
       "filename": "sound-artist.maxpat",
       "rnboobjname": "rnbomatic",
-      "maxversion": "9.1.1",
+      "maxversion": "9.1.2",
       "rnboversion": "1.4.2",
       "name": "sound-artist"
     }
@@ -100,10 +100,10 @@
     {
       "name": "sound-artist",
       "preset": {
-        "playSamp": {
-          "value": 0
+        "freq": {
+          "value": 100
         },
-        "playWave": {
+        "playSamp": {
           "value": 0
         }
       }
