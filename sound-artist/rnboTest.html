@@ -4,133 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <title>RNBO Web Player - Click to Focus</title>
+    <title>Pond - Sound Artist</title>
     <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
     <style>
-        :root { --accent: #007bff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #000; color: white; margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        
-        /* The Blur Overlay */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #05070a; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+
+        /* Diegetic Focus Overlay */
         #focus-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.9);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; cursor: pointer; transition: opacity 1s ease, visibility 1s;
+            z-index: 100; cursor: pointer; transition: opacity 2s ease;
+            visibility: hidden; opacity: 0; /* Hidden until patch loads */
         }
         
-        #focus-text { font-family: monospace; letter-spacing: 0.5em; color: var(--accent); font-size: 1.2rem; transition: letter-spacing 0.5s; }
-        #focus-overlay:hover #focus-text { letter-spacing: 0.8em; color: white; }
+        #focus-text { 
+            font-family: monospace; letter-spacing: 0.8em; color: #3b82f6; 
+            font-size: 1rem; border: 1px solid #1e3a8a; padding: 20px 40px;
+            transition: all 0.5s ease;
+        }
+        #focus-overlay:hover #focus-text { background: #1e3a8a; color: white; letter-spacing: 1.2em; }
 
-        /* The Content (Starts blurry/hidden behind overlay) */
-        .card { text-align: center; width: 340px; }
-        .display-container { display: flex; gap: 10px; margin: 1.5rem 0; }
-        .readout { flex: 1; background: #111; border: 1px solid #333; border-radius: 4px; padding: 10px; font-family: monospace; }
-        .label { color: #555; font-size: 0.6rem; text-transform: uppercase; margin-bottom: 5px; }
-        .val { color: var(--accent); font-size: 1.2rem; font-weight: bold; }
-        #status { font-family: monospace; font-size: 0.7rem; color: #444; }
+        /* Status text for loading phase */
+        #loading-indicator {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: monospace; color: #1e3a8a; font-size: 0.8rem; letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
+    <div id="loading-indicator">INITIALIZING POND...</div>
+
     <div id="focus-overlay">
         <div id="focus-text">CLICK TO FOCUS</div>
-        <div id="status" style="margin-top: 20px;">Scanning assets...</div>
     </div>
 
-    <div class="card">
-        <h1 style="font-weight: 200; letter-spacing: 3px;">SYSTEM ACTIVE</h1>
-        <div class="display-container">
-            <div class="readout">
-                <div class="label">X: Freq</div>
-                <div id="freq-val" class="val">---</div>
-            </div>
-            <div class="readout">
-                <div class="label">Y: SampRate</div>
-                <div id="samp-val" class="val">---</div>
-            </div>
-        </div>
-    </div>
+    <canvas id="pondCanvas"></canvas>
 
     <script>
         const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
         const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
+        const AUDIO_ASSETS = ["epno.aiff", "eroica.aiff", "isthatyou.aiff", "sacre.aiff", "snare.aiff"];
 
         let context, device, isRunning = false;
-        let selectedAudioURL = "", selectedFileName = "";
+        let freqParam, sampParam;
 
+        // --- RIPPLE SYSTEM ---
+        const canvas = document.getElementById('pondCanvas');
+        const ctx = canvas.getContext('2d');
+        let ripples = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Ripple {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.r = 0; this.opacity = 0.5;
+            }
+            update() {
+                this.r += 2.5; // Expansion speed
+                this.opacity -= 0.008; // Fade speed
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(59, 130, 246, ${this.opacity})`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 7, 10, 0.15)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ripples.forEach((ripple, i) => {
+                ripple.update();
+                ripple.draw();
+                if (ripple.opacity <= 0) ripples.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- RNBO & LOADING ---
         async function init() {
-            const statusText = document.getElementById("status");
-            const overlay = document.getElementById("focus-overlay");
-            const freqValDisplay = document.getElementById("freq-val");
-            const sampValDisplay = document.getElementById("samp-val");
-
             try {
                 const WAContext = window.AudioContext || window.webkitAudioContext;
                 context = new WAContext();
                 const cacheBuster = `?t=${new Date().getTime()}`;
 
-                // 1. Scan Assets
-                const apiResponse = await fetch(REPO_API_URL);
-                const files = await apiResponse.json();
-                const audioFiles = files.filter(f => f.name.match(/\.(aiff|wav|mp3)$/i));
-                const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-                selectedAudioURL = choice.download_url + cacheBuster;
-                selectedFileName = choice.name;
+                // 1. Pick Random Asset
+                const randomFile = AUDIO_ASSETS[Math.floor(Math.random() * AUDIO_ASSETS.length)];
+                const audioFileURL = `https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/assets/${randomFile}${cacheBuster}`;
 
-                // 2. Load RNBO Device
+                // 2. Load RNBO
                 const patchResponse = await fetch(PATCH_URL + cacheBuster);
                 const patcher = await patchResponse.json();
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                statusText.innerText = "Ready to engage.";
+                // 3. Prepare Buffer
+                const fileResponse = await fetch(audioFileURL);
+                const arrayBuffer = await fileResponse.arrayBuffer();
+                const audioBuffer = await context.decodeAudioData(arrayBuffer);
+                await device.setDataBuffer("sound", audioBuffer);
 
-                // 3. Mouse Logic
-                const freqParam = device.parametersById.get("freq");
-                const sampParam = device.parametersById.get("sampRate");
+                freqParam = device.parametersById.get("freq");
+                sampParam = device.parametersById.get("sampRate");
 
+                // Reveal the Diegetic Button
+                document.getElementById('loading-indicator').style.display = 'none';
+                const overlay = document.getElementById('focus-overlay');
+                overlay.style.visibility = 'visible';
+                overlay.style.opacity = '1';
+
+                overlay.onclick = async () => {
+                    if (context.state === 'suspended') await context.resume();
+                    isRunning = true;
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.style.visibility = 'hidden', 2000);
+                };
+
+                // Tracking & Ripples
                 window.addEventListener('mousemove', (e) => {
                     if (!isRunning) return;
-                    
+
+                    // Add a ripple every time mouse moves
+                    if (Math.random() > 0.8) { // Throttle ripples slightly for performance
+                        ripples.push(new Ripple(e.clientX, e.clientY));
+                    }
+
+                    // DSP Mapping
                     if (freqParam) {
-                        const xValue = 100 + ((e.clientX / window.innerWidth) * 900);
-                        freqParam.value = xValue;
-                        freqValDisplay.innerText = Math.round(xValue) + "Hz";
+                        freqParam.value = 100 + ((e.clientX / window.innerWidth) * 900);
                     }
                     if (sampParam) {
                         const yPercent = 1 - (e.clientY / window.innerHeight);
-                        const yValue = 0.1 + (yPercent * 3.9);
-                        sampParam.value = yValue;
-                        sampValDisplay.innerText = yValue.toFixed(2);
+                        sampParam.value = 0.1 + (yPercent * 3.9);
                     }
                 });
 
-                // 4. Click to Focus Logic
-                overlay.onclick = async () => {
-                    if (context.state === 'suspended') await context.resume();
-                    
-                    statusText.innerText = `Engaging ${selectedFileName}...`;
-                    
-                    // Fetch and decode chosen file
-                    const fileResponse = await fetch(selectedAudioURL);
-                    const arrayBuffer = await fileResponse.arrayBuffer();
-                    const audioBuffer = await context.decodeAudioData(arrayBuffer);
-
-                    // Set decoded data to "sound" buffer
-                    await device.setDataBuffer("sound", audioBuffer);
-
-                    isRunning = true;
-                    overlay.style.opacity = "0";
-                    setTimeout(() => overlay.style.visibility = "hidden", 1000);
-                };
-
             } catch (err) {
                 console.error(err);
-                statusText.innerText = "Initialization failed.";
+                document.getElementById('loading-indicator').innerText = "SYSTEM ERROR";
             }
         }
 
