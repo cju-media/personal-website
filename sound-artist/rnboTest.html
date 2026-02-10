@@ -115,7 +115,13 @@
         const ctx = canvas.getContext('2d');
         let ripples = [];
         let maxDiagonal = 0;
-        let mouseX = -1000, mouseY = -1000;
+
+        // Interaction State
+        let isInteracting = false;
+        let currentX = 0;
+        let currentY = 0;
+        let frameCounter = 0;
+        let lastTouchTime = 0;
 
         function setCanvasSize() {
             canvas.width = window.innerWidth;
@@ -179,7 +185,6 @@
                             const intensity = (Math.cos(normalized * Math.PI) + 1) / 2; // 0 to 1 smooth bell curve
 
                             // Push the wave up/down based on strength
-                            // Negative offset pushes 'up' visually if strength is positive
                             y -= intensity * 40 * r.strength;
                         }
                     }
@@ -196,6 +201,15 @@
             ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Constant Ripple Generation Logic
+            if (isRunning && isInteracting) {
+                frameCounter++;
+                // Spawn ripple every 5 frames (~12 times/sec at 60fps)
+                if (frameCounter % 5 === 0) {
+                    ripples.push(new Ripple(currentX, currentY));
+                }
+            }
+
             drawWaves();
 
             for (let i = ripples.length - 1; i >= 0; i--) {
@@ -209,14 +223,13 @@
 
         // SHARED INPUT HANDLER (Touch & Mouse)
         function handleInteraction(clientX, clientY) {
-            mouseX = clientX;
-            mouseY = clientY;
+            currentX = clientX;
+            currentY = clientY;
+            isInteracting = true;
 
             if (!isRunning) return;
 
-            // Only add ripple occasionally on move, but always track mouse
-            if (Math.random() > 0.85) ripples.push(new Ripple(clientX, clientY));
-
+            // Update Audio Params
             if (freqParam) freqParam.value = 100 + ((clientX / window.innerWidth) * 900);
             if (sampParam) {
                 const yPercent = 1 - (clientY / window.innerHeight);
@@ -224,15 +237,13 @@
             }
         }
 
-        // Add explicit click handler to guarantee ripple on click/tap
+        // Handle Click just for initialization or immediate feedback if needed
         function handleClick(e) {
-            if (!isRunning) return;
-            // For touch events, use the first touch point
-            const x = e.clientX || (e.touches && e.touches[0].clientX);
-            const y = e.clientY || (e.touches && e.touches[0].clientY);
-            if (x !== undefined && y !== undefined) {
-                ripples.push(new Ripple(x, y));
-            }
+             const x = e.clientX || (e.touches && e.touches[0].clientX);
+             const y = e.clientY || (e.touches && e.touches[0].clientY);
+             if (x !== undefined && y !== undefined) {
+                 handleInteraction(x, y);
+             }
         }
 
         async function init() {
@@ -287,22 +298,45 @@
                 overlay.addEventListener('touchstart', startAudio);
 
                 // MOUSE SUPPORT
-                window.addEventListener('mousemove', (e) => handleInteraction(e.clientX, e.clientY));
-                window.addEventListener('click', handleClick); // Added click listener
+                window.addEventListener('mousemove', (e) => {
+                    // Prevent ghost mouse moves on mobile from re-enabling interaction
+                    if (Date.now() - lastTouchTime < 1000) return;
+                    handleInteraction(e.clientX, e.clientY);
+                });
+                // REMOVED GLOBAL CLICK LISTENER to prevent ghost clicks on mobile
+                // window.addEventListener('click', handleClick);
+
+                window.addEventListener('mouseleave', () => {
+                    isInteracting = false;
+                });
 
                 // MOBILE SUPPORT: Touch tracking
                 window.addEventListener('touchmove', (e) => {
                     if (e.touches.length > 0) {
+                        e.preventDefault(); // Prevent scrolling
+                        lastTouchTime = Date.now();
                         handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
                     }
                 }, { passive: false });
 
-                // Allow tap to create ripple without moving
-                 window.addEventListener('touchstart', (e) => {
-                     if (isRunning && e.touches.length > 0) {
+                window.addEventListener('touchstart', (e) => {
+                     if (e.touches.length > 0) {
+                         lastTouchTime = Date.now();
                          handleClick(e);
                      }
                  }, { passive: false });
+
+                window.addEventListener('touchend', (e) => {
+                    if (e.touches.length === 0) {
+                        isInteracting = false;
+                    }
+                });
+
+                window.addEventListener('touchcancel', (e) => {
+                    if (e.touches.length === 0) {
+                        isInteracting = false;
+                    }
+                });
 
 
             } catch (err) {
