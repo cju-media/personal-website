@@ -63,12 +63,9 @@ When integrating Cycling '74 RNBO (Web Audio) patches into this repository, stri
 * **User Interaction Resume:** Always call `context.resume()` inside a user interaction handler (e.g., `mousedown`, `touchstart`) to comply with browser autoplay policies.
 
 ### C. Asset Fetching
-* **No GitHub API Calls:** Do not use `api.github.com` to list assets dynamically. The unauthenticated rate limit (60 requests/hour) is easily exceeded by public traffic, causing the entire audio experience to fail silently.
-* **Raw URLs:** Use hardcoded lists of known assets and fetch them directly from `raw.githubusercontent.com`.
-  ```javascript
-  const ASSETS = ["sound1.aiff", "sound2.aiff"]; // Static list
-  const url = `https://raw.githubusercontent.com/user/repo/main/path/${ASSETS[0]}`;
-  ```
+* **GitHub API Calls:** Dynamic fetching via `api.github.com` (e.g., listing directory contents) is permitted to load assets dynamically without hardcoding filenames.
+* **Rate Limit Handling:** Be aware of the unauthenticated rate limit (60 requests/hour). Implement graceful error handling (e.g., fallback to a default asset or cached list) in case the API returns a 403 Forbidden status.
+* **Raw Content:** Once the file list is retrieved, fetch the actual binary data using the `download_url` or construct a raw URL (`raw.githubusercontent.com`) to avoid further API hits for the content itself.
 
 ### D. Error Handling & Diagnostics
 * **Granular Errors:** Distinguish between network errors (e.g., 404 Fetch) and codec errors (e.g., `EncodingError`). This aids debugging across different environments (e.g., testing environments without certain codecs).
