@@ -363,7 +363,11 @@
                 });
             }
             isRunning = true;
+
+            // Hide overlay and dev button
             overlay.style.opacity = '0';
+            devBtn.style.display = 'none';
+
             setTimeout(() => overlay.style.visibility = 'hidden', 1000);
             handleInteraction(e.clientX, e.clientY);
         });
