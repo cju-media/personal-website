@@ -119,10 +119,22 @@
     <canvas id="pondCanvas"></canvas>
 </div>
 
+<!-- Load RNBO Library -->
+<script type="text/javascript" src="https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js"></script>
+
 <script>
 (function() {
-    const REPO_API_URL = "https://api.github.com/repos/cju-media/personal-website/contents/sound-artist/sound/assets";
-    const PATCH_URL = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/rnbo-export/sound-artist.export.json";
+    const REPO_ROOT = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/";
+    const ASSETS_URL = REPO_ROOT + "assets/";
+    const PATCH_URL = REPO_ROOT + "rnbo-export/sound-artist.export.json";
+
+    const SAMPLE_ASSETS = [
+        "epno.aiff",
+        "eroica.aiff",
+        "isthatyou.aiff",
+        "sacre.aiff",
+        "snare.aiff"
+    ];
 
     let context, device, isRunning = false;
     let freqParam, sampParam;
@@ -272,15 +284,12 @@
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
 
-                const apiResponse = await fetch(REPO_API_URL);
-                const files = await apiResponse.json();
-                const audioFiles = files.filter(f => f.name.match(/\.(wav|mp3|aiff|aif)$/i));
-                if (audioFiles.length === 0) {
-                    throw new Error("No supported audio files found in repository.");
-                }
-                const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+                const randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
+                const fileUrl = ASSETS_URL + randomFile;
+
+                const fileResponse = await fetch(fileUrl);
+                if (!fileResponse.ok) throw new Error(`Failed to fetch audio file: ${fileResponse.statusText}`);
                 
-                const fileResponse = await fetch(choice.download_url);
                 const arrayBuffer = await fileResponse.arrayBuffer();
                 const audioBuffer = await context.decodeAudioData(arrayBuffer);
                 await device.setDataBuffer("sound", audioBuffer);
@@ -293,7 +302,13 @@
                 overlay.style.opacity = '1';
             } catch (e) {
                 console.error(e);
-                loading.innerText = "AUDIO LOAD ERROR";
+                if (e.name === 'EncodingError') {
+                    loading.innerText = "AUDIO DECODE ERROR";
+                } else if (e.name === 'TypeError' || e.message.includes('fetch')) {
+                    loading.innerText = "AUDIO FETCH ERROR";
+                } else {
+                    loading.innerText = "AUDIO LOAD ERROR";
+                }
             }
         }
 
