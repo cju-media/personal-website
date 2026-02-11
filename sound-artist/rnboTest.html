@@ -124,6 +124,7 @@
 
 <script>
 (function() {
+    console.log("RNBO Test Script Loaded");
     const REPO_ROOT = "https://raw.githubusercontent.com/cju-media/personal-website/main/sound-artist/sound/";
     const ASSETS_URL = REPO_ROOT + "assets/";
     const PATCH_URL = REPO_ROOT + "rnbo-export/sound-artist.export.json";
@@ -277,22 +278,49 @@
         async function setupRNBO() {
             if (devMode) return;
             try {
+                console.log("Setting up RNBO...");
+
+                // Use a shared context if possible to avoid context limit exhaustion
                 const WAContext = window.AudioContext || window.webkitAudioContext;
-                context = new WAContext();
+                // Reuse existing context or create a new one, but always assign to window property
+                // so it persists across re-injections of this block.
+                if (!window.RNBO_AudioContext) {
+                    console.log("Creating new AudioContext");
+                    window.RNBO_AudioContext = new WAContext();
+                } else {
+                    console.log("Reusing existing AudioContext");
+                    // If the previous context was closed (unlikely but possible), create new
+                    if (window.RNBO_AudioContext.state === 'closed') {
+                         console.log("Previous context closed. Creating new.");
+                         window.RNBO_AudioContext = new WAContext();
+                    }
+                }
+                context = window.RNBO_AudioContext;
+
+                console.log("AudioContext State:", context.state);
+
+                console.log("Fetching patch:", PATCH_URL);
                 const patchResponse = await fetch(PATCH_URL);
+                if (!patchResponse.ok) throw new Error(`Failed to fetch patch: ${patchResponse.statusText}`);
                 const patcher = await patchResponse.json();
+
+                console.log("Creating RNBO device...");
                 device = await RNBO.createDevice({ context, patcher });
                 device.node.connect(context.destination);
+                console.log("Device created.");
 
                 const randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
                 const fileUrl = ASSETS_URL + randomFile;
+                console.log("Fetching audio file:", fileUrl);
 
                 const fileResponse = await fetch(fileUrl);
                 if (!fileResponse.ok) throw new Error(`Failed to fetch audio file: ${fileResponse.statusText}`);
                 
                 const arrayBuffer = await fileResponse.arrayBuffer();
+                console.log("Decoding audio data...");
                 const audioBuffer = await context.decodeAudioData(arrayBuffer);
                 await device.setDataBuffer("sound", audioBuffer);
+                console.log("Audio buffer set.");
 
                 freqParam = device.parametersById.get("freq");
                 sampParam = device.parametersById.get("sampRate");
@@ -300,8 +328,9 @@
                 loading.style.display = 'none';
                 overlay.style.visibility = 'visible';
                 overlay.style.opacity = '1';
+                console.log("RNBO Setup Complete. Ready for interaction.");
             } catch (e) {
-                console.error(e);
+                console.error("RNBO Setup Failed:", e);
                 if (e.name === 'EncodingError') {
                     loading.innerText = "AUDIO DECODE ERROR";
                 } else if (e.name === 'TypeError' || e.message.includes('fetch')) {
@@ -312,10 +341,14 @@
             }
         }
 
-        if (typeof RNBO !== "undefined") setupRNBO();
-        else {
+        if (typeof RNBO !== "undefined") {
+            console.log("RNBO found immediately.");
+            setupRNBO();
+        } else {
+            console.log("Waiting for RNBO...");
             const check = setInterval(() => {
                 if (typeof RNBO !== "undefined") {
+                    console.log("RNBO loaded via interval.");
                     setupRNBO();
                     clearInterval(check);
                 }
@@ -323,6 +356,12 @@
         }
 
         overlay.addEventListener('mousedown', (e) => {
+            console.log("Interaction started. Resuming AudioContext...");
+            if (context && context.state === 'suspended') {
+                context.resume().then(() => {
+                    console.log("AudioContext resumed.");
+                });
+            }
             isRunning = true;
             overlay.style.opacity = '0';
             setTimeout(() => overlay.style.visibility = 'hidden', 1000);
