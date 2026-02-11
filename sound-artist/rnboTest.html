@@ -274,7 +274,10 @@
 
                 const apiResponse = await fetch(REPO_API_URL);
                 const files = await apiResponse.json();
-                const audioFiles = files.filter(f => f.name.match(/\.(wav|mp3)$/i));
+                const audioFiles = files.filter(f => f.name.match(/\.(wav|mp3|aiff|aif)$/i));
+                if (audioFiles.length === 0) {
+                    throw new Error("No supported audio files found in repository.");
+                }
                 const choice = audioFiles[Math.floor(Math.random() * audioFiles.length)];
                 
                 const fileResponse = await fetch(choice.download_url);
@@ -289,6 +292,7 @@
                 overlay.style.visibility = 'visible';
                 overlay.style.opacity = '1';
             } catch (e) {
+                console.error(e);
                 loading.innerText = "AUDIO LOAD ERROR";
             }
         }
