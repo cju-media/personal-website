@@ -39,3 +39,40 @@ This repository contains HTML fragments and scripts intended to be injected into
 
 ## 5. File Restrictions
 * **Never edit files containing the title "export.json".**
+
+## 6. RNBO Integration Guidelines
+When integrating Cycling '74 RNBO (Web Audio) patches into this repository, strictly adhere to the following patterns to ensure reliability on Squarespace and other hosting environments:
+
+### A. Library Loading
+* **Explicit Import:** Do not assume the parent environment has loaded the RNBO library. Always include the script tag explicitly within your fragment.
+  ```html
+  <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js"></script>
+  ```
+* **Initialization Loop:** Even with the tag present, use `setInterval` to wait for `RNBO` to be defined in the global scope before running setup logic.
+
+### B. AudioContext Management (Crucial for Reliability)
+* **Singleton Pattern:** Browsers enforce a strict limit on the number of hardware AudioContexts (often ~6). Repeated page navigations or block re-injections can quickly exhaust this limit if new contexts are created blindly.
+* **Shared Window Property:** Store the context in a unique window property (e.g., `window.RNBO_AudioContext`) and reuse it if it exists.
+  ```javascript
+  const WAContext = window.AudioContext || window.webkitAudioContext;
+  if (!window.RNBO_AudioContext) {
+      window.RNBO_AudioContext = new WAContext();
+  }
+  const context = window.RNBO_AudioContext;
+  ```
+* **User Interaction Resume:** Always call `context.resume()` inside a user interaction handler (e.g., `mousedown`, `touchstart`) to comply with browser autoplay policies.
+
+### C. Asset Fetching
+* **No GitHub API Calls:** Do not use `api.github.com` to list assets dynamically. The unauthenticated rate limit (60 requests/hour) is easily exceeded by public traffic, causing the entire audio experience to fail silently.
+* **Raw URLs:** Use hardcoded lists of known assets and fetch them directly from `raw.githubusercontent.com`.
+  ```javascript
+  const ASSETS = ["sound1.aiff", "sound2.aiff"]; // Static list
+  const url = `https://raw.githubusercontent.com/user/repo/main/path/${ASSETS[0]}`;
+  ```
+
+### D. Error Handling & Diagnostics
+* **Granular Errors:** Distinguish between network errors (e.g., 404 Fetch) and codec errors (e.g., `EncodingError`). This aids debugging across different environments (e.g., testing environments without certain codecs).
+* **Verbose Logging:** Log every step of the initialization sequence (Library Load -> Context Creation -> Fetch -> Decode -> Device Creation) to the console.
+
+### E. Interaction Logic
+* **Ghost Events:** On touch devices, a `touchstart` is often followed by a `mousemove`. Implement logic to ignore mouse events immediately following touch events (e.g., within 1000ms) to prevent double-triggering or jittery interaction.
