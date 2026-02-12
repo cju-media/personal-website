@@ -1,4 +1,4 @@
-##2-11-26
+## 2-11-26
 Got to a point with 9 that I am happy doing a recordings. I didn’t do it last night because I was a little bit eppy. I wanted a second look at it for more effects or some form, which I think I landed on pretty well the following morning. 
 
 It was my father’s birthday dinner and got to see my cousin and her husband with their daughter for the first time, which was nice.
