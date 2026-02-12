@@ -1,3 +1,14 @@
+##2-11-26
+Got to a point with 9 that I am happy doing a recordings. I didn’t do it last night because I was a little bit eppy. I wanted a second look at it for more effects or some form, which I think I landed on pretty well the following morning. 
+
+It was my father’s birthday dinner and got to see my cousin and her husband with their daughter for the first time, which was nice.
+
+## 2-10-26
+Spent a good amount of time on my website again today. Mainly working on rnbo to nail down the skills for that webdev project. Also, I had an idea for a multimedia work. The project, called Alta, will feature a few sound art Max pieces in between more traditional tracks. These max pieces will also exist as interactive rnbo pages on my website. I want to build up some tools and knowledge for that. These max patches will also be able to be performed live. A true multimedia work.
+
+Also spent some time streaming my work on the [9](https://cameronjohnston.bandcamp.com/album/last) video. I want to market it as botanica piece and I want a video to go with it, so I’ve been building that in max. I’ve never even posted it to my YouTube so it’s fresh.
+
+
 ## 2-9-26
 I did some cool drone work and autistically worked on my website. Had a nice viewer in stream keep us entertained. Its never a bad time streaming. I figure I do not have much to say. I guess a daily goal is to have something substantial to say everyday to make life worth it.
 
