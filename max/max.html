@@ -113,6 +113,31 @@
             border-color: #333;
         }
 
+        /* Sort Styles */
+        #max-patches-page-wrapper #sort-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        #max-patches-page-wrapper #sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: inherit;
+            outline: none;
+        }
+
+        #max-patches-page-wrapper #sort-select:hover {
+             background: rgba(0, 0, 0, 0.05);
+        }
+
         /* Repo Grid Styles */
         #max-patches-page-wrapper #repo-list {
             display: grid;
@@ -215,6 +240,15 @@
             <button class="filter-button" data-filter="rnbo">RNBO</button>
             <button class="filter-button" data-filter="pieces">Pieces</button>
             <button class="filter-button" data-filter="abstraction">Abstractions</button>
+        </div>
+
+        <div id="sort-container">
+            <label for="sort-select" style="margin-right: 10px;">Sort by:</label>
+            <select id="sort-select">
+                <option value="name">Name (A-Z)</option>
+                <option value="updated">Last Updated</option>
+                <option value="created">Newest Created</option>
+            </select>
         </div>
 
         <div id="repo-list">
@@ -320,6 +354,7 @@
                 const activeFilters = new Set();
                 const repoListContainer = wrapper.querySelector('#repo-list');
                 const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstraction'];
+                const sortSelect = wrapper.querySelector('#sort-select');
 
                 // Filter Buttons
                 const filterButtons = wrapper.querySelectorAll('.filter-button');
@@ -336,6 +371,30 @@
                         renderRepos();
                     });
                 });
+
+                // Sort Listener
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', () => {
+                        sortRepos(allRepos);
+                        renderRepos();
+                    });
+                }
+
+                function sortRepos(repos) {
+                    const sortMethod = sortSelect ? sortSelect.value : 'name';
+                    repos.sort((a, b) => {
+                        switch (sortMethod) {
+                            case 'name':
+                                return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                            case 'updated':
+                                return new Date(b.pushed_at) - new Date(a.pushed_at);
+                            case 'created':
+                                return new Date(b.created_at) - new Date(a.created_at);
+                            default:
+                                return 0;
+                        }
+                    });
+                }
 
                 function renderRepos() {
                     repoListContainer.innerHTML = '';
@@ -430,10 +489,11 @@
                             return;
                         }
 
-                        // Sort alphabetically
-                        relevantRepos.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-                        
                         allRepos = relevantRepos;
+
+                        // Initial Sort (defaults to Name or whatever is selected)
+                        sortRepos(allRepos);
+
                         renderRepos();
                     })
                     .catch(error => {
