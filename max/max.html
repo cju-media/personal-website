@@ -240,6 +240,7 @@
             <button class="filter-button" data-filter="rnbo">RNBO</button>
             <button class="filter-button" data-filter="pieces">Pieces</button>
             <button class="filter-button" data-filter="abstraction">Abstractions</button>
+            <button class="filter-button" data-filter="standalone">Standalone</button>
         </div>
 
         <div id="sort-container">
@@ -353,7 +354,7 @@
                 let allRepos = [];
                 const activeFilters = new Set();
                 const repoListContainer = wrapper.querySelector('#repo-list');
-                const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstraction'];
+                const targetTopics = ['max', 'msp', 'jitter', 'rnbo', 'pieces', 'abstraction', 'standalone'];
                 const sortSelect = wrapper.querySelector('#sort-select');
 
                 // Filter Buttons
