@@ -400,14 +400,18 @@
                 function renderRepos() {
                     repoListContainer.innerHTML = '';
 
-                    // Filter Logic: OR (Union)
+                    // Filter Logic: AND (Intersection)
                     // If no filters selected, show all fetched (which are already pre-filtered to be Max-relevant).
-                    // If filters selected, show repo if it has ANY of the selected tags.
+                    // If filters selected, show repo if it has ALL of the selected tags.
                     const filteredRepos = allRepos.filter(repo => {
                         if (activeFilters.size === 0) return true;
                         if (!repo.topics || repo.topics.length === 0) return false;
-                        // Check if any topic matches any active filter
-                        return repo.topics.some(topic => activeFilters.has(topic));
+
+                        // Check if ALL active filters are present in repo topics
+                        for (const filter of activeFilters) {
+                            if (!repo.topics.includes(filter)) return false;
+                        }
+                        return true;
                     });
 
                     if (filteredRepos.length === 0) {
