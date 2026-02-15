@@ -1,5 +1,5 @@
 ## 2-14-26
-Finally did a recording for [9](https://youtu.be/QnOQ1OiV9WQ)and got that up on YouTube. I will not let the fear of perfection stop me from creating. 
+Finally did a recording for [9](https://youtu.be/QnOQ1OiV9WQ) and got that up on YouTube. I will not let the fear of perfection stop me from creating. 
 
 I had the idea for a week or so now to make a randomize velocity plug in out of rnbo. I had a good amount of free time today so I was able to make it and record a little video for them YouTube just for demonstration/promo. 
 
