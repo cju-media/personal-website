@@ -1,0 +1,406 @@
+<!-- VST Plugins Page Fragment -->
+<div id="vst-plugins-page-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+        /* Scoped Styles */
+        #vst-plugins-page-wrapper {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: auto;
+            margin: 0;
+            background-color: transparent; /* Inherit from Squarespace */
+            padding: 60px 20px 20px 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* Glitch font classes */
+        #vst-plugins-page-wrapper .font1 { font-family: Arial, sans-serif !important; }
+        #vst-plugins-page-wrapper .font2 { font-family: Times New Roman, serif !important; }
+        #vst-plugins-page-wrapper .font3 { font-family: Courier New, monospace !important; }
+        #vst-plugins-page-wrapper .font4 { font-family: essay-text, monospace !important; }
+        #vst-plugins-page-wrapper .font5 { font-family: 'Playfair Display', serif !important; }
+        #vst-plugins-page-wrapper .font6 { font-family: 'VT323', monospace !important; transform: scale(1.1); }
+
+        #vst-plugins-page-wrapper h1 {
+            font-size: min(5vw, 3rem);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            margin-bottom: 40px;
+            color: inherit; /* Inherit text color */
+        }
+
+        #vst-plugins-page-wrapper .text-block1 {
+            padding-bottom: 25px;
+        }
+
+        #vst-plugins-page-wrapper .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
+        }
+
+        /* Layout Styles - Updated for Grid */
+        #vst-plugins-page-wrapper .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Wider for grid */
+            gap: 30px; /* Space between text, filters, grid */
+        }
+
+        /* Sort Styles */
+        #vst-plugins-page-wrapper #sort-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        #vst-plugins-page-wrapper #sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: inherit;
+            outline: none;
+        }
+
+        #vst-plugins-page-wrapper #sort-select:hover {
+             background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Repo Grid Styles */
+        #vst-plugins-page-wrapper #repo-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* Mobile / Vertical Styles */
+        @media (max-width: 768px) {
+            #vst-plugins-page-wrapper #repo-list {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+        }
+
+        /* Button Styles */
+        #vst-plugins-page-wrapper .repo-button {
+            display: flex; /* Centering content */
+            flex-wrap: wrap;
+            gap: 0.4em;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 60px; /* Ensure consistent height */
+        }
+
+        #vst-plugins-page-wrapper .repo-button:hover {
+            background-color: #555;
+            transform: scale(1.02);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            z-index: 1; /* Bring to front on hover */
+        }
+
+        /* Button Character Styles - to prevent jitter */
+        #vst-plugins-page-wrapper .button-char {
+            display: inline-block;
+            width: 0.6em;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        /* Wrapper to keep words together */
+        #vst-plugins-page-wrapper .word-wrapper {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        #vst-plugins-page-wrapper .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+            text-align: center;
+            grid-column: 1 / -1; /* Span all columns */
+        }
+    </style>
+
+    <div class="text-block1">
+        <h1>
+            <span class="span-class">V</span>
+            <span class="span-class">S</span>
+            <span class="span-class">T</span>
+            <span class="span-class" style="width: 0.5em;">&nbsp;</span>
+            <span class="span-class">P</span>
+            <span class="span-class">L</span>
+            <span class="span-class">U</span>
+            <span class="span-class">G</span>
+            <span class="span-class">I</span>
+            <span class="span-class">N</span>
+            <span class="span-class">S</span>
+        </h1>
+    </div>
+
+    <div class="content-wrapper">
+        <div id="sort-container">
+            <label for="sort-select" style="margin-right: 10px;">Sort by:</label>
+            <select id="sort-select">
+                <option value="created">Newest Created</option>
+                <option value="updated">Last Updated</option>
+                <option value="name">Name (A-Z)</option>
+            </select>
+        </div>
+
+        <div id="repo-list">
+            <div class="loading">Loading VST plugins...</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function initVSTPlugins() {
+                // Prevent double initialization
+                if (window.vstPluginsInitialized) return;
+                window.vstPluginsInitialized = true;
+
+                // Glitch Effect Logic
+                const wrapper = document.getElementById('vst-plugins-page-wrapper');
+                if (!wrapper) return; // Guard clause
+
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'ク', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span, enableColor = true) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        if (enableColor) {
+                            this.loopColor(span);
+                        }
+                    },
+
+                    stop(span) {
+                        clearTimeout(span._fontTimeout);
+                        clearTimeout(span._colorTimeout);
+                        this.reset(span);
+                    },
+
+                    reset(span) {
+                        if (span.dataset.original) {
+                            span.innerText = span.dataset.original;
+                        }
+                        span.style.color = ''; // Reset to inherited
+                        this.fontClasses.forEach(c => span.classList.remove(c));
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            // Change Font
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            // Chance to change to Katakana
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            span._fontTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            // Change Color
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            span._colorTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
+                };
+
+                // Initialize Title Spans (Continuous)
+                const titleSpans = wrapper.querySelectorAll('.text-block1 .span-class');
+                titleSpans.forEach(span => {
+                    // Skip the space span
+                    if (span.innerHTML === '&nbsp;') return;
+                    Glitch.start(span);
+                });
+
+                // --- Filter & Repo Logic ---
+
+                let allRepos = [];
+                const repoListContainer = wrapper.querySelector('#repo-list');
+                const sortSelect = wrapper.querySelector('#sort-select');
+
+                // Sort Listener
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', () => {
+                        sortRepos(allRepos);
+                        renderRepos();
+                    });
+                }
+
+                function sortRepos(repos) {
+                    const sortMethod = sortSelect ? sortSelect.value : 'created';
+                    repos.sort((a, b) => {
+                        switch (sortMethod) {
+                            case 'name':
+                                return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                            case 'updated':
+                                return new Date(b.pushed_at) - new Date(a.pushed_at);
+                            case 'created':
+                                return new Date(b.created_at) - new Date(a.created_at);
+                            default:
+                                return 0;
+                        }
+                    });
+                }
+
+                function renderRepos() {
+                    repoListContainer.innerHTML = '';
+
+                    if (allRepos.length === 0) {
+                        repoListContainer.innerHTML = '<div class="loading">No VST plugins found.</div>';
+                        return;
+                    }
+
+                    allRepos.forEach(repo => {
+                        const link = document.createElement('a');
+                        link.href = repo.html_url;
+                        link.className = 'repo-button';
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+
+                        // Build spans for button text
+                        const text = repo.name.replace(/[-_]/g, ' ');
+                        const words = text.split(' ');
+
+                        words.forEach((word, index) => {
+                            const wordSpan = document.createElement('span');
+                            wordSpan.className = 'word-wrapper';
+
+                            for (let char of word) {
+                                const span = document.createElement('span');
+                                span.textContent = char;
+                                span.className = 'button-char';
+                                // Pre-set original for Glitch object logic
+                                span.dataset.original = char;
+                                wordSpan.appendChild(span);
+                            }
+
+                            link.appendChild(wordSpan);
+                        });
+
+                        // Interactive Glitch on Hover
+                        link.addEventListener('mouseenter', () => {
+                            const chars = link.querySelectorAll('.button-char');
+                            chars.forEach(span => Glitch.start(span, false)); // false = disable color glitch
+                        });
+
+                        link.addEventListener('mouseleave', () => {
+                            const chars = link.querySelectorAll('.button-char');
+                            chars.forEach(span => Glitch.stop(span));
+                        });
+
+                        repoListContainer.appendChild(link);
+                    });
+                }
+
+                // Fetch GitHub Repos (Fetch ALL user repos then filter)
+                // Using per_page=100 to get maximum items. Pagination might be needed if > 100 repos.
+                const apiUrl = 'https://api.github.com/users/cju-media/repos?per_page=100';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`GitHub API Error: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 'data' is the array of repos directly for users/repos endpoint
+                        let repos = data;
+
+                        if (!repos || repos.length === 0) {
+                            repoListContainer.innerHTML = '<div class="loading">No repositories found.</div>';
+                            return;
+                        }
+
+                        // Filter client-side for VST-relevant repos
+                        // Include if has topic 'vst'
+                        const relevantRepos = repos.filter(repo => {
+                            return repo.topics && repo.topics.includes('vst');
+                        });
+
+                        if (relevantRepos.length === 0) {
+                            repoListContainer.innerHTML = '<div class="loading">No VST plugins found.</div>';
+                            return;
+                        }
+
+                        allRepos = relevantRepos;
+
+                        // Initial Sort
+                        sortRepos(allRepos);
+
+                        renderRepos();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching VST plugins:', error);
+                        repoListContainer.innerHTML = `<div class="loading" style="color: red;">Error loading VST plugins. Please try again later.</div>`;
+                    });
+            }
+
+            // Initialization logic for Squarespace
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initVSTPlugins);
+            } else {
+                initVSTPlugins();
+            }
+        })();
+    </script>
+</div>
