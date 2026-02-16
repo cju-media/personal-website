@@ -1,5 +1,19 @@
+## 2-14-26
+Finally did a recording for [9](https://youtu.be/QnOQ1OiV9WQ) and got that up on YouTube. I will not let the fear of perfection stop me from creating. 
+
+I had the idea for a week or so now to make a randomize velocity plug in out of rnbo. I had a good amount of free time today so I was able to make it and record a little video for them YouTube just for demonstration/promo. 
+
+It was Valentine’s Day so I had a nice day hanging out with my wife when I wasn’t grinding.
+
+## 2-13-26
+Finally put the finishing touches on the 9 video. I ended up recording the following day morning, when I’m writing this.
+
+Spent a good amount of time cleaning my office. I want a clear space to work and the mess of my office was not helping with the vibes. 
+
+Hopefully did the last final touches of SND with Alina. Still need to give her the tracks but at least the video is 100% done. Looking forward to doing something with that project again. Hopefully something comes out of this year long endeavor.
+
 ## 2-12-26
-Listened deeply to my original California piece from nearly a decade ago. I originally had the idea that it was salvageable. With a few edits the piece could really stand out and be something I’m proud of. Unfortunately, I do not think that’s a possibility. I wouldn’t be happy without major revisions to the work and it still wouldn’t be up the my standards. The only way is to throw out the work entirely and start again with the same concept. Considering I’m going to work on another California themed project it doesn’t make sense to restart a completely unrelated piece that’s not going on the project. Once I’m done with this 9 video, I will go full in on alta.
+Listened deeply to my original [California](https://cju.media/music/california) piece from nearly a decade ago. I originally had the idea that it was salvageable. With a few edits the piece could really stand out and be something I’m proud of. Unfortunately, I do not think that’s a possibility. I wouldn’t be happy without major revisions to the work and it still wouldn’t be up the my standards. The only way is to throw out the work entirely and start again with the same concept. Considering I’m going to work on another California themed project it doesn’t make sense to restart a completely unrelated piece that’s not going on the project. Once I’m done with this 9 video, I will go full in on alta.
 
 Rehearsal today. Starting to feel really good where I am on tuba.
 
