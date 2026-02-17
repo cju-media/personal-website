@@ -1,3 +1,19 @@
+## 2-16-26
+I landed on just redoing a rescore for the opening of Halo ODST. I did one in college but I can’t find it so fuck it I’ll do another one. However at that point I’m fucked. I have no idea what to score considering I do not watch enough media. The scene where the main characters meet in Kimi no wa? I don’t remember a ton of music for that scene and since an anime scene was so popular for me another could do the same. I should also look at weathering with you, that probably has some good scenes. 
+
+Managed to get some major work done on the ODST rescore. I ended up sketching everything in Dorico, since it has a media scoring feature with the plan to export the midi into Ableton to do some real producing. The reason I am writing everything in Dorico because I can’t see shit when writing in a DAW. I have no context for anything musical, it’s so hard to determine notes and chords from a piano roll. I was able to get all of the notes down in Dorico in under a day. Now I can do some production and hopefully finish the track today.
+
+## 2-15-26
+Sent in an application for a Composer/Sound Designer gig for an indie studio. It’s unpaid as of now but I don’t really care. I really want to get back in there and build up my skills again. I feel like my technical background will be a big draw. I believe I can create some really unique experiences not only from my technical background but also from my history working with soundscapes with my Laptop Ensemble history.  
+
+I realized that a [rescore](https://youtube.com/watch?v=Q1PClhDXwLo) I did over half a decade ago popped off on YouTube for like no reason. I thought the video was popping with 800 views. But it turns out that was 800 views *this month*. Over 5k total views in a couple of months. The video was sitting at under 100 views for 6 and a half years. Why did it pop off? I have no idea. But the comments aren’t too negative and only one dislike out of about 70. Do I like the track? It’s okay. I would probably do something different now and be more advanced on the production. But are the notes nice? I would say so. I am not as surprised as [last](https://cameronjohnston.bandcamp.com/track/last) or [9](https://cameronjohnston.bandcamp.com/track/9) but it’s not *terrible.*
+
+On Friday I rediscovered my arrangement of [Satyagraha Finale](https://youtu.be/QptSj_9kp68?t=957&si=elKd58BiTUn_t5gS) for New Music Ensemble and was quite surprised how good it was. Maybe I overestimated my lack of skill. Got that shit up on my website quick via GH. Although maybe California shouldn’t be up there. 
+
+I am on a roll on the YouTube videos. Got another one up today advertising my Auto Panning VST I used for SND. It’s a fun little VST and I think others can get some use out of it. I do really need to replace my dynamic mic with a condenser. The fucking dynamic is so low gain and I do not want to buy a cloud lifter.
+
+Maybe I move on from *alta* for now and instead attack some rescoring projects.
+
 ## 2-14-26
 Finally did a recording for [9](https://youtu.be/QnOQ1OiV9WQ) and got that up on YouTube. I will not let the fear of perfection stop me from creating. 
 
