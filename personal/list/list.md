@@ -1,3 +1,8 @@
+## 2-16-26
+I landed on just redoing a rescore for the opening of Halo ODST. I did one in college but I can’t find it so fuck it I’ll do another one. However at that point I’m fucked. I have no idea what to score considering I do not watch enough media. The scene where the main characters meet in Kimi no wa? I don’t remember a ton of music for that scene and since an anime scene was so popular for me another could do the same. I should also look at weathering with you, that probably has some good scenes. 
+
+Managed to get some major work done on the ODST rescore. I ended up sketching everything in Dorico, since it has a media scoring feature with the plan to export the midi into Ableton to do some real producing. The reason I am writing everything in Dorico because I can’t see shit when writing in a DAW. I have no context for anything musical, it’s so hard to determine notes and chords from a piano roll. I was able to get all of the notes down in Dorico in under a day. Now I can do some production and hopefully finish the track today.
+
 ## 2-15-26
 Sent in an application for a Composer/Sound Designer gig for an indie studio. It’s unpaid as of now but I don’t really care. I really want to get back in there and build up my skills again. I feel like my technical background will be a big draw. I believe I can create some really unique experiences not only from my technical background but also from my history working with soundscapes with my Laptop Ensemble history.  
 
