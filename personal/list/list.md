@@ -1,11 +1,17 @@
-<<<<<<< HEAD
+## 2-17-26
+Started the process of producing the ODST scene in Ableton. I want to do it in Ableton so I hage the flexbility of using Max 4 Live devices if I feel thats necessary. The fact that the scene is a straight forward action scene probably means theres not going to be room for weird Max 4 Live stuff. But its about the practice more than anything. Will probably take a few days to get it done but overall I am happy with how the piece is turning out.
+
+No new VST video today but I did some work on converting my [Glitch Effect](https://github.com/cju-media/Glitch-Delay) Max device to [RNBO](https://github.com/cju-media/glitchDelay). The effect creates a random delay time and a random pan position creating some thick glitchy textures. I had originally wanted to use VST polyphony to get the effect but that kind of goes against my core design principle of "Start and Go." I want my max devices and VSTs to just work when you turn them on. Using VST polyphony takes set up time to get the effect going. I want users to be wowed the moment they start playing with a plugin. Tomorrow (the day after I am writing this) I will rebuild the internal polyphony. I want to give a skipping CD effect and depending on VST polyphony will not give me the desired effect easily. If the user has to build the effect then it is not my effect doing the work, its their DAW skills that are doing it.
+
+At work I finally nailed down the issues with the tower lights. My sunset automation never fired, although my sunrise automation does. They are set to the same coordinates so I am unsure of what the problem is. Regardless I set the lights to turn on at 4pm everyday so that should solve all of the turning on issues.
+
+Fixed an issue with the auto-Sermon record system not working. It was my fault for trusting a toggle. I hard coded the record start and stop into ProPresenter and set the record start to also open the server in Finder. That way OBS can always have access to the folder when recording starts.  
+
 ## 2-16-26
 I landed on just redoing a rescore for the opening of Halo ODST. I did one in college but I can’t find it so fuck it I’ll do another one. However at that point I’m fucked. I have no idea what to score considering I do not watch enough media. The scene where the main characters meet in Kimi no wa? I don’t remember a ton of music for that scene and since an anime scene was so popular for me another could do the same. I should also look at weathering with you, that probably has some good scenes. 
 
 Managed to get some major work done on the ODST rescore. I ended up sketching everything in Dorico, since it has a media scoring feature with the plan to export the midi into Ableton to do some real producing. The reason I am writing everything in Dorico because I can’t see shit when writing in a DAW. I have no context for anything musical, it’s so hard to determine notes and chords from a piano roll. I was able to get all of the notes down in Dorico in under a day. Now I can do some production and hopefully finish the track today.
 
-=======
->>>>>>> ef7600f0dad8134e7dccb594f498a1e8875175af
 ## 2-15-26
 Sent in an application for a Composer/Sound Designer gig for an indie studio. It’s unpaid as of now but I don’t really care. I really want to get back in there and build up my skills again. I feel like my technical background will be a big draw. I believe I can create some really unique experiences not only from my technical background but also from my history working with soundscapes with my Laptop Ensemble history.  
 
