@@ -1,3 +1,14 @@
+## 2-18-26
+Did three major things today.
+
+First: worked heavily, bigly even, on my rescore of the ODST scene. I think its coming along nicely. The production and orchestration I am doing really is making it all come together. I am also moving notes around in Ableton, which is fun. I still do not think I would have been able to write something as harmonically intense because I have no context for where anything is when I am editing MIDI. Hopefully can get the orchestration done tomorrow, then I can really dive into the production.  
+
+Second: Glitch Delay RNBO Port. I think it is mostly done. I added all the polyphony internally and it has a great scratched TV effect that I love. Hopefully I can get it posted tomorrow with a video. I want to sleep on it and reorder the params since they're are a lot.
+
+Lastly, I applied for an Audio Engineering job with Apple. Its a audio tech job for the Steve Jobs theater which is exciting. Hopefully I can at least get to an interview.
+
+I found at least one more scene to score. It is the opening of Suzume. Its like 5 minutes to the door. Most of it is in silence so I do not have to compete with existing music. It is a lot and theres a couple of distinct sections where I can maybe chop it up. That way I have a few scenes in the bank that I do not have to think about. Will take a closer look and see tomorrow.
+
 ## 2-17-26
 Started the process of producing the ODST scene in Ableton. I want to do it in Ableton so I hage the flexbility of using Max 4 Live devices if I feel thats necessary. The fact that the scene is a straight forward action scene probably means theres not going to be room for weird Max 4 Live stuff. But its about the practice more than anything. Will probably take a few days to get it done but overall I am happy with how the piece is turning out.
 
