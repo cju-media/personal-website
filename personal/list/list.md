@@ -1,3 +1,6 @@
+## 2-19-26
+Finished my glitch delay vst, got it on github and posted a (video)[https://www.youtube.com/@cjxyz/videos] about it. Best performing so far there are already more views on this video then the other two I have posted
+
 ## 2-18-26
 Did three major things today.
 
