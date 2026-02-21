@@ -8,7 +8,7 @@ I am really inspired by the episodic nature of **Golden Pavilion.** Its just a r
 Attacking all of **alta** seems huge but the idea of doing just one scene is not as scary. I think the first scene I would do is **la mer**. Do something with sound of waves, spectral processing. Could be a lot of fun.
 
 I could also go back and start working on some VSTs again, although I am out of ideas as of now. Wait I remember:
-writing my own Low Pass Gate and coverting that into RNBO. I abused a LPG M4L device for years. I would not use the same LPG but writing my own could be something cool.
+writing my own Low Pass Gate and coverting that into RNBO. I abused a LPG M4L device for years. I would not use the same LPG but writing my own could be something cool. Also doing a tape sim would be cool.
 
 I would be remissed if I did not also mention Mabel had to go to the hospital today because she got into pills. I am hopeful she will be alright but she had to stay in the hospital overnight for monitoring. I miss her and I hope she is doing alright. Shes tough. She will do just fine.
 
