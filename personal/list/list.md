@@ -1,5 +1,9 @@
 ## 2-19-26
-Finished my glitch delay vst, got it on github and posted a (video)[https://www.youtube.com/@cjxyz/videos] about it. Best performing so far there are already more views on this video then the other two I have posted
+Finished my glitch delay vst, got it on github and posted a [video](https://www.youtube.com/watch?v=HFuF8aCPmKI) for it. Best performing so far; there are already more views on this video then the other two I have posted. Even got a comment, although I am pretty sure it is negative the fact I am not sure I will count as a win. I had advertised the VST as a "CD Skipping Simulation and this commentor asked if "I had any CDs that skipped like that?" Okay bub, sorry I did not clarify that it was inspired by CD skipping and not a one-to-one recreation. But whatever, I am glad I am getting real eyes and interaction on my work.
+
+Did some great work on my ODST rescore today. I feel like the orchestration is almost completely done. I am playing with some percussion and moving some notes around to really lock in the timing. Tomorrow I think I can have the rescore orchestration 100% done and I will just need to play with the production. In retrospect, I thought that I could have done the production in logic because this is such a straight forward score that I wouldn't need to do anything weird. On second thought however its better to be safe than sorry. The only reason logic is superior is for better timecode editing once you are ready to export. You can always pull the audio files with embedded signatures and tempos to drop into logic. From there you can change the start timecode for the start of the cue. 
+
+I pushed myself to read a little more of Mishima's **In the Temple of The Golden Pavilion** and theres is this evocative scene about the protangists crush that lives next door. No dialogue, just descriptions of the scene and I believe it has the potential to be a beatifully directed scene of film. I hesitate to want to write music about the work because Glass scored a movie on the topic (Mishima film). 
 
 ## 2-18-26
 Did three major things today.
