@@ -1,9 +1,25 @@
+## 2-20-26
+I got to the point of the ODST rescore where I was just playing it over and over again with no new ideas on how to improve the overall sound. I figured that was the point where I was pretty much done. I went through some light mixing and production before exporting and getting it on [Youtube](https://www.youtube.com/watch?v=yPkY2KzNnx8). I am quite happy where it turned out especially compared to my attempted I did nearly a decade ago. What I do recall of my original cue in comparison to this one is that I hit all the beats a little more smoothly here. I also worked in the halo theme very nicely which I am quite proud of. It never ends: on to the next project.
+
+I have a few choices. I can look into into scoring the opening of Shizume. That could be some fun because I will have  room to do some weird stuff. I could look into starting **alta** although I do not have much to go off of... maybe I should just attack a scene at a time.
+
+I am really inspired by the episodic nature of **Golden Pavilion.** Its just a recollection of events that made the protagonist who he is. It is hard to seperate the book from Mishima's worldview, closted homosexuality and misogyny. His books are almost a meta narrative, the episodes that make him who he is. At least in my view. He is the monk and his books are his episodes. I can see why the movie based on his life was made that way, it explemplfies this episodic narrative. Although that could be my perspective because I watched the movie before reading any of his books. 
+
+Attacking all of **alta** seems huge but the idea of doing just one scene is not as scary. I think the first scene I would do is **la mer**. Do something with sound of waves, spectral processing. Could be a lot of fun.
+
+I could also go back and start working on some VSTs again, although I am out of ideas as of now. Wait I remember:
+writing my own Low Pass Gate and coverting that into RNBO. I abused a LPG M4L device for years. I would not use the same LPG but writing my own could be something cool.
+
+I would be remissed if I did not also mention Mabel had to go to the hospital today because she got into pills. I am hopeful she will be alright but she had to stay in the hospital overnight for monitoring. I miss her and I hope she is doing alright. Shes tough. She will do just fine.
+
 ## 2-19-26
 Finished my glitch delay vst, got it on github and posted a [video](https://www.youtube.com/watch?v=HFuF8aCPmKI) for it. Best performing so far; there are already more views on this video then the other two I have posted. Even got a comment, although I am pretty sure it is negative the fact I am not sure I will count as a win. I had advertised the VST as a "CD Skipping Simulation and this commentor asked if "I had any CDs that skipped like that?" Okay bub, sorry I did not clarify that it was inspired by CD skipping and not a one-to-one recreation. But whatever, I am glad I am getting real eyes and interaction on my work.
 
 Did some great work on my ODST rescore today. I feel like the orchestration is almost completely done. I am playing with some percussion and moving some notes around to really lock in the timing. Tomorrow I think I can have the rescore orchestration 100% done and I will just need to play with the production. In retrospect, I thought that I could have done the production in logic because this is such a straight forward score that I wouldn't need to do anything weird. On second thought however its better to be safe than sorry. The only reason logic is superior is for better timecode editing once you are ready to export. You can always pull the audio files with embedded signatures and tempos to drop into logic. From there you can change the start timecode for the start of the cue. 
 
-I pushed myself to read a little more of Mishima's **In the Temple of The Golden Pavilion** and theres is this evocative scene about the protangists crush that lives next door. No dialogue, just descriptions of the scene and I believe it has the potential to be a beatifully directed scene of film. I hesitate to want to write music about the work because Glass scored a movie on the topic (Mishima film). 
+I pushed myself to read a little more of Mishima's **The Temple of The Golden Pavilion** and theres is this evocative scene about the protangists crush that lives next door. No dialogue, just descriptions of the scene and I believe it has the potential to be a beatifully directed scene of film. I hesitate to want to write music about the work because Glass scored a movie on the topic (Mishima film). 
+
+Went to see Gaga's Mayhem ball. It was really her best concert ever. It was filmed so it is probably on some streaming service by the time you read this. 
 
 ## 2-18-26
 Did three major things today.
