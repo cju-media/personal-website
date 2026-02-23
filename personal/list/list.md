@@ -1,3 +1,8 @@
+## 2-21-26
+I started on **la mer**. The core of the work right now is using a sample of an ocean to drive an envelope follower controlling the amplitude of a variety of instruments. Very drone-y and cool. There is also a spectral effect that takes the amplitude of the ocean sample and the frequency components of the instruments. Overall I like the sound but I am worried about the flow and build of the piece. If I have room to vary the sound enough to make a differnce to create a nice arc of the work.
+
+This work can also serve as a basis for a solo or open instrumentation piece. Using live instruments individually mic'd running the patch instead of the solo laptop version.
+
 ## 2-20-26
 I got to the point of the ODST rescore where I was just playing it over and over again with no new ideas on how to improve the overall sound. I figured that was the point where I was pretty much done. I went through some light mixing and production before exporting and getting it on [Youtube](https://www.youtube.com/watch?v=yPkY2KzNnx8). I am quite happy where it turned out especially compared to my attempted I did nearly a decade ago. What I do recall of my original cue in comparison to this one is that I hit all the beats a little more smoothly here. I also worked in the halo theme very nicely which I am quite proud of. It never ends: on to the next project.
 
