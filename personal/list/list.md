@@ -1,3 +1,13 @@
+## 2-22-26
+It was a sleepy day today. I had service in the morning which went great for the most part. Had a faulty battery die way to quickly but it was swiflty replaced. I should be checking battery when they come on. There is about an hour that the packs are on between the end of sound check and the end of the prelude. I should be checking when they get back to the receiver after the prelude. You cannot learn without error. After getting home I slept for probably more than it was helpful.
+
+I got the go-ahead to begin work on a website project for one of my team members. They want a demo website for their band. The concept is german brutalism. The page will display a random slideshow of images from a google drive folder with a randomized playlist from another google drive folder. Fairly simple but I am excited to get a website project regardless. 
+
+Looked at **la mer** a little bit. Added some more granular controls to each instance of the instrument playback. I 
+think I am coming closer to an idea of form. **ocean>>ocean spectral>>instruments** something like that.
+
+Mabel is back home and is doing healthy. We are going to take her in today for another bloodtest to make sure her levels are normal.
+
 ## 2-21-26
 I started on **la mer**. The core of the work right now is using a sample of an ocean to drive an envelope follower controlling the amplitude of a variety of instruments. Very drone-y and cool. There is also a spectral effect that takes the amplitude of the ocean sample and the frequency components of the instruments. Overall I like the sound but I am worried about the flow and build of the piece. If I have room to vary the sound enough to make a differnce to create a nice arc of the work.
 
