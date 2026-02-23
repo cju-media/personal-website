@@ -322,6 +322,11 @@
 
             const img = document.createElement('img');
             img.src = thumb;
+            // Use high-res image for high-DPI (Retina) mobile screens
+            // 342w is the typical derivative width, 2048w is the master width
+            img.srcset = `${thumb} 342w, ${src} 2048w`;
+            // On mobile (<600px), use 100vw, otherwise use approx 300px (grid item size)
+            img.sizes = "(max-width: 600px) 100vw, 300px";
             img.alt = photo.caption || 'Photo';
             img.loading = 'lazy';
             img.onload = () => img.classList.add('loaded');
