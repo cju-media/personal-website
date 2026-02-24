@@ -1,3 +1,8 @@
+## 2-23-26
+**la mer** faced my wrath today.
+
+I had an idea to start work on a Tokyo Trials project. I think there is a lot of potential commentary on the effects of imperialism. Both Japanese imperialism and Western imperialism. Drama was abound. The Chief Judge resigned due to a mockery of justice. The Indian judge wrote a dissenting opinion mialigning Western powers for their expansion in Asia. Japan resisted the West and in order to do that they had to build their Empire to compete. Of course, I am not justifying their war crimes. The West was not so different in their actions in Asia. Japan learned how to empire from the West and they had to do it or they would have been swallowed just like the rest of the continent.
+
 ## 2-22-26
 It was a sleepy day today. I had service in the morning which went great for the most part. Had a faulty battery die way to quickly but it was swiflty replaced. I should be checking battery when they come on. There is about an hour that the packs are on between the end of sound check and the end of the prelude. I should be checking when they get back to the receiver after the prelude. You cannot learn without error. After getting home I slept for probably more than it was helpful.
 
