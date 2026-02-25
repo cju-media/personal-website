@@ -1,3 +1,9 @@
+## 2-24-26
+Busy day at USC, running errands and emails. Not enough time to do some work on a personal project. I applied for another Magic Castle job which I think will work well for me. Though, it has given me pause to my title at the church. AV Tech Manager does not seem adequate for the type of work I am approaching at the church.
+
+Did some work adding a randomly roll of videos to stream which will be funny when I have to step away.
+
+
 ## 2-23-26
 **la mer** faced my wrath today.
 
