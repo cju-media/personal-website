@@ -1,3 +1,13 @@
+## 2-26-26
+Rough day today. A little stressful set at USC because I did not confirm the specs of the show. A car hit a train on the A line so I decided to go to the church and take care of some work. Even after 2 hours of waiting I still had to take a bus bridge. (as of the following day, over 24 hours later the train is still not fully up.) Because it's Marathon day and I was beat from the day before I did not get much work done when I was off in the morning.
+
+Marathon is fun. Took me a couple of games to get it but the gun play feels great. No solo wins but in trios I did pretty good. Some early exfils but I think the longer you stay in the game the more rewards you get.
+
+## 2-25-26
+Honestly I got home late and did not write this on the 25th. I am writing this on the train at nearly 10pm on the 26th. Marathon comes on the 26th (I am having fun so far) and the [EP](https://youtu.be/-wQfCuKxC5c?si=LIrh8S3WCVJ2WQ5R) by Ryan Lott is already out. I watched the [ViDoc](https://www.youtube.com/watch?v=uk4K91aeixU&pp=ygUZbWFyYXRob24gc291bmR0cmFjayB2aURvYw%3D%3D) on creating the soundtrack. It really resonated with me. I like his use of the human voice to create these glitchy unworldy sounds. I will have more thoughts on it later.
+
+A conversation with Harris today about doing some punch-ins for **Souls Never Die**. He is really optimistic about some Grammy nomination chances with a little more recording. The goal being we will have the new recordings in with the film and the LP. November release, I think it will be done quick. 
+
 ## 2-24-26
 Busy day at USC, running errands and emails. Not enough time to do some work on a personal project. I applied for another Magic Castle job which I think will work well for me. Though, it has given me pause to my title at the church. AV Tech Manager does not seem adequate for the type of work I am approaching at the church.
 
