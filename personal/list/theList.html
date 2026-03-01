@@ -406,9 +406,15 @@
 
                     entries.forEach(entry => entry.style.display = 'none');
                     const randomIndex = Math.floor(Math.random() * entries.length);
-                    entries[randomIndex].style.display = 'block';
+                    const randomEntry = entries[randomIndex];
+                    randomEntry.style.display = 'block';
 
-                    if (window.location.hash) {
+                    const h2 = randomEntry.querySelector('h2');
+                    if (h2) {
+                        const dateStr = h2.textContent.trim();
+                        // Use pushState so they can use the browser back button to go to previous randoms or main list
+                        history.pushState(null, null, `#${encodeURIComponent(dateStr)}`);
+                    } else if (window.location.hash) {
                         history.replaceState(null, null, window.location.pathname + window.location.search);
                     }
 
