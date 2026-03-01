@@ -362,6 +362,39 @@
                     }
                 }
 
+                function handleHashChange() {
+                    const hash = window.location.hash;
+                    if (!hash || hash === '#') return;
+
+                    const dateStr = decodeURIComponent(hash.substring(1)); // Remove the '#' and decode
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+
+                    if (entries.length === 0) return;
+
+                    let found = false;
+                    for (let entry of entries) {
+                        const h2 = entry.querySelector('h2');
+                        if (h2 && h2.textContent.trim() === dateStr) {
+                            found = true;
+                            // Hide intro
+                            const intro = contentContainer.querySelector('.intro-text');
+                            if (intro) intro.style.display = 'none';
+
+                            // Hide all other entries
+                            entries.forEach(e => e.style.display = 'none');
+
+                            // Show matching entry
+                            entry.style.display = 'block';
+
+                            updateNavForRandom(); // Uses back link logic
+                            break;
+                        }
+                    }
+
+                    // If hash didn't match anything, maybe just show all entries?
+                    // Currently we do nothing and let it be, but showing all might be safer
+                }
+
                 function showRandomEntry(e) {
                     if (e) e.preventDefault();
 
@@ -375,6 +408,10 @@
                     const randomIndex = Math.floor(Math.random() * entries.length);
                     entries[randomIndex].style.display = 'block';
 
+                    if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
+
                     updateNavForRandom();
                 }
 
@@ -386,6 +423,10 @@
 
                     if (intro) intro.style.display = 'block';
                     entries.forEach(entry => entry.style.display = 'block');
+
+                    if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
 
                     updateNavForMain();
                 }
@@ -489,6 +530,10 @@
                             setLinksTargetBlank(contentContainer);
                             setupEntries();
                             bindNavEvents();
+
+                            if (window.location.hash) {
+                                handleHashChange();
+                            }
                         })
                         .catch(error => {
                             console.error('Error loading list:', error);
@@ -540,6 +585,13 @@
                     }
                 });
 
+                window.addEventListener('hashchange', () => {
+                    if (window.location.hash) {
+                        handleHashChange();
+                    } else {
+                        showAllEntries();
+                    }
+                });
 
                 loadMarked(fetchAndRenderList);
             }
