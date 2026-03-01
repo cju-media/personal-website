@@ -1,7 +1,12 @@
+## 3-1-26
+6:30am start at USC and then a church event in the evening. I probably will not get home until 10 or later.
+
 
 
 ## 2-28-26
 Very successful event at the church in the morning followed by a longer set day at USC. I got home after 12 hours of work so I did not have the energy to add to the list. I refuse to let a couple of days to snowball into me giving up on this project all together. I will be consistent.
+
+I did have time to play Marathon. I feel like I did a little better and I am getting the flow of the game pretty good.
 
 ## 2-27-26
 USC again. This time: early. I was in around 5:30am. 
