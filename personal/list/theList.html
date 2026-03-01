@@ -208,6 +208,20 @@
             cursor: pointer;
             z-index: 10000;
         }
+
+        #the-list-page-wrapper .caption {
+            margin-top: 15px;
+            color: #fff;
+            text-align: center;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: sans-serif;
+        }
     </style>
 
     <h1 class="glitch-title">
@@ -236,6 +250,7 @@
         <div class="lightbox-content">
             <div id="lightbox-spinner" class="spinner"></div>
             <img id="lightbox-img" src="" alt="Full view" style="display:none;">
+            <div id="lightbox-caption" class="caption"></div>
         </div>
     </div>
 
@@ -500,11 +515,13 @@
                 const lightbox = wrapper.querySelector('#lightbox-modal');
                 const lightboxImg = wrapper.querySelector('#lightbox-img');
                 const lightboxSpinner = wrapper.querySelector('#lightbox-spinner');
+                const lightboxCaption = wrapper.querySelector('#lightbox-caption');
                 const closeBtn = wrapper.querySelector('.close-btn');
 
-                function openLightbox(src) {
+                function openLightbox(src, altText) {
                     lightboxImg.style.display = 'none';
                     lightboxSpinner.style.display = 'block';
+                    lightboxCaption.style.display = 'none'; // hide until loaded
 
                     lightboxImg.src = ''; // reset
                     lightboxImg.src = src;
@@ -512,6 +529,11 @@
                     lightboxImg.onload = () => {
                         lightboxSpinner.style.display = 'none';
                         lightboxImg.style.display = 'block';
+
+                        if (altText) {
+                            lightboxCaption.textContent = altText;
+                            lightboxCaption.style.display = 'block';
+                        }
                     };
 
                     lightbox.classList.add('active');
@@ -520,7 +542,7 @@
                 // Event delegation for dynamically loaded images
                 wrapper.addEventListener('click', (e) => {
                     if (e.target.tagName === 'IMG' && (contentContainer.contains(e.target) || aboutContainer.contains(e.target))) {
-                        openLightbox(e.target.src);
+                        openLightbox(e.target.src, e.target.alt);
                     }
                 });
 
