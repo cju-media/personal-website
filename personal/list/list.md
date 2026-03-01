@@ -1,5 +1,23 @@
+
+
+## 2-28-26
+Very successful event at the church in the morning followed by a longer set day at USC. I got home after 12 hours of work so I did not have the energy to add to the list. I refuse to let a couple of days to snowball into me giving up on this project all together. I will be consistent.
+
+## 2-27-26
+USC again. This time: early. I was in around 5:30am. 
+
+I am thinking about a [video](https://www.youtube.com/watch?v=-gr-upidU2Q) made by Narhe Sol regarding the Bad Bunny. Despite the very clickbait thumbnail she had a very positive opinion on the work as a whole. She is a classical pianist and composer so she came at it from that angle. So much so she called it Gesamtkunstwerk, which is such an overly acadmeic way of describing the work. 
+
+That brought up some feelings. I do agree it is probably closer to Gesamtkunstwerk than a traditional Super Bowl halftime. But what is the difference? Modern concert production always includes dance, theatre, lighting, effects, etc (unless you're Adele). What made Bad Bunny different to raise his production to the level of Gesamtkunstwerk. There was a soild story and message that is not apparent in other recent half time shows (maybe except for Kendrick). Because the Shakira show definitly had more than music, but not really a story. A message, sure, but that comes from the songs themselves. The elements of Gesamtkunstwerk have meaning alone. Is 4DX Gesamtkunstwerk? Its more integrated than a traditional theatre experience. Is film Gesamtkunstwerk? It probably is, with its influence from theatre and opera. Greek theatre had all of these elements 2000 years ago. Renaissance ballet had all of those elements. Why does some proto-Nazi get the credit for a word that describes the state of stagecraft for thousands of years.
+
+Does Gesamtkunstwerk mean nothing or everything? The fact it is not in the vernacular carries weight methinks.
+
+I started filling out a list of composition competitions that I can enter. Gonna start grinding those out. First due date is 3/31.
+
 ## 2-26-26
-Rough day today. A little stressful set at USC because I did not confirm the specs of the show. A car hit a train on the A line so I decided to go to the church and take care of some work. Even after 2 hours of waiting I still had to take a bus bridge. (as of the following day, over 24 hours later the train is still not fully up.) Because it's Marathon day and I was beat from the day before I did not get much work done when I was off in the morning.
+Rough day today. A little stressful set at USC because I did not confirm the specs of the show before hand. We some help from Beji though we got it set up before the start of the show. Clinet was a little nervous but I was happy, other than some RF interference issues.
+
+A car hit a train on the A line so I decided to go to the church and take care of some work. Even after 2 hours of waiting I still had to take a bus bridge. (as of the following day, over 24 hours later the train is still not fully up.) Because it's Marathon day and I was beat from the day before I did not get much work done when I was off in the morning.
 
 Marathon is fun. Took me a couple of games to get it but the gun play feels great. No solo wins but in trios I did pretty good. Some early exfils but I think the longer you stay in the game the more rewards you get.
 
