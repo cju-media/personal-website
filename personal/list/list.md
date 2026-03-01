@@ -1,7 +1,11 @@
 ## 3-1-26
 6:30am start at USC and then a church event in the evening. I probably will not get home until 10 or later.
 
-![show setup](https://github.com/cju-media/personal-website/blob/main/personal/list/images/3-1-26.jpeg?raw=true)
+But look at this beauty. 
+
+![THE SET](https://github.com/cju-media/personal-website/blob/main/personal/list/images/3-1-26.jpeg?raw=true)
+
+Controlling the ATEM via bitfocus companion. I have macros to switch the program, only programming the buttons I need. I have also programmed some macros to change the feed to the confmon. The ATEM was receiving notes and slides from the same device, 2 total. Using a third output to display multiview that shows the confidence monitor output as well as the notes from each laptop. In the past we have used a seperate laptop controlled via a perfect cue. Working with two laptops I would have to switch the USB to the other device when I probably had a 10 second turn around. The client was very specifc about having notes for his presentation so I had to be ready. With this setup I was able to the provide speaker notes for both spekaers, with only two devices, one switcher with the press of a button. Further programming could have given me automated switching for the conf. Keeping the notes in line with whats on the program automatically.
 
 I was thinking about my creative output during this busy week. I realized I do really like creating. 
 
