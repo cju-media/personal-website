@@ -1,7 +1,9 @@
 ## 3-1-26
 6:30am start at USC and then a church event in the evening. I probably will not get home until 10 or later.
 
+![show setup](https://github.com/cju-media/personal-website/blob/main/personal/list/images/3-1-26.jpeg?raw=true)
 
+I was thinking about my creative output during this busy week. I realized I do really like creating. 
 
 ## 2-28-26
 Very successful event at the church in the morning followed by a longer set day at USC. I got home after 12 hours of work so I did not have the energy to add to the list. I refuse to let a couple of days to snowball into me giving up on this project all together. I will be consistent.
