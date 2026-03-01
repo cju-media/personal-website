@@ -122,11 +122,89 @@
         /* Image scaling */
         #the-list-page-wrapper #list-content img,
         #the-list-page-wrapper #about-content img {
-            max-width: 300px;
-            max-height: 300px;
+            max-width: 600px;
+            max-height: 600px;
             width: auto;
             height: auto;
             object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #the-list-page-wrapper #list-content img:hover,
+        #the-list-page-wrapper #about-content img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 600px) {
+            #the-list-page-wrapper #list-content img,
+            #the-list-page-wrapper #about-content img {
+                max-width: 300px;
+                max-height: 300px;
+            }
+        }
+
+        /* Lightbox Styles */
+        #the-list-page-wrapper .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #the-list-page-wrapper .lightbox.active {
+            display: flex;
+        }
+
+        #the-list-page-wrapper .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        #the-list-page-wrapper .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid white;
+            box-sizing: border-box; /* Include border in dimensions */
+        }
+
+        /* Spinner */
+        #the-list-page-wrapper .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #the-list-page-wrapper .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
         }
     </style>
 
@@ -149,6 +227,15 @@
         <div class="loading">Loading list...</div>
     </div>
     <div id="about-content" style="display:none; width: 100%; max-width: 800px; text-align: left; line-height: 1.6; font-size: 1.1rem;"></div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <div id="lightbox-spinner" class="spinner"></div>
+            <img id="lightbox-img" src="" alt="Full view" style="display:none;">
+        </div>
+    </div>
 
     <script>
         (function() {
@@ -406,6 +493,51 @@
                             contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading list content.</div>';
                         });
                 }
+
+                // --- Lightbox Logic ---
+                const lightbox = wrapper.querySelector('#lightbox-modal');
+                const lightboxImg = wrapper.querySelector('#lightbox-img');
+                const lightboxSpinner = wrapper.querySelector('#lightbox-spinner');
+                const closeBtn = wrapper.querySelector('.close-btn');
+
+                function openLightbox(src) {
+                    lightboxImg.style.display = 'none';
+                    lightboxSpinner.style.display = 'block';
+
+                    lightboxImg.src = ''; // reset
+                    lightboxImg.src = src;
+
+                    lightboxImg.onload = () => {
+                        lightboxSpinner.style.display = 'none';
+                        lightboxImg.style.display = 'block';
+                    };
+
+                    lightbox.classList.add('active');
+                }
+
+                // Event delegation for dynamically loaded images
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'IMG' && (contentContainer.contains(e.target) || aboutContainer.contains(e.target))) {
+                        openLightbox(e.target.src);
+                    }
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                });
+
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
 
                 loadMarked(fetchAndRenderList);
             }
