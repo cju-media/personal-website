@@ -1,0 +1,313 @@
+<!-- Way Page Fragment -->
+<div id="way-page-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+        /* Scoped Styles */
+        #way-page-wrapper {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: auto;
+            margin: 0;
+            background-color: transparent; /* Inherit from Squarespace */
+            padding: 60px 20px 20px 20px;
+            box-sizing: border-box;
+        }
+
+        /* Glitch font classes */
+        #way-page-wrapper .font1 { font-family: Arial, sans-serif !important; }
+        #way-page-wrapper .font2 { font-family: Times New Roman, serif !important; }
+        #way-page-wrapper .font3 { font-family: Courier New, monospace !important; }
+        #way-page-wrapper .font4 { font-family: essay-text, monospace !important; }
+        #way-page-wrapper .font5 { font-family: 'Playfair Display', serif !important; }
+        #way-page-wrapper .font6 { font-family: 'VT323', monospace !important; transform: scale(1.1); }
+
+        #way-page-wrapper h1 {
+            font-size: min(5vw, 3rem);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            margin-bottom: 40px;
+            color: inherit; /* Inherit text color */
+        }
+
+        #way-page-wrapper .text-block1 {
+            padding-bottom: 25px;
+        }
+
+        #way-page-wrapper .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
+        }
+
+        /* Layout Styles */
+        #way-page-wrapper .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        #way-page-wrapper #text-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            /* font-family: 'Playfair Display', serif; */
+            /* font-size: 1.2rem; */
+            line-height: 1.6;
+            color: inherit; /* Inherit text color */
+        }
+
+        #way-page-wrapper #button-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        /* Mobile / Vertical Styles */
+        @media (max-width: 768px) {
+            #way-page-wrapper #text-container {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Button Styles */
+        #way-page-wrapper .repo-button {
+            display: block;
+            padding: 15px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #way-page-wrapper .repo-button:hover {
+            background-color: #555;
+            transform: scale(1.02);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Button Character Styles - to prevent jitter */
+        #way-page-wrapper .button-char {
+            display: inline-block;
+            width: 0.6em;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        #way-page-wrapper .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+        }
+    </style>
+
+    <div class="text-block1">
+        <h1>
+            <span class="span-class">T</span>
+            <span class="span-class">H</span>
+            <span class="span-class">E</span>
+            <span class="span-class">&nbsp;</span>
+            <span class="span-class">W</span>
+            <span class="span-class">A</span>
+            <span class="span-class">Y</span>
+        </h1>
+    </div>
+
+    <div class="content-wrapper">
+        <div id="text-container">
+            <p>
+              A collection of folders on the way.
+            </p>
+        </div>
+
+        <div id="button-container">
+            <div class="loading">Loading The Way folders...</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function initWay() {
+                // Prevent double initialization
+                if (window.wayInitialized) return;
+                window.wayInitialized = true;
+
+                // Glitch Effect Logic
+                const wrapper = document.getElementById('way-page-wrapper');
+                if (!wrapper) return; // Guard clause
+
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span, enableColor = true) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        if (enableColor) {
+                            this.loopColor(span);
+                        }
+                    },
+
+                    stop(span) {
+                        clearTimeout(span._fontTimeout);
+                        clearTimeout(span._colorTimeout);
+                        this.reset(span);
+                    },
+
+                    reset(span) {
+                        if (span.dataset.original) {
+                            span.innerText = span.dataset.original;
+                        }
+                        span.style.color = ''; // Reset to inherited
+                        this.fontClasses.forEach(c => span.classList.remove(c));
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            // Change Font
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            // Chance to change to Katakana
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            span._fontTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            // Change Color
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            span._colorTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
+                };
+
+                // Initialize Title Spans (Continuous)
+                const titleSpans = wrapper.querySelectorAll('.text-block1 .span-class');
+                titleSpans.forEach(span => {
+                    // Skip glitch on spaces
+                    if (span.innerText.trim() !== '') {
+                        Glitch.start(span);
+                    }
+                });
+
+                // Fetch GitHub Directory
+                const container = wrapper.querySelector('#button-container');
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/The%20Way?ref=main';
+                const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/The%20Way/';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`GitHub API Error: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        container.innerHTML = ''; // Clear loading message
+
+                        // Filter for directories, exclude TEMPLATES
+                        const directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
+
+                        if (directories.length === 0) {
+                            container.innerHTML = '<div class="loading">No folders found.</div>';
+                            return;
+                        }
+
+                        directories.forEach(dir => {
+                            const link = document.createElement('a');
+                            link.href = repoUrlBase + encodeURIComponent(dir.name);
+                            link.className = 'repo-button';
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+
+                            // Build spans for button text
+                            const text = dir.name;
+                            for (let char of text) {
+                                const span = document.createElement('span');
+                                span.textContent = char;
+                                span.className = 'button-char';
+                                // Pre-set original for Glitch object logic
+                                span.dataset.original = char;
+                                link.appendChild(span);
+                            }
+
+                            // Interactive Glitch on Hover
+                            link.addEventListener('mouseenter', () => {
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => {
+                                    if (span.dataset.original.trim() !== '') {
+                                        Glitch.start(span, false);
+                                    }
+                                });
+                            });
+
+                            link.addEventListener('mouseleave', () => {
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => Glitch.stop(span));
+                            });
+
+                            container.appendChild(link);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching The Way folders:', error);
+                        container.innerHTML = `<div class="loading" style="color: red;">Error loading folders. Please try again later.</div>`;
+                    });
+            }
+
+            // Initialization logic for Squarespace
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initWay);
+            } else {
+                initWay();
+            }
+        })();
+    </script>
+</div>
