@@ -2,7 +2,11 @@
 
 Another 12+ hour day today.
 
-Trying to work on the first piece that's due the 31st. I am really not liking at the first few bars, just really not seeing the through line right now. I guess I struggle to find 
+Trying to work on the first piece that's due the 31st. I am really not liking at the first few bars, just really not seeing the through line right now. I guess I struggle to find the foundation that works. I gotta work on doing some sort of daily three pages but for music. Just work out that composition muscle. Maybe a good idea will come up, the same way the writers way can create a good idea from the practice of consistent writing. 
+
+Another problem I think I have attacking this piece in particular is that I have no game plan, no inspriation. Right now I am just writing music with no goal or theme. It is hard to get an aesthetic or direction if there is not event an idea in mind. That may be hard for some daily compostion assignments. A new fully developed theme with an arch is something that could be drained for everything quickly.
+
+Maybe I should start with a melody, especially thats something I struggle with.
 
 ## 3-1-26
 6:30am start at USC and then a church event in the evening. I probably will not get home until 10 or later.
@@ -14,7 +18,6 @@ But look at this beauty.
 Controlling the ATEM via bitfocus companion. I have macros to switch the program, only programming the buttons I need. I have also programmed some macros to change the feed to the confmon. The ATEM was receiving notes and slides from the same device, 2 total. Using a third output to display multiview that shows the confidence monitor output as well as the notes from each laptop. In the past we have used a seperate laptop controlled via a perfect cue. Working with two laptops I would have to switch the USB to the other device when I probably had a 10 second turn around. The client was very specifc about having notes for his presentation so I had to be ready. With this setup I was able to the provide speaker notes for both spekaers, with only two devices, one switcher with the press of a button. Further programming could have given me automated switching for the conf. Keeping the notes in line with whats on the program automatically.
 
 Did not get home until a little after 9.
-
 
 ## 2-28-26
 Very successful event at the church in the morning followed by a longer set day at USC. I got home after 12 hours of work so I did not have the energy to add to the list. I refuse to let a couple of days to snowball into me giving up on this project all together. I will be consistent.
