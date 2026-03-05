@@ -184,14 +184,25 @@
             margin-bottom: 15px;
         }
 
+        .visualizers-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         midi-visualizer {
             display: block;
             width: 100%;
-            height: 300px;
+            height: 200px;
             background: #000;
             border-radius: 4px;
             overflow: hidden;
             border: 1px solid #333;
+        }
+
+        #way-midi-staff {
+            background: #fff; /* Staff needs white background to see the notes clearly */
         }
 
         @media (max-width: 768px) {
@@ -199,7 +210,7 @@
                 padding: 20px 15px;
             }
             midi-visualizer {
-                height: 200px;
+                height: 150px;
             }
         }
     </style>
@@ -209,8 +220,11 @@
         <div id="midi-modal-content">
             <button id="midi-modal-close">&times;</button>
             <h2 id="midi-modal-title">MIDI Player</h2>
-            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-visualizer"></midi-player>
-            <midi-visualizer id="way-midi-visualizer" type="piano-roll"></midi-visualizer>
+            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-visualizer, #way-midi-staff"></midi-player>
+            <div class="visualizers-container">
+                <midi-visualizer id="way-midi-visualizer" type="piano-roll"></midi-visualizer>
+                <midi-visualizer id="way-midi-staff" type="staff"></midi-visualizer>
+            </div>
         </div>
     </div>
 
@@ -396,14 +410,17 @@
                             });
 
                             // Click handler to open MIDI modal
+                            let isFetching = false;
                             link.addEventListener('click', (e) => {
                                 e.preventDefault();
+                                if (isFetching) return;
 
                                 const dirContentsUrl = `https://api.github.com/repos/cju-media/Scores/contents/The%20Way/${encodeURIComponent(dir.name)}?ref=main`;
 
-                                // Show loading text on the link temporarily
-                                const originalHtml = link.innerHTML;
-                                link.innerHTML = '<span style="font-family: monospace;">Loading...</span>';
+                                isFetching = true;
+                                const originalText = link.innerText;
+                                // Temporarily show loading without destroying spans
+                                link.style.color = '#888';
 
                                 fetch(dirContentsUrl)
                                     .then(res => {
@@ -424,7 +441,10 @@
                                         alert("Error fetching folder contents. You may have hit the GitHub API rate limit, please try again later.");
                                     })
                                     .finally(() => {
-                                        link.innerHTML = originalHtml;
+                                        isFetching = false;
+                                        link.style.color = ''; // Restore original color via CSS
+                                        const chars = link.querySelectorAll('.button-char');
+                                        chars.forEach(span => Glitch.reset(span)); // Ensure spans are back to normal if glitch stopped
                                     });
                             });
 
