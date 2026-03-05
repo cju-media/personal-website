@@ -202,8 +202,8 @@
         }
 
         .osmd-controls button svg {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             fill: currentColor;
         }
 
@@ -552,17 +552,8 @@
                             drawTitle: false,
                         });
                         audioPlayerInstance = new OsmdAudioPlayer();
-                    }
 
-                    modal.style.display = 'flex';
-
-                    // Load the XML file
-                    osmdInstance.load(xmlUrl).then(() => {
-                        osmdInstance.render();
-                        loading.style.display = 'none';
-
-                        // Load into Audio Player
-                        audioPlayerInstance.loadScore(osmdInstance);
+                        // Attach iteration listener only once
                         audioPlayerInstance.on("iteration", notes => {
                             // Scroll the container if the cursor moves out of view
                             if (osmdInstance.cursor && osmdInstance.cursor.cursorElement) {
@@ -580,43 +571,59 @@
                                 }
                             }
                         });
+                    }
 
-                        playPauseBtn.disabled = false;
-                        stopBtn.disabled = false;
+                    modal.style.display = 'flex';
 
-                        // State tracking for the toggle button
-                        let isPlaying = false;
+                    // Load the XML file
+                    osmdInstance.load(xmlUrl).then(() => {
+                        osmdInstance.render();
+                        loading.textContent = "Loading Audio Instruments...";
 
-                        const setPlayState = () => {
-                            isPlaying = true;
-                            iconPlay.style.display = 'none';
-                            iconPause.style.display = 'block';
-                            playPauseBtn.title = "Pause";
-                            audioPlayerInstance.play();
-                        };
+                        // Load into Audio Player
+                        audioPlayerInstance.loadScore(osmdInstance).then(() => {
+                            loading.style.display = 'none';
 
-                        const setPauseState = () => {
-                            isPlaying = false;
-                            iconPlay.style.display = 'block';
-                            iconPause.style.display = 'none';
-                            playPauseBtn.title = "Play";
-                            audioPlayerInstance.pause();
-                        };
+                            playPauseBtn.disabled = false;
+                            stopBtn.disabled = false;
 
-                        playPauseBtn.onclick = () => {
-                            if (isPlaying) {
-                                setPauseState();
-                            } else {
-                                setPlayState();
-                            }
-                        };
+                            // State tracking for the toggle button
+                            let isPlaying = false;
 
-                        stopBtn.onclick = () => {
-                            audioPlayerInstance.stop();
-                            osmdInstance.cursor.reset();
-                            container.scrollTop = 0; // Reset scroll
-                            setPauseState(); // Reset icon
-                        };
+                            const setPlayState = () => {
+                                isPlaying = true;
+                                iconPlay.style.display = 'none';
+                                iconPause.style.display = 'block';
+                                playPauseBtn.title = "Pause";
+                                audioPlayerInstance.play();
+                            };
+
+                            const setPauseState = () => {
+                                isPlaying = false;
+                                iconPlay.style.display = 'block';
+                                iconPause.style.display = 'none';
+                                playPauseBtn.title = "Play";
+                                audioPlayerInstance.pause();
+                            };
+
+                            playPauseBtn.onclick = () => {
+                                if (isPlaying) {
+                                    setPauseState();
+                                } else {
+                                    setPlayState();
+                                }
+                            };
+
+                            stopBtn.onclick = () => {
+                                audioPlayerInstance.stop();
+                                osmdInstance.cursor.reset();
+                                container.scrollTop = 0; // Reset scroll
+                                setPauseState(); // Reset icon
+                            };
+                        }).catch(audioError => {
+                            console.error("OSMD Audio Load Error:", audioError);
+                            loading.textContent = "Failed to load audio instruments.";
+                        });
                     }).catch(error => {
                         console.error("OSMD Load Error:", error);
                         loading.textContent = "Failed to load score.";
