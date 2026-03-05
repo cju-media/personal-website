@@ -194,15 +194,11 @@
         midi-visualizer {
             display: block;
             width: 100%;
-            height: 200px;
-            background: #000;
+            height: 300px;
+            background: #fff; /* Staff needs white background to see the notes clearly */
             border-radius: 4px;
             overflow: hidden;
             border: 1px solid #333;
-        }
-
-        #way-midi-staff {
-            background: #fff; /* Staff needs white background to see the notes clearly */
         }
 
         @media (max-width: 768px) {
@@ -210,7 +206,7 @@
                 padding: 20px 15px;
             }
             midi-visualizer {
-                height: 150px;
+                height: 200px;
             }
         }
     </style>
@@ -220,9 +216,8 @@
         <div id="midi-modal-content">
             <button id="midi-modal-close">&times;</button>
             <h2 id="midi-modal-title">MIDI Player</h2>
-            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-visualizer, #way-midi-staff"></midi-player>
+            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-staff"></midi-player>
             <div class="visualizers-container">
-                <midi-visualizer id="way-midi-visualizer" type="piano-roll"></midi-visualizer>
                 <midi-visualizer id="way-midi-staff" type="staff"></midi-visualizer>
             </div>
         </div>
@@ -369,12 +364,25 @@
                         container.innerHTML = ''; // Clear loading message
 
                         // Filter for directories, exclude TEMPLATES
-                        const directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
+                        let directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
 
                         if (directories.length === 0) {
                             container.innerHTML = '<div class="loading">No folders found.</div>';
                             return;
                         }
+
+                        // Sort directories from newest to oldest based on MM-DD-YY naming convention
+                        directories.sort((a, b) => {
+                            const parseDateStr = (str) => {
+                                const parts = str.split('-');
+                                if (parts.length === 3) {
+                                    // Parse as MM-DD-YY. Note: YY is assumed to be 2000+
+                                    return new Date(`20${parts[2]}-${parts[0]}-${parts[1]}`);
+                                }
+                                return new Date(0); // Fallback for unparseable names
+                            };
+                            return parseDateStr(b.name) - parseDateStr(a.name);
+                        });
 
                         directories.forEach(dir => {
                             const link = document.createElement('a');
@@ -462,14 +470,13 @@
                     if (!modal) return;
 
                     const player = document.getElementById('way-midi-player');
-                    const visualizer = document.getElementById('way-midi-visualizer');
                     const staff = document.getElementById('way-midi-staff');
                     const title = document.getElementById('midi-modal-title');
 
-                    if (player && visualizer && staff) {
+                    if (player && staff) {
                         player.setAttribute('src', midiUrl);
                         // Force a reload of visualizers array via attribute reset
-                        player.setAttribute('visualizer', '#way-midi-visualizer, #way-midi-staff');
+                        player.setAttribute('visualizer', '#way-midi-staff');
 
                         // Reset player just in case
                         if(player.playing) {
