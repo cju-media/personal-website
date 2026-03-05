@@ -1,3 +1,15 @@
+## 3-5-26
+I am back. Now caught up, technically. The absolute SLOP I threw up in the last addition I guess technically counts as a submission.
+
+I am suffering in this USC meeting. I need just a coffee so bad but the client has not offered. I refuse to be a dick. I may steal a water though, I think that is an acceptable cop.
+
+Yesterday's **way** was actually really good. I still do not have good rules on how much I need to write a day. And how much does **The Way** distract me from doing "real" work. 
+
+## 3-4-26
+I look up at the date and realize I am a day behind on writing. Always behind in writing, in my work in everything. It is never enough to keep up. Just not enough hours in the day.
+
+I am at USC this morning (the fifth) working a fairly easy gig, pretty much just a presentation with sound. I certainly do not mind the easy money.
+
 ## 3-3-26
 I had mostly a day off. Did a lot of personal work.
 
