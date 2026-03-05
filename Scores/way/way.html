@@ -622,6 +622,8 @@
                                 iconPlay.style.display = 'none';
                                 iconPause.style.display = 'block';
                                 playPauseBtn.title = "Pause";
+                                // The osmd-audio-player hides the cursor on pause but sometimes fails to unhide it on play
+                                osmdInstance.cursor.show();
                                 audioPlayerInstance.play();
                             };
 
