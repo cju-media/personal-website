@@ -118,7 +118,101 @@
             color: #666;
             font-size: 1.2rem;
         }
+
+        /* Modal Styles */
+        #midi-modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+
+        #midi-modal-content {
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        #midi-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #ccc;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        #midi-modal-close:hover {
+            color: #fff;
+        }
+
+        #midi-modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* html-midi-player custom styling via CSS variables */
+        midi-player {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        midi-visualizer {
+            display: block;
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        @media (max-width: 768px) {
+            #midi-modal-content {
+                padding: 20px 15px;
+            }
+            midi-visualizer {
+                height: 200px;
+            }
+        }
     </style>
+
+    <!-- MIDI Modal -->
+    <div id="midi-modal-overlay">
+        <div id="midi-modal-content">
+            <button id="midi-modal-close">&times;</button>
+            <h2 id="midi-modal-title">MIDI Player</h2>
+            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-visualizer"></midi-player>
+            <midi-visualizer id="way-midi-visualizer" type="piano-roll"></midi-visualizer>
+        </div>
+    </div>
 
     <div class="text-block1">
         <h1>
@@ -150,6 +244,14 @@
                 // Prevent double initialization
                 if (window.wayInitialized) return;
                 window.wayInitialized = true;
+
+                // Load MIDI Player scripts
+                if (!window.midiScriptsLoaded) {
+                    const script = document.createElement('script');
+                    script.src = "https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0";
+                    document.body.appendChild(script);
+                    window.midiScriptsLoaded = true;
+                }
 
                 // Glitch Effect Logic
                 const wrapper = document.getElementById('way-page-wrapper');
@@ -262,10 +364,10 @@
 
                         directories.forEach(dir => {
                             const link = document.createElement('a');
-                            link.href = repoUrlBase + encodeURIComponent(dir.name);
+                            link.href = '#';
                             link.className = 'repo-button';
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
+                            // link.target = '_blank';
+                            // link.rel = 'noopener noreferrer';
 
                             // Build spans for button text
                             const text = dir.name;
@@ -293,6 +395,39 @@
                                 chars.forEach(span => Glitch.stop(span));
                             });
 
+                            // Click handler to open MIDI modal
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+
+                                const dirContentsUrl = `https://api.github.com/repos/cju-media/Scores/contents/The%20Way/${encodeURIComponent(dir.name)}?ref=main`;
+
+                                // Show loading text on the link temporarily
+                                const originalHtml = link.innerHTML;
+                                link.innerHTML = '<span style="font-family: monospace;">Loading...</span>';
+
+                                fetch(dirContentsUrl)
+                                    .then(res => {
+                                        if(!res.ok) throw new Error("Failed to fetch dir contents");
+                                        return res.json();
+                                    })
+                                    .then(files => {
+                                        const midiFile = files.find(f => f.name.toLowerCase().endsWith('.mid') || f.name.toLowerCase().endsWith('.midi'));
+                                        if (midiFile) {
+                                            const rawMidiUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(midiFile.name)}`;
+                                            openMidiModal(rawMidiUrl, dir.name);
+                                        } else {
+                                            alert("No MIDI file found in this folder.");
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert("Error fetching folder contents. You may have hit the GitHub API rate limit, please try again later.");
+                                    })
+                                    .finally(() => {
+                                        link.innerHTML = originalHtml;
+                                    });
+                            });
+
                             container.appendChild(link);
                         });
                     })
@@ -300,6 +435,51 @@
                         console.error('Error fetching The Way folders:', error);
                         container.innerHTML = `<div class="loading" style="color: red;">Error loading folders. Please try again later.</div>`;
                     });
+
+                // Function to handle opening the MIDI modal
+                function openMidiModal(midiUrl, titleText) {
+                    const modal = document.getElementById('midi-modal-overlay');
+                    if (!modal) return;
+
+                    const player = document.getElementById('way-midi-player');
+                    const visualizer = document.getElementById('way-midi-visualizer');
+                    const title = document.getElementById('midi-modal-title');
+
+                    if (player && visualizer) {
+                        player.setAttribute('src', midiUrl);
+                        // Reset player just in case
+                        if(player.playing) {
+                            player.stop();
+                        }
+                    }
+                    if (title) {
+                        title.textContent = titleText;
+                    }
+
+                    modal.style.display = 'flex';
+                }
+
+                // Add close modal functionality
+                const modalOverlay = document.getElementById('midi-modal-overlay');
+                if (modalOverlay) {
+                    const closeBtn = document.getElementById('midi-modal-close');
+                    const closeModal = () => {
+                        modalOverlay.style.display = 'none';
+                        const player = document.getElementById('way-midi-player');
+                        if (player && player.playing) {
+                            player.stop();
+                        }
+                    };
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', closeModal);
+                    }
+                    modalOverlay.addEventListener('click', (e) => {
+                        if (e.target === modalOverlay) {
+                            closeModal();
+                        }
+                    });
+                }
             }
 
             // Initialization logic for Squarespace
