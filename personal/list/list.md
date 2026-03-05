@@ -1,3 +1,13 @@
+## 3-3-26
+I had mostly a day off. Did a lot of personal work.
+
+I realize I am falling behind on my daily commitments. Reading, writing, music, projects. It is a alot and I have no idea how to keep up. I wrote SOMETHING for The Way yesterday. I am not proud of it, I did not "finish" it. I guess the goal is not to have something completed it is just work on the practice of it. I just have to grind through until it feels comfortable. Even if I do not have a scene to compose for I have to do something. I can write words without a theme or a greater purpose, I should be able to do the same with my music. I should be able to write notes on a page without a greater theme and purpose. This is the importance of process.
+
+All the greatest composers developed content using processes. How could Bach write a cantata every week? Process. The fugue is a very strict format, serialism is a very strict format. These formats gives the composer a way to generate content easily. I have long been of the opinion that early atonal work in the mid-19th century did not take off because composers in that style had to every single note as an option. Its like writing a sentence or a word with no gramatical rules or spelling rules. Having every option possible is limiting in a way. As I write this sentence I am generating words based on gramatical rules. Words and conjugations are given to me based on the context of the sentence it exists in. Of course, I can write completely random characters. Thats easy on a keyboard, but if I were writing this out, I would have to think consciously about the letters I would have to write. Just thinking of simple sentences to write would be a more fruitful endeavor in the effort of generating content.
+
+This is why Scheonberg was successful in standardization of atonal music. He developed a way to generate content atonally. A grammar for that idiom which did not exist before formally.
+
+
 ## 3-2-26
 
 Another 12+ hour day today.
