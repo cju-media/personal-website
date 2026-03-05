@@ -194,6 +194,17 @@
             border-radius: 4px;
             cursor: pointer;
             font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .osmd-controls button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
         }
 
         .osmd-controls button:hover {
@@ -240,9 +251,13 @@
             <h2 id="midi-modal-title">Score Player</h2>
 
             <div class="osmd-controls">
-                <button id="osmd-play-btn" disabled>Play</button>
-                <button id="osmd-pause-btn" disabled>Pause</button>
-                <button id="osmd-stop-btn" disabled>Stop</button>
+                <button id="osmd-play-pause-btn" disabled title="Play">
+                    <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="icon-pause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="osmd-stop-btn" disabled title="Stop">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                </button>
             </div>
 
             <div class="visualizers-container">
@@ -511,16 +526,19 @@
                     const container = document.getElementById('osmd-container');
                     const title = document.getElementById('midi-modal-title');
                     const loading = document.getElementById('osmd-loading');
-                    const playBtn = document.getElementById('osmd-play-btn');
-                    const pauseBtn = document.getElementById('osmd-pause-btn');
+                    const playPauseBtn = document.getElementById('osmd-play-pause-btn');
                     const stopBtn = document.getElementById('osmd-stop-btn');
+                    const iconPlay = document.getElementById('icon-play');
+                    const iconPause = document.getElementById('icon-pause');
 
                     if (title) title.textContent = titleText;
 
                     // Reset UI
-                    playBtn.disabled = true;
-                    pauseBtn.disabled = true;
+                    playPauseBtn.disabled = true;
                     stopBtn.disabled = true;
+                    iconPlay.style.display = 'block';
+                    iconPause.style.display = 'none';
+                    playPauseBtn.title = "Play";
                     loading.style.display = 'block';
 
                     // Clear previous score if any
@@ -546,20 +564,58 @@
                         // Load into Audio Player
                         audioPlayerInstance.loadScore(osmdInstance);
                         audioPlayerInstance.on("iteration", notes => {
-                            // OSMD handles cursor updates automatically if bound
-                            // But audioPlayerInstance needs to be told to track
-                            // Actually OsmdAudioPlayer moves the cursor for us when bound!
+                            // Scroll the container if the cursor moves out of view
+                            if (osmdInstance.cursor && osmdInstance.cursor.cursorElement) {
+                                const cursorElem = osmdInstance.cursor.cursorElement;
+                                const cursorRect = cursorElem.getBoundingClientRect();
+                                const containerRect = container.getBoundingClientRect();
+
+                                // If cursor is below the visible area, scroll down
+                                if (cursorRect.bottom > containerRect.bottom - 20) {
+                                    container.scrollBy({ top: cursorRect.height + 40, behavior: 'smooth' });
+                                }
+                                // If cursor is above the visible area (e.g. on reset), scroll up
+                                else if (cursorRect.top < containerRect.top + 20) {
+                                    container.scrollTop = cursorElem.offsetTop - 20;
+                                }
+                            }
                         });
 
-                        playBtn.disabled = false;
-                        pauseBtn.disabled = false;
+                        playPauseBtn.disabled = false;
                         stopBtn.disabled = false;
 
-                        playBtn.onclick = () => audioPlayerInstance.play();
-                        pauseBtn.onclick = () => audioPlayerInstance.pause();
+                        // State tracking for the toggle button
+                        let isPlaying = false;
+
+                        const setPlayState = () => {
+                            isPlaying = true;
+                            iconPlay.style.display = 'none';
+                            iconPause.style.display = 'block';
+                            playPauseBtn.title = "Pause";
+                            audioPlayerInstance.play();
+                        };
+
+                        const setPauseState = () => {
+                            isPlaying = false;
+                            iconPlay.style.display = 'block';
+                            iconPause.style.display = 'none';
+                            playPauseBtn.title = "Play";
+                            audioPlayerInstance.pause();
+                        };
+
+                        playPauseBtn.onclick = () => {
+                            if (isPlaying) {
+                                setPauseState();
+                            } else {
+                                setPlayState();
+                            }
+                        };
+
                         stopBtn.onclick = () => {
                             audioPlayerInstance.stop();
                             osmdInstance.cursor.reset();
+                            container.scrollTop = 0; // Reset scroll
+                            setPauseState(); // Reset icon
                         };
                     }).catch(error => {
                         console.error("OSMD Load Error:", error);
