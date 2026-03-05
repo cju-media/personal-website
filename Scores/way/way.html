@@ -177,11 +177,44 @@
             width: 100%;
         }
 
-        /* html-midi-player custom styling via CSS variables */
-        midi-player {
-            display: block;
+        /* OSMD custom styling */
+        .osmd-controls {
             width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 15px;
+        }
+
+        .osmd-controls button {
+            padding: 8px 16px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .osmd-controls button svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
+        .osmd-controls button:hover {
+            background: #555;
+        }
+
+        .osmd-controls button:disabled {
+            background: #222;
+            color: #666;
+            cursor: not-allowed;
         }
 
         .visualizers-container {
@@ -191,26 +224,22 @@
             gap: 15px;
         }
 
-        midi-visualizer {
+        #osmd-container {
             display: block;
             width: 100%;
-            height: 200px;
-            background: #000;
+            height: 400px;
+            background: #fff; /* OSMD renders black notes, needs white background */
             border-radius: 4px;
-            overflow: hidden;
+            overflow: auto;
             border: 1px solid #333;
-        }
-
-        #way-midi-staff {
-            background: #fff; /* Staff needs white background to see the notes clearly */
         }
 
         @media (max-width: 768px) {
             #midi-modal-content {
                 padding: 20px 15px;
             }
-            midi-visualizer {
-                height: 150px;
+            #osmd-container {
+                height: 250px;
             }
         }
     </style>
@@ -219,11 +248,22 @@
     <div id="midi-modal-overlay">
         <div id="midi-modal-content">
             <button id="midi-modal-close">&times;</button>
-            <h2 id="midi-modal-title">MIDI Player</h2>
-            <midi-player id="way-midi-player" sound-font visualizer="#way-midi-visualizer, #way-midi-staff"></midi-player>
+            <h2 id="midi-modal-title">Score Player</h2>
+
+            <div class="osmd-controls">
+                <button id="osmd-play-pause-btn" disabled title="Play">
+                    <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="icon-pause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="osmd-stop-btn" disabled title="Stop">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                </button>
+            </div>
+
             <div class="visualizers-container">
-                <midi-visualizer id="way-midi-visualizer" type="piano-roll"></midi-visualizer>
-                <midi-visualizer id="way-midi-staff" type="staff"></midi-visualizer>
+                <div id="osmd-container">
+                    <div id="osmd-loading" style="color: #000; padding: 20px; text-align: center; font-family: monospace; display: none;">Loading Score...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -259,12 +299,17 @@
                 if (window.wayInitialized) return;
                 window.wayInitialized = true;
 
-                // Load MIDI Player scripts
-                if (!window.midiScriptsLoaded) {
-                    const script = document.createElement('script');
-                    script.src = "https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0";
-                    document.body.appendChild(script);
-                    window.midiScriptsLoaded = true;
+                // Load OSMD Player scripts
+                if (!window.osmdScriptsLoaded) {
+                    const osmdScript = document.createElement('script');
+                    osmdScript.src = "https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.9.3/build/opensheetmusicdisplay.min.js";
+                    document.body.appendChild(osmdScript);
+
+                    const audioScript = document.createElement('script');
+                    audioScript.src = "https://cdn.jsdelivr.net/npm/osmd-audio-player@0.7.0/umd/OsmdAudioPlayer.min.js";
+                    document.body.appendChild(audioScript);
+
+                    window.osmdScriptsLoaded = true;
                 }
 
                 // Glitch Effect Logic
@@ -369,12 +414,25 @@
                         container.innerHTML = ''; // Clear loading message
 
                         // Filter for directories, exclude TEMPLATES
-                        const directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
+                        let directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
 
                         if (directories.length === 0) {
                             container.innerHTML = '<div class="loading">No folders found.</div>';
                             return;
                         }
+
+                        // Sort directories from newest to oldest based on MM-DD-YY naming convention
+                        directories.sort((a, b) => {
+                            const parseDateStr = (str) => {
+                                const parts = str.split('-');
+                                if (parts.length === 3) {
+                                    // Parse as MM-DD-YY. Note: YY is assumed to be 2000+
+                                    return new Date(`20${parts[2]}-${parts[0]}-${parts[1]}`);
+                                }
+                                return new Date(0); // Fallback for unparseable names
+                            };
+                            return parseDateStr(b.name) - parseDateStr(a.name);
+                        });
 
                         directories.forEach(dir => {
                             const link = document.createElement('a');
@@ -409,7 +467,7 @@
                                 chars.forEach(span => Glitch.stop(span));
                             });
 
-                            // Click handler to open MIDI modal
+                            // Click handler to open XML modal
                             let isFetching = false;
                             link.addEventListener('click', (e) => {
                                 e.preventDefault();
@@ -428,12 +486,12 @@
                                         return res.json();
                                     })
                                     .then(files => {
-                                        const midiFile = files.find(f => f.name.toLowerCase().endsWith('.mid') || f.name.toLowerCase().endsWith('.midi'));
-                                        if (midiFile) {
-                                            const rawMidiUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(midiFile.name)}`;
-                                            openMidiModal(rawMidiUrl, dir.name);
+                                        const xmlFile = files.find(f => f.name.toLowerCase().endsWith('.musicxml') || f.name.toLowerCase().endsWith('.xml'));
+                                        if (xmlFile) {
+                                            const rawXmlUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(xmlFile.name)}`;
+                                            openXmlModal(rawXmlUrl, dir.name);
                                         } else {
-                                            alert("No MIDI file found in this folder.");
+                                            alert("No MusicXML file found in this folder. Please make sure a .musicxml or .xml file is uploaded.");
                                         }
                                     })
                                     .catch(err => {
@@ -456,31 +514,120 @@
                         container.innerHTML = `<div class="loading" style="color: red;">Error loading folders. Please try again later.</div>`;
                     });
 
-                // Function to handle opening the MIDI modal
-                function openMidiModal(midiUrl, titleText) {
+                // Global instances for OSMD and AudioPlayer
+                let osmdInstance = null;
+                let audioPlayerInstance = null;
+
+                // Function to handle opening the XML modal
+                function openXmlModal(xmlUrl, titleText) {
                     const modal = document.getElementById('midi-modal-overlay');
                     if (!modal) return;
 
-                    const player = document.getElementById('way-midi-player');
-                    const visualizer = document.getElementById('way-midi-visualizer');
-                    const staff = document.getElementById('way-midi-staff');
+                    const container = document.getElementById('osmd-container');
                     const title = document.getElementById('midi-modal-title');
+                    const loading = document.getElementById('osmd-loading');
+                    const playPauseBtn = document.getElementById('osmd-play-pause-btn');
+                    const stopBtn = document.getElementById('osmd-stop-btn');
+                    const iconPlay = document.getElementById('icon-play');
+                    const iconPause = document.getElementById('icon-pause');
 
-                    if (player && visualizer && staff) {
-                        player.setAttribute('src', midiUrl);
-                        // Force a reload of visualizers array via attribute reset
-                        player.setAttribute('visualizer', '#way-midi-visualizer, #way-midi-staff');
+                    if (title) title.textContent = titleText;
 
-                        // Reset player just in case
-                        if(player.playing) {
-                            player.stop();
-                        }
-                    }
-                    if (title) {
-                        title.textContent = titleText;
+                    // Reset UI
+                    playPauseBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    iconPlay.style.display = 'block';
+                    iconPause.style.display = 'none';
+                    playPauseBtn.title = "Play";
+                    loading.style.display = 'block';
+
+                    // Clear previous score if any
+                    if (osmdInstance) {
+                        osmdInstance.clear();
+                    } else {
+                        // Initialize OSMD if not already done
+                        osmdInstance = new opensheetmusicdisplay.OpenSheetMusicDisplay(container, {
+                            autoResize: true,
+                            backend: "svg",
+                            drawTitle: false,
+                        });
+                        audioPlayerInstance = new OsmdAudioPlayer();
+
+                        // Attach iteration listener only once
+                        audioPlayerInstance.on("iteration", notes => {
+                            // Scroll the container if the cursor moves out of view
+                            if (osmdInstance.cursor && osmdInstance.cursor.cursorElement) {
+                                const cursorElem = osmdInstance.cursor.cursorElement;
+                                const cursorRect = cursorElem.getBoundingClientRect();
+                                const containerRect = container.getBoundingClientRect();
+
+                                // If cursor is below the visible area, scroll down
+                                if (cursorRect.bottom > containerRect.bottom - 20) {
+                                    container.scrollBy({ top: cursorRect.height + 40, behavior: 'smooth' });
+                                }
+                                // If cursor is above the visible area (e.g. on reset), scroll up
+                                else if (cursorRect.top < containerRect.top + 20) {
+                                    container.scrollTop = cursorElem.offsetTop - 20;
+                                }
+                            }
+                        });
                     }
 
                     modal.style.display = 'flex';
+
+                    // Load the XML file
+                    osmdInstance.load(xmlUrl).then(() => {
+                        osmdInstance.render();
+                        loading.textContent = "Loading Audio Instruments...";
+
+                        // Load into Audio Player
+                        audioPlayerInstance.loadScore(osmdInstance).then(() => {
+                            loading.style.display = 'none';
+
+                            playPauseBtn.disabled = false;
+                            stopBtn.disabled = false;
+
+                            // State tracking for the toggle button
+                            let isPlaying = false;
+
+                            const setPlayState = () => {
+                                isPlaying = true;
+                                iconPlay.style.display = 'none';
+                                iconPause.style.display = 'block';
+                                playPauseBtn.title = "Pause";
+                                audioPlayerInstance.play();
+                            };
+
+                            const setPauseState = () => {
+                                isPlaying = false;
+                                iconPlay.style.display = 'block';
+                                iconPause.style.display = 'none';
+                                playPauseBtn.title = "Play";
+                                audioPlayerInstance.pause();
+                            };
+
+                            playPauseBtn.onclick = () => {
+                                if (isPlaying) {
+                                    setPauseState();
+                                } else {
+                                    setPlayState();
+                                }
+                            };
+
+                            stopBtn.onclick = () => {
+                                audioPlayerInstance.stop();
+                                osmdInstance.cursor.reset();
+                                container.scrollTop = 0; // Reset scroll
+                                setPauseState(); // Reset icon
+                            };
+                        }).catch(audioError => {
+                            console.error("OSMD Audio Load Error:", audioError);
+                            loading.textContent = "Failed to load audio instruments.";
+                        });
+                    }).catch(error => {
+                        console.error("OSMD Load Error:", error);
+                        loading.textContent = "Failed to load score.";
+                    });
                 }
 
                 // Add close modal functionality
@@ -489,9 +636,8 @@
                     const closeBtn = document.getElementById('midi-modal-close');
                     const closeModal = () => {
                         modalOverlay.style.display = 'none';
-                        const player = document.getElementById('way-midi-player');
-                        if (player && player.playing) {
-                            player.stop();
+                        if (audioPlayerInstance) {
+                            audioPlayerInstance.stop();
                         }
                     };
 
