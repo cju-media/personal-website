@@ -551,6 +551,7 @@
                             backend: "svg",
                             drawTitle: false,
                         });
+
                         audioPlayerInstance = new OsmdAudioPlayer();
 
                         // Attach iteration listener only once
@@ -575,13 +576,39 @@
 
                     modal.style.display = 'flex';
 
-                    // Load the XML file
-                    osmdInstance.load(xmlUrl).then(() => {
+                    // Fetch and Load the XML file
+                    fetch(xmlUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch XML file");
+                        return res.text();
+                    })
+                    .then(xmlText => {
+                        // Hack to bypass osmd-audio-player "Buffer 12 not found" mapping bug:
+                        // Inject <midi-instrument id="xyz"><midi-program>1</midi-program></midi-instrument> into the XML
+                        xmlText = xmlText.replace(/(<score-part id="([^"]+)">[\s\S]*?)<\/score-part>/g, (match, p1, partId) => {
+                            if (match.includes('<midi-instrument')) return match;
+
+                            const instMatch = match.match(/<score-instrument id="([^"]+)">/);
+                            const instId = instMatch ? instMatch[1] : `${partId}-I1`;
+
+                            return `${p1}
+                                <midi-device id="${instId}" port="1"></midi-device>
+                                <midi-instrument id="${instId}">
+                                    <midi-channel>1</midi-channel>
+                                    <midi-program>1</midi-program>
+                                    <volume>78.7402</volume>
+                                    <pan>0</pan>
+                                </midi-instrument>
+                            </score-part>`;
+                        });
+                        return osmdInstance.load(xmlText);
+                    })
+                    .then(() => {
                         osmdInstance.render();
                         loading.textContent = "Loading Audio Instruments...";
 
                         // Load into Audio Player
-                        audioPlayerInstance.loadScore(osmdInstance).then(() => {
+                        audioPlayerInstance.loadScore(osmdInstance).then(async () => {
                             loading.style.display = 'none';
 
                             playPauseBtn.disabled = false;
