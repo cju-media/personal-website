@@ -463,10 +463,14 @@
 
                     const player = document.getElementById('way-midi-player');
                     const visualizer = document.getElementById('way-midi-visualizer');
+                    const staff = document.getElementById('way-midi-staff');
                     const title = document.getElementById('midi-modal-title');
 
-                    if (player && visualizer) {
+                    if (player && visualizer && staff) {
                         player.setAttribute('src', midiUrl);
+                        // Force a reload of visualizers array via attribute reset
+                        player.setAttribute('visualizer', '#way-midi-visualizer, #way-midi-staff');
+
                         // Reset player just in case
                         if(player.playing) {
                             player.stop();
