@@ -489,9 +489,15 @@
                                     })
                                     .then(files => {
                                         const xmlFile = files.find(f => f.name.toLowerCase().endsWith('.musicxml') || f.name.toLowerCase().endsWith('.xml'));
+                                        const rnboJsonFile = files.find(f => f.name.toLowerCase().endsWith('.json') && (f.name.toLowerCase().includes('rnbo') || f.name.toLowerCase().includes('export')));
+
                                         if (xmlFile) {
                                             const rawXmlUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(xmlFile.name)}`;
-                                            openXmlModal(rawXmlUrl, dir.name);
+                                            let rawRnboUrl = null;
+                                            if (rnboJsonFile) {
+                                                rawRnboUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(rnboJsonFile.name)}`;
+                                            }
+                                            openXmlModal(rawXmlUrl, dir.name, rawRnboUrl);
                                         } else {
                                             alert("No MusicXML file found in this folder. Please make sure a .musicxml or .xml file is uploaded.");
                                         }
@@ -520,8 +526,28 @@
                 let osmdInstance = null;
                 let audioPlayerInstance = null;
 
+                // RNBO Integration variables
+                let rnboDevice = null;
+                let originalSchedule = null;
+
+                // Dynamically load RNBO script if needed
+                function loadRNBOScript() {
+                    return new Promise((resolve, reject) => {
+                        if (window.RNBO) {
+                            resolve();
+                            return;
+                        }
+                        const script = document.createElement('script');
+                        script.src = "https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js";
+                        script.crossOrigin = "anonymous";
+                        script.onload = () => resolve();
+                        script.onerror = () => reject(new Error("Failed to load RNBO library"));
+                        document.head.appendChild(script);
+                    });
+                }
+
                 // Function to handle opening the XML modal
-                function openXmlModal(xmlUrl, titleText) {
+                function openXmlModal(xmlUrl, titleText, rawRnboUrl) {
                     const modal = document.getElementById('midi-modal-overlay');
                     if (!modal) return;
 
@@ -639,6 +665,71 @@
 
                         // Load into Audio Player
                         audioPlayerInstance.loadScore(osmdInstance).then(async () => {
+                            // If we have an RNBO patch, set it up and hijack OSMD audio routing
+                            if (rawRnboUrl) {
+                                loading.textContent = "Loading Custom RNBO Synth...";
+                                try {
+                                    await loadRNBOScript();
+                                    const patchResponse = await fetch(rawRnboUrl);
+                                    if (!patchResponse.ok) throw new Error("Failed to fetch RNBO json");
+                                    const patcher = await patchResponse.json();
+
+                                    // Use Singleton AudioContext to prevent exhaustion
+                                    const WAContext = window.AudioContext || window.webkitAudioContext;
+                                    if (!window.RNBO_AudioContext) {
+                                        window.RNBO_AudioContext = new WAContext();
+                                    }
+                                    const context = window.RNBO_AudioContext;
+
+                                    // Replace OSMD's internal context to keep things tightly synced
+                                    if (audioPlayerInstance.ac) {
+                                        // We let OSMD do its thing but ensure it doesn't fight our context
+                                    }
+
+                                    rnboDevice = await RNBO.createDevice({ context, patcher });
+                                    rnboDevice.node.connect(context.destination);
+
+                                    // Hijack the instrumentPlayer schedule function!
+                                    if (audioPlayerInstance.instrumentPlayer && !originalSchedule) {
+                                        originalSchedule = audioPlayerInstance.instrumentPlayer.schedule;
+
+                                        audioPlayerInstance.instrumentPlayer.schedule = function(instrumentId, time, notes) {
+                                            // 'time' is WebAudio absolute time.
+                                            // 'notes' is an array of { note, duration, gain }
+
+                                            // Calculate RNBO time offset from its context
+                                            const timeOffset = time - context.currentTime;
+                                            const rnboTime = rnboDevice.context.currentTime + Math.max(0, timeOffset);
+
+                                            notes.forEach(n => {
+                                                // Note On
+                                                let noteOnEvent = new RNBO.MIDIEvent(rnboTime, 0, [144, n.note, Math.floor(n.gain * 127)]);
+                                                rnboDevice.scheduleEvent(noteOnEvent);
+
+                                                // Note Off
+                                                let noteOffEvent = new RNBO.MIDIEvent(rnboTime + n.duration, 0, [128, n.note, 0]);
+                                                rnboDevice.scheduleEvent(noteOffEvent);
+                                            });
+
+                                            // We intentionally DO NOT call originalSchedule.call(this, ...)
+                                            // This prevents the default osmd soundfonts from playing!
+                                        };
+                                    }
+
+                                } catch (e) {
+                                    console.error("RNBO Setup Error, falling back to General MIDI:", e);
+                                    // If RNBO fails, we restore the original schedule so it plays default soundfonts
+                                    if (originalSchedule && audioPlayerInstance.instrumentPlayer) {
+                                        audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
+                                    }
+                                }
+                            } else {
+                                // Clear RNBO hijack if previously set (e.g. user clicked an RNBO track, then a normal track)
+                                if (originalSchedule && audioPlayerInstance.instrumentPlayer) {
+                                    audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
+                                }
+                            }
+
                             loading.style.display = 'none';
 
                             playPauseBtn.disabled = false;
@@ -652,6 +743,12 @@
                                 iconPlay.style.display = 'none';
                                 iconPause.style.display = 'block';
                                 playPauseBtn.title = "Pause";
+
+                                // Ensure RNBO audio context is resumed on user gesture to bypass browser autoplay rules
+                                if (rnboDevice && window.RNBO_AudioContext && window.RNBO_AudioContext.state !== 'running') {
+                                    window.RNBO_AudioContext.resume();
+                                }
+
                                 // The osmd-audio-player hides the cursor on pause but sometimes fails to unhide it on play
                                 osmdInstance.cursor.show();
                                 audioPlayerInstance.play();
@@ -675,6 +772,12 @@
 
                             stopBtn.onclick = () => {
                                 audioPlayerInstance.stop();
+                                // Send panic (all notes off) to RNBO device if exists
+                                if (rnboDevice) {
+                                    for (let i = 0; i < 128; i++) {
+                                        rnboDevice.scheduleEvent(new RNBO.MIDIEvent(rnboDevice.context.currentTime, 0, [128, i, 0]));
+                                    }
+                                }
                                 osmdInstance.cursor.reset();
                                 container.scrollTop = 0; // Reset scroll
                                 setPauseState(); // Reset icon
@@ -697,6 +800,15 @@
                         modalOverlay.style.display = 'none';
                         if (audioPlayerInstance) {
                             audioPlayerInstance.stop();
+                        }
+                        if (rnboDevice) {
+                            // Cleanup device to free memory
+                            rnboDevice.node.disconnect();
+                            rnboDevice = null;
+                        }
+                        // Clear hijack safely
+                        if (originalSchedule && audioPlayerInstance && audioPlayerInstance.instrumentPlayer) {
+                            audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
                         }
                     };
 
