@@ -665,6 +665,58 @@
 
                         // Load into Audio Player
                         audioPlayerInstance.loadScore(osmdInstance).then(async () => {
+
+                            // --- FIX STEREO PANNING FOR DEFAULT PLAYER ---
+                            // osmd-audio-player uses soundfont-player which lacks PannerNode support and downmixes to mono.
+                            // We manually loop through the internal player nodes and insert a StereoPannerNode based on the OSMD sheet instruments.
+                            if (audioPlayerInstance.instrumentPlayer && audioPlayerInstance.instrumentPlayer.players) {
+                                const dest = audioPlayerInstance.ac.destination;
+                                // Get standard panning from OSMD instruments (usually mapped -100 to 100, WebAudio needs -1 to 1)
+                                const instruments = osmdInstance.sheet.Instruments;
+
+                                instruments.forEach((inst, index) => {
+                                    const sfPlayer = audioPlayerInstance.instrumentPlayer.players.get(inst.MidiInstrumentId);
+                                    if (sfPlayer && sfPlayer.out) {
+                                        // Attempt to extract volume/pan. OSMD volume is usually 0-100. Default pan is 0.
+                                        let panValue = 0;
+
+                                        // In standard general midi / orchestral mixing, auto-pan based on index to widen the mix if not set
+                                        if (instruments.length > 1) {
+                                            // Spread panning left to right
+                                            panValue = -0.5 + (index / (instruments.length - 1));
+                                        }
+
+                                        // Disconnect mono generic gain
+                                        sfPlayer.out.disconnect();
+
+                                        // Insert Panner
+                                        const panner = audioPlayerInstance.ac.createStereoPanner();
+                                        panner.pan.value = panValue;
+                                        panner.connect(dest);
+
+                                        sfPlayer.out.connect(panner);
+                                    }
+                                });
+                            }
+
+                            // --- FIX TUPLET TIMING GLITCH FOR DEFAULT PLAYER ---
+                            // osmd-audio-player calculates triplet timing using a strict 1024 tick grid, which drifts
+                            // and causes severe micro-stuttering inside WebAudio scheduling. We apply a rounding hook.
+                            if (audioPlayerInstance.instrumentPlayer && !originalSchedule) {
+                                originalSchedule = audioPlayerInstance.instrumentPlayer.schedule;
+                                audioPlayerInstance.instrumentPlayer.schedule = function(instrumentId, time, notes) {
+                                    // Smooth out fractional floating point drift for WebAudio (rounding to closest 10ms boundary)
+                                    const smoothedTime = Math.round(time * 100) / 100;
+
+                                    notes.forEach(n => {
+                                        // Fix duration jitter
+                                        n.duration = Math.round(n.duration * 100) / 100;
+                                    });
+
+                                    originalSchedule.call(this, instrumentId, smoothedTime, notes);
+                                };
+                            }
+
                             // If we have an RNBO patch, set it up and hijack OSMD audio routing
                             if (rawRnboUrl) {
                                 loading.textContent = "Loading Custom RNBO Synth...";
@@ -690,8 +742,8 @@
                                     rnboDevice.node.connect(context.destination);
 
                                     // Hijack the instrumentPlayer schedule function!
-                                    if (audioPlayerInstance.instrumentPlayer && !originalSchedule) {
-                                        originalSchedule = audioPlayerInstance.instrumentPlayer.schedule;
+                                    if (audioPlayerInstance.instrumentPlayer) {
+                                        // We already stored originalSchedule in the tuplet fix block above
 
                                         audioPlayerInstance.instrumentPlayer.schedule = function(instrumentId, time, notes) {
                                             // 'time' is WebAudio absolute time.
