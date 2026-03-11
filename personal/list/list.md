@@ -1,3 +1,10 @@
+## 3-10-26
+I am marathon-pilled like no other. This game has absorbed my life like no other recently. The gunplay is crazy good. PvE feels amazing, AI is great. Contract system is addicting. PvP is so intense. I have fallen behind on being productive. Heres me trying to catch up and at least keep up with the illusion of habit building.
+
+## 3-7-26
+I am going to call it. I officially missed a day. It has been two days since an entry and I do not feel comfortable going back and writing a few wolrds for each day
+
+
 ## 3-5-26
 I am back. Now caught up, technically. The absolute SLOP I threw up in the last addition I guess technically counts as a submission.
 
