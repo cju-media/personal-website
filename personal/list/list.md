@@ -1,3 +1,6 @@
+## 3-12-26
+I played marathoned too much the last two days. At least it is an active activity but maybe I should cut down on the gaming a bit
+
 ## 3-10-26
 I am marathon-pilled like no other. This game has absorbed my life like no other recently. The gunplay is crazy good. PvE feels amazing, AI is great. Contract system is addicting. PvP is so intense. I have fallen behind on being productive. Heres me trying to catch up and at least keep up with the illusion of habit building.
 
