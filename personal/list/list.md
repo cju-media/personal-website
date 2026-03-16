@@ -1,5 +1,14 @@
+## 3-15-26
+I saw Akhnaten yesterday. There was a good bit of I did not remember from when I saw this production a decade ago. Maybe I am a more attentive listener now. Maybe my tastes have mature. Maybe sitting in the balcony gave me a new perspective on the music (a lot of tuba, which I enjoyed). 
+
+I generally like the slowmo evolution of action in this production in particular. However, contrast is the name of the game. *Everything* is so slow and sustained. The only real constrast is in the juggling and in the retrospective scene when the movements are not sustained. The retrospective scene itself sticks out. It is weird to have the framing device at the very end of the work. I understand from a theatrical perspective having the opening of the work be the birth/ascension of the title character but then why have the framing device in the final act? Maybe to speak of the lasting effects of Akhnaten? But I do not think that was well established in that scene. The professor was just giving instructions how to get the ruins of Akhanaten's temple. They have a bit of multimedia, flashing slides of the journey to Aten's city built ny Akhnaten. The opening movement with the herioglyphics of his name slowly fading on the scrim. I wish there was more of that. The closest you get to a big effects moment is the giant sun, representing Ak's new religion. The motif of the staircase reaching toward the sky was a good through line. 
+
+Overall I wish there was more of a statement. Was Ak right or wrong to start a new religion? Is the message hubris? Was he too rash in the creation of this new religion? Is he an out-of-touch king? Was he trying to centralize his power? Did he genuinely believe in this religion and an uneducated populace revolted against his changes? I feel like there was room for those sorts of statements. If there was it did not quite cut through. 
+
+Where *Einstein* was more about the vibes and the experience as a work of art. A painting in motion. Saytagraha and Ak have a more substantial story so the audience demands more from the overall statement of these works. At least in my opinion.
+
 ## 3-12-26
-I played marathoned too much the last two days. At least it is an active activity but maybe I should cut down on the gaming a bit
+I played marathoned too much the last two days. At least it is an active activity but maybe I should cut down on the gaming a bit.
 
 ## 3-10-26
 I am marathon-pilled like no other. This game has absorbed my life like no other recently. The gunplay is crazy good. PvE feels amazing, AI is great. Contract system is addicting. PvP is so intense. I have fallen behind on being productive. Heres me trying to catch up and at least keep up with the illusion of habit building.
