@@ -1,0 +1,886 @@
+<!-- Way Page Fragment -->
+<div id="way-page-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+        /* Scoped Styles */
+        #way-page-wrapper {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: auto;
+            margin: 0;
+            background-color: transparent; /* Inherit from Squarespace */
+            padding: 60px 20px 20px 20px;
+            box-sizing: border-box;
+        }
+
+        /* Glitch font classes */
+        #way-page-wrapper .font1 { font-family: Arial, sans-serif !important; }
+        #way-page-wrapper .font2 { font-family: Times New Roman, serif !important; }
+        #way-page-wrapper .font3 { font-family: Courier New, monospace !important; }
+        #way-page-wrapper .font4 { font-family: essay-text, monospace !important; }
+        #way-page-wrapper .font5 { font-family: 'Playfair Display', serif !important; }
+        #way-page-wrapper .font6 { font-family: 'VT323', monospace !important; transform: scale(1.1); }
+
+        #way-page-wrapper h1 {
+            font-size: min(5vw, 3rem);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            margin-bottom: 40px;
+            color: inherit; /* Inherit text color */
+        }
+
+        #way-page-wrapper .text-block1 {
+            padding-bottom: 25px;
+        }
+
+        #way-page-wrapper .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
+        }
+
+        /* Layout Styles */
+        #way-page-wrapper .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        #way-page-wrapper #text-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            /* font-family: 'Playfair Display', serif; */
+            /* font-size: 1.2rem; */
+            line-height: 1.6;
+            color: inherit; /* Inherit text color */
+        }
+
+        #way-page-wrapper #button-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        /* Mobile / Vertical Styles */
+        @media (max-width: 768px) {
+            #way-page-wrapper #text-container {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Button Styles */
+        #way-page-wrapper .repo-button {
+            display: block;
+            padding: 15px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #way-page-wrapper .repo-button:hover {
+            background-color: #555;
+            transform: scale(1.02);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Button Character Styles - to prevent jitter */
+        #way-page-wrapper .button-char {
+            display: inline-block;
+            width: 0.6em;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        #way-page-wrapper .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        /* Modal Styles */
+        #midi-modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+
+        #midi-modal-content {
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 1200px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        #midi-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #ccc;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        #midi-modal-close:hover {
+            color: #fff;
+        }
+
+        #midi-modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            width: 100%;
+            color: #d3d3d3; /* Light grey text */
+        }
+
+        /* OSMD custom styling */
+        .osmd-controls {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .osmd-controls button {
+            padding: 8px 16px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .osmd-controls button svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
+        .osmd-controls button:hover {
+            background: #555;
+        }
+
+        .osmd-controls button:disabled {
+            background: #222;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .visualizers-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #osmd-container {
+            display: block;
+            width: 100%;
+            height: 70vh;
+            background: #fff; /* OSMD renders black notes, needs white background */
+            border-radius: 4px;
+            overflow: auto;
+            border: 1px solid #333;
+        }
+
+        @media (max-width: 768px) {
+            #midi-modal-content {
+                padding: 20px 15px;
+                width: 100%;
+            }
+            #osmd-container {
+                height: 60vh;
+            }
+        }
+    </style>
+
+    <!-- MIDI Modal -->
+    <div id="midi-modal-overlay">
+        <div id="midi-modal-content">
+            <button id="midi-modal-close">&times;</button>
+            <h2 id="midi-modal-title">Score Player</h2>
+
+            <div class="osmd-controls">
+                <button id="osmd-play-pause-btn" disabled title="Play">
+                    <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="icon-pause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="osmd-stop-btn" disabled title="Stop">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                </button>
+            </div>
+
+            <div class="visualizers-container">
+                <div id="osmd-container">
+                    <div id="osmd-loading" style="color: #000; padding: 20px; text-align: center; font-family: monospace; display: none;">Loading Score...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-block1">
+        <h1>
+            <span class="span-class">T</span>
+            <span class="span-class">H</span>
+            <span class="span-class">E</span>
+            <span class="span-class">&nbsp;</span>
+            <span class="span-class">W</span>
+            <span class="span-class">A</span>
+            <span class="span-class">Y</span>
+        </h1>
+    </div>
+
+    <div class="content-wrapper">
+        <div id="text-container">
+            <p>
+              A collection of folders on the way.
+            </p>
+        </div>
+
+        <div id="button-container">
+            <div class="loading">Loading The Way folders...</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function initWay() {
+                // Prevent double initialization
+                if (window.wayInitialized) return;
+                window.wayInitialized = true;
+
+                // Load OSMD Player scripts
+                if (!window.osmdScriptsLoaded) {
+                    const osmdScript = document.createElement('script');
+                    osmdScript.src = "https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.9.3/build/opensheetmusicdisplay.min.js";
+                    document.body.appendChild(osmdScript);
+
+                    const audioScript = document.createElement('script');
+                    audioScript.src = "https://cdn.jsdelivr.net/npm/osmd-audio-player@0.7.0/umd/OsmdAudioPlayer.min.js";
+                    document.body.appendChild(audioScript);
+
+                    window.osmdScriptsLoaded = true;
+                }
+
+                // Glitch Effect Logic
+                const wrapper = document.getElementById('way-page-wrapper');
+                if (!wrapper) return; // Guard clause
+
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span, enableColor = true) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        if (enableColor) {
+                            this.loopColor(span);
+                        }
+                    },
+
+                    stop(span) {
+                        clearTimeout(span._fontTimeout);
+                        clearTimeout(span._colorTimeout);
+                        this.reset(span);
+                    },
+
+                    reset(span) {
+                        if (span.dataset.original) {
+                            span.innerText = span.dataset.original;
+                        }
+                        span.style.color = ''; // Reset to inherited
+                        this.fontClasses.forEach(c => span.classList.remove(c));
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            // Change Font
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            // Chance to change to Katakana
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            span._fontTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            // Change Color
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+
+                            // Schedule next tick
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            span._colorTimeout = setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
+                };
+
+                // Initialize Title Spans (Continuous)
+                const titleSpans = wrapper.querySelectorAll('.text-block1 .span-class');
+                titleSpans.forEach(span => {
+                    // Skip glitch on spaces
+                    if (span.innerText.trim() !== '') {
+                        Glitch.start(span);
+                    }
+                });
+
+                // Fetch GitHub Directory
+                const container = wrapper.querySelector('#button-container');
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/The%20Way?ref=main';
+                const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/The%20Way/';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`GitHub API Error: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        container.innerHTML = ''; // Clear loading message
+
+                        // Filter for directories, exclude TEMPLATES
+                        let directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
+
+                        if (directories.length === 0) {
+                            container.innerHTML = '<div class="loading">No folders found.</div>';
+                            return;
+                        }
+
+                        // Sort directories from newest to oldest based on MM-DD-YY naming convention
+                        directories.sort((a, b) => {
+                            const parseDateStr = (str) => {
+                                const parts = str.split('-');
+                                if (parts.length === 3) {
+                                    // Parse as MM-DD-YY. Note: YY is assumed to be 2000+
+                                    return new Date(`20${parts[2]}-${parts[0]}-${parts[1]}`);
+                                }
+                                return new Date(0); // Fallback for unparseable names
+                            };
+                            return parseDateStr(b.name) - parseDateStr(a.name);
+                        });
+
+                        directories.forEach(dir => {
+                            const link = document.createElement('a');
+                            link.href = '#';
+                            link.className = 'repo-button';
+                            // link.target = '_blank';
+                            // link.rel = 'noopener noreferrer';
+
+                            // Build spans for button text
+                            const text = dir.name;
+                            for (let char of text) {
+                                const span = document.createElement('span');
+                                span.textContent = char;
+                                span.className = 'button-char';
+                                // Pre-set original for Glitch object logic
+                                span.dataset.original = char;
+                                link.appendChild(span);
+                            }
+
+                            // Interactive Glitch on Hover
+                            link.addEventListener('mouseenter', () => {
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => {
+                                    if (span.dataset.original.trim() !== '') {
+                                        Glitch.start(span, false);
+                                    }
+                                });
+                            });
+
+                            link.addEventListener('mouseleave', () => {
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => Glitch.stop(span));
+                            });
+
+                            // Click handler to open XML modal
+                            let isFetching = false;
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                if (isFetching) return;
+
+                                const dirContentsUrl = `https://api.github.com/repos/cju-media/Scores/contents/The%20Way/${encodeURIComponent(dir.name)}?ref=main`;
+
+                                isFetching = true;
+                                const originalText = link.innerText;
+                                // Temporarily show loading without destroying spans
+                                link.style.color = '#888';
+
+                                fetch(dirContentsUrl)
+                                    .then(res => {
+                                        if(!res.ok) throw new Error("Failed to fetch dir contents");
+                                        return res.json();
+                                    })
+                                    .then(files => {
+                                        const xmlFile = files.find(f => f.name.toLowerCase().endsWith('.musicxml') || f.name.toLowerCase().endsWith('.xml'));
+                                        const rnboJsonFile = files.find(f => f.name.toLowerCase().endsWith('.json') && (f.name.toLowerCase().includes('rnbo') || f.name.toLowerCase().includes('export')));
+
+                                        if (xmlFile) {
+                                            const rawXmlUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(xmlFile.name)}`;
+                                            let rawRnboUrl = null;
+                                            if (rnboJsonFile) {
+                                                rawRnboUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(rnboJsonFile.name)}`;
+                                            }
+                                            openXmlModal(rawXmlUrl, dir.name, rawRnboUrl);
+                                        } else {
+                                            alert("No MusicXML file found in this folder. Please make sure a .musicxml or .xml file is uploaded.");
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert("Error fetching folder contents. You may have hit the GitHub API rate limit, please try again later.");
+                                    })
+                                    .finally(() => {
+                                        isFetching = false;
+                                        link.style.color = ''; // Restore original color via CSS
+                                        const chars = link.querySelectorAll('.button-char');
+                                        chars.forEach(span => Glitch.reset(span)); // Ensure spans are back to normal if glitch stopped
+                                    });
+                            });
+
+                            container.appendChild(link);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching The Way folders:', error);
+                        container.innerHTML = `<div class="loading" style="color: red;">Error loading folders. Please try again later.</div>`;
+                    });
+
+                // Global instances for OSMD and AudioPlayer
+                let osmdInstance = null;
+                let audioPlayerInstance = null;
+
+                // RNBO Integration variables
+                let rnboDevice = null;
+                let originalSchedule = null;
+
+                // Dynamically load RNBO script if needed
+                function loadRNBOScript() {
+                    return new Promise((resolve, reject) => {
+                        if (window.RNBO) {
+                            resolve();
+                            return;
+                        }
+                        const script = document.createElement('script');
+                        script.src = "https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js";
+                        script.crossOrigin = "anonymous";
+                        script.onload = () => resolve();
+                        script.onerror = () => reject(new Error("Failed to load RNBO library"));
+                        document.head.appendChild(script);
+                    });
+                }
+
+                // Function to handle opening the XML modal
+                function openXmlModal(xmlUrl, titleText, rawRnboUrl) {
+                    const modal = document.getElementById('midi-modal-overlay');
+                    if (!modal) return;
+
+                    const container = document.getElementById('osmd-container');
+                    const title = document.getElementById('midi-modal-title');
+                    const loading = document.getElementById('osmd-loading');
+                    const playPauseBtn = document.getElementById('osmd-play-pause-btn');
+                    const stopBtn = document.getElementById('osmd-stop-btn');
+                    const iconPlay = document.getElementById('icon-play');
+                    const iconPause = document.getElementById('icon-pause');
+
+                    if (title) title.textContent = titleText;
+
+                    // Reset UI
+                    playPauseBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    iconPlay.style.display = 'block';
+                    iconPause.style.display = 'none';
+                    playPauseBtn.title = "Play";
+                    loading.style.display = 'block';
+
+                    // Clear previous score if any
+                    if (osmdInstance) {
+                        osmdInstance.clear();
+                    } else {
+                        // Initialize OSMD if not already done
+                        osmdInstance = new opensheetmusicdisplay.OpenSheetMusicDisplay(container, {
+                            autoResize: true,
+                            backend: "svg",
+                            drawTitle: false,
+                        });
+
+                        audioPlayerInstance = new OsmdAudioPlayer();
+
+                        // Attach iteration listener only once
+                        audioPlayerInstance.on("iteration", notes => {
+                            // Scroll the container if the cursor moves out of view
+                            if (osmdInstance.cursor && osmdInstance.cursor.cursorElement) {
+                                const cursorElem = osmdInstance.cursor.cursorElement;
+                                const cursorRect = cursorElem.getBoundingClientRect();
+                                const containerRect = container.getBoundingClientRect();
+
+                                // If cursor is below the visible area, scroll down
+                                if (cursorRect.bottom > containerRect.bottom - 20) {
+                                    container.scrollBy({ top: cursorRect.height + 40, behavior: 'smooth' });
+                                }
+                                // If cursor is above the visible area (e.g. on reset), scroll up
+                                else if (cursorRect.top < containerRect.top + 20) {
+                                    container.scrollTop = cursorElem.offsetTop - 20;
+                                }
+                            }
+                        });
+                    }
+
+                    modal.style.display = 'flex';
+
+                    // Fetch and Load the XML file
+                    fetch(xmlUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch XML file");
+                        return res.text();
+                    })
+                    .then(xmlText => {
+                        // Hack to bypass osmd-audio-player "Buffer 12 not found" mapping bug:
+                        // Inject <midi-instrument id="xyz"><midi-program>X</midi-program></midi-instrument> into the XML
+                        xmlText = xmlText.replace(/(<score-part id="([^"]+)">[\s\S]*?)<\/score-part>/g, (match, p1, partId) => {
+                            if (match.includes('<midi-instrument')) return match;
+
+                            const instMatch = match.match(/<score-instrument id="([^"]+)">/);
+                            const instId = instMatch ? instMatch[1] : `${partId}-I1`;
+
+                            // Extract part-name to guess instrument if possible
+                            let midiProgram = 1; // Default to Acoustic Grand Piano
+                            const nameMatch = match.match(/<part-name[^>]*>([\s\S]*?)<\/part-name>/);
+                            if (nameMatch) {
+                                const partName = nameMatch[1].toLowerCase();
+                                // General MIDI Program mappings
+                                const instrumentMap = {
+                                    'piano': 1, 'harpsichord': 7, 'celesta': 9, 'glockenspiel': 10, 'music box': 11, 'vibraphone': 12, 'marimba': 13, 'xylophone': 14, 'tubular bells': 15, 'dulcimer': 16,
+                                    'organ': 20, 'accordion': 22, 'harmonica': 23, 'bandoneon': 24,
+                                    'guitar': 25, 'acoustic guitar': 26, 'electric guitar': 28, 'bass': 33, 'acoustic bass': 33, 'electric bass': 34,
+                                    'violin': 41, 'viola': 42, 'cello': 43, 'violoncello': 43, 'contrabass': 44, 'double bass': 44, 'tremolo strings': 45, 'pizzicato strings': 46, 'harp': 47, 'timpani': 48,
+                                    'strings': 49, 'string ensemble': 49, 'synth strings': 51, 'choir': 53, 'voice': 54, 'synth choir': 55,
+                                    'trumpet': 57, 'trombone': 58, 'tuba': 59, 'muted trumpet': 60, 'french horn': 61, 'horn': 61, 'brass': 62, 'synth brass': 63,
+                                    'soprano sax': 65, 'alto sax': 66, 'tenor sax': 67, 'baritone sax': 68, 'oboe': 69, 'english horn': 70, 'bassoon': 71, 'clarinet': 72,
+                                    'piccolo': 73, 'flute': 74, 'recorder': 75, 'pan flute': 76, 'blown bottle': 77, 'shakuhachi': 78, 'whistle': 79, 'ocarina': 80
+                                };
+
+                                // Sort keys by length descending to prevent substring matching bugs (e.g. "bass" matching "bassoon")
+                                const sortedKeys = Object.keys(instrumentMap).sort((a, b) => b.length - a.length);
+                                for (const key of sortedKeys) {
+                                    if (partName.includes(key)) {
+                                        midiProgram = instrumentMap[key];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            return `${p1}
+                                <midi-device id="${instId}" port="1"></midi-device>
+                                <midi-instrument id="${instId}">
+                                    <midi-channel>1</midi-channel>
+                                    <midi-program>${midiProgram}</midi-program>
+                                    <volume>78.7402</volume>
+                                    <pan>0</pan>
+                                </midi-instrument>
+                            </score-part>`;
+                        });
+                        return osmdInstance.load(xmlText);
+                    })
+                    .then(() => {
+                        osmdInstance.zoom = 0.6; // Decrease staff size
+                        osmdInstance.render();
+                        loading.textContent = "Loading Audio Instruments...";
+
+                        // Load into Audio Player
+                        audioPlayerInstance.loadScore(osmdInstance).then(async () => {
+
+                            // --- FIX STEREO PANNING FOR DEFAULT PLAYER ---
+                            // osmd-audio-player uses soundfont-player which lacks PannerNode support and downmixes to mono.
+                            // We manually loop through the internal player nodes and insert a StereoPannerNode based on the OSMD sheet instruments.
+                            if (audioPlayerInstance.instrumentPlayer && audioPlayerInstance.instrumentPlayer.players) {
+                                const dest = audioPlayerInstance.ac.destination;
+                                // Get standard panning from OSMD instruments (usually mapped -100 to 100, WebAudio needs -1 to 1)
+                                const instruments = osmdInstance.sheet.Instruments;
+
+                                instruments.forEach((inst, index) => {
+                                    const sfPlayer = audioPlayerInstance.instrumentPlayer.players.get(inst.MidiInstrumentId);
+                                    if (sfPlayer && sfPlayer.out) {
+                                        // Attempt to extract volume/pan. OSMD volume is usually 0-100. Default pan is 0.
+                                        let panValue = 0;
+
+                                        // In standard general midi / orchestral mixing, auto-pan based on index to widen the mix if not set
+                                        if (instruments.length > 1) {
+                                            // Spread panning left to right
+                                            panValue = -0.5 + (index / (instruments.length - 1));
+                                        }
+
+                                        // Disconnect mono generic gain
+                                        sfPlayer.out.disconnect();
+
+                                        // Insert Panner
+                                        const panner = audioPlayerInstance.ac.createStereoPanner();
+                                        panner.pan.value = panValue;
+                                        panner.connect(dest);
+
+                                        sfPlayer.out.connect(panner);
+                                    }
+                                });
+                            }
+
+                            // --- FIX TUPLET TIMING GLITCH FOR DEFAULT PLAYER ---
+                            // osmd-audio-player calculates triplet timing using a strict 1024 tick grid, which drifts
+                            // and causes severe micro-stuttering inside WebAudio scheduling. We apply a rounding hook.
+                            if (audioPlayerInstance.instrumentPlayer && !originalSchedule) {
+                                originalSchedule = audioPlayerInstance.instrumentPlayer.schedule;
+                                audioPlayerInstance.instrumentPlayer.schedule = function(instrumentId, time, notes) {
+                                    // Smooth out fractional floating point drift for WebAudio (rounding to closest 10ms boundary)
+                                    const smoothedTime = Math.round(time * 100) / 100;
+
+                                    notes.forEach(n => {
+                                        // Fix duration jitter
+                                        n.duration = Math.round(n.duration * 100) / 100;
+                                    });
+
+                                    originalSchedule.call(this, instrumentId, smoothedTime, notes);
+                                };
+                            }
+
+                            // If we have an RNBO patch, set it up and hijack OSMD audio routing
+                            if (rawRnboUrl) {
+                                loading.textContent = "Loading Custom RNBO Synth...";
+                                try {
+                                    await loadRNBOScript();
+                                    const patchResponse = await fetch(rawRnboUrl);
+                                    if (!patchResponse.ok) throw new Error("Failed to fetch RNBO json");
+                                    const patcher = await patchResponse.json();
+
+                                    // Use Singleton AudioContext to prevent exhaustion
+                                    const WAContext = window.AudioContext || window.webkitAudioContext;
+                                    if (!window.RNBO_AudioContext) {
+                                        window.RNBO_AudioContext = new WAContext();
+                                    }
+                                    const context = window.RNBO_AudioContext;
+
+                                    // Replace OSMD's internal context to keep things tightly synced
+                                    if (audioPlayerInstance.ac) {
+                                        // We let OSMD do its thing but ensure it doesn't fight our context
+                                    }
+
+                                    rnboDevice = await RNBO.createDevice({ context, patcher });
+                                    rnboDevice.node.connect(context.destination);
+
+                                    // Hijack the instrumentPlayer schedule function!
+                                    if (audioPlayerInstance.instrumentPlayer) {
+                                        // We already stored originalSchedule in the tuplet fix block above
+
+                                        audioPlayerInstance.instrumentPlayer.schedule = function(instrumentId, time, notes) {
+                                            // 'time' is WebAudio absolute time.
+                                            // 'notes' is an array of { note, duration, gain }
+
+                                            // Calculate RNBO time offset from its context
+                                            const timeOffset = time - context.currentTime;
+                                            const rnboTime = rnboDevice.context.currentTime + Math.max(0, timeOffset);
+
+                                            notes.forEach(n => {
+                                                // Note On
+                                                let noteOnEvent = new RNBO.MIDIEvent(rnboTime, 0, [144, n.note, Math.floor(n.gain * 127)]);
+                                                rnboDevice.scheduleEvent(noteOnEvent);
+
+                                                // Note Off
+                                                let noteOffEvent = new RNBO.MIDIEvent(rnboTime + n.duration, 0, [128, n.note, 0]);
+                                                rnboDevice.scheduleEvent(noteOffEvent);
+                                            });
+
+                                            // We intentionally DO NOT call originalSchedule.call(this, ...)
+                                            // This prevents the default osmd soundfonts from playing!
+                                        };
+                                    }
+
+                                } catch (e) {
+                                    console.error("RNBO Setup Error, falling back to General MIDI:", e);
+                                    // If RNBO fails, we restore the original schedule so it plays default soundfonts
+                                    if (originalSchedule && audioPlayerInstance.instrumentPlayer) {
+                                        audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
+                                    }
+                                }
+                            } else {
+                                // Clear RNBO hijack if previously set (e.g. user clicked an RNBO track, then a normal track)
+                                if (originalSchedule && audioPlayerInstance.instrumentPlayer) {
+                                    audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
+                                }
+                            }
+
+                            loading.style.display = 'none';
+
+                            playPauseBtn.disabled = false;
+                            stopBtn.disabled = false;
+
+                            // State tracking for the toggle button
+                            let isPlaying = false;
+
+                            const setPlayState = () => {
+                                isPlaying = true;
+                                iconPlay.style.display = 'none';
+                                iconPause.style.display = 'block';
+                                playPauseBtn.title = "Pause";
+
+                                // Ensure RNBO audio context is resumed on user gesture to bypass browser autoplay rules
+                                if (rnboDevice && window.RNBO_AudioContext && window.RNBO_AudioContext.state !== 'running') {
+                                    window.RNBO_AudioContext.resume();
+                                }
+
+                                // The osmd-audio-player hides the cursor on pause but sometimes fails to unhide it on play
+                                osmdInstance.cursor.show();
+                                audioPlayerInstance.play();
+                            };
+
+                            const setPauseState = () => {
+                                isPlaying = false;
+                                iconPlay.style.display = 'block';
+                                iconPause.style.display = 'none';
+                                playPauseBtn.title = "Play";
+                                audioPlayerInstance.pause();
+                            };
+
+                            playPauseBtn.onclick = () => {
+                                if (isPlaying) {
+                                    setPauseState();
+                                } else {
+                                    setPlayState();
+                                }
+                            };
+
+                            stopBtn.onclick = () => {
+                                audioPlayerInstance.stop();
+                                // Send panic (all notes off) to RNBO device if exists
+                                if (rnboDevice) {
+                                    for (let i = 0; i < 128; i++) {
+                                        rnboDevice.scheduleEvent(new RNBO.MIDIEvent(rnboDevice.context.currentTime, 0, [128, i, 0]));
+                                    }
+                                }
+                                osmdInstance.cursor.reset();
+                                container.scrollTop = 0; // Reset scroll
+                                setPauseState(); // Reset icon
+                            };
+                        }).catch(audioError => {
+                            console.error("OSMD Audio Load Error:", audioError);
+                            loading.textContent = "Failed to load audio instruments.";
+                        });
+                    }).catch(error => {
+                        console.error("OSMD Load Error:", error);
+                        loading.textContent = "Failed to load score.";
+                    });
+                }
+
+                // Add close modal functionality
+                const modalOverlay = document.getElementById('midi-modal-overlay');
+                if (modalOverlay) {
+                    const closeBtn = document.getElementById('midi-modal-close');
+                    const closeModal = () => {
+                        modalOverlay.style.display = 'none';
+                        if (audioPlayerInstance) {
+                            audioPlayerInstance.stop();
+                        }
+                        if (rnboDevice) {
+                            // Cleanup device to free memory
+                            rnboDevice.node.disconnect();
+                            rnboDevice = null;
+                        }
+                        // Clear hijack safely
+                        if (originalSchedule && audioPlayerInstance && audioPlayerInstance.instrumentPlayer) {
+                            audioPlayerInstance.instrumentPlayer.schedule = originalSchedule;
+                        }
+                    };
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', closeModal);
+                    }
+                    modalOverlay.addEventListener('click', (e) => {
+                        if (e.target === modalOverlay) {
+                            closeModal();
+                        }
+                    });
+                }
+            }
+
+            // Initialization logic for Squarespace
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initWay);
+            } else {
+                initWay();
+            }
+        })();
+    </script>
+</div>

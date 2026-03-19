@@ -118,6 +118,110 @@
         #the-list-page-wrapper #about-content h3 {
             margin-top: 40px;
         }
+
+        /* Image scaling */
+        #the-list-page-wrapper #list-content img,
+        #the-list-page-wrapper #about-content img {
+            max-width: 600px;
+            max-height: 600px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #the-list-page-wrapper #list-content img:hover,
+        #the-list-page-wrapper #about-content img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 600px) {
+            #the-list-page-wrapper #list-content img,
+            #the-list-page-wrapper #about-content img {
+                max-width: 300px;
+                max-height: 300px;
+            }
+        }
+
+        /* Lightbox Styles */
+        #the-list-page-wrapper .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #the-list-page-wrapper .lightbox.active {
+            display: flex;
+        }
+
+        #the-list-page-wrapper .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        #the-list-page-wrapper .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid white;
+            box-sizing: border-box; /* Include border in dimensions */
+        }
+
+        /* Spinner */
+        #the-list-page-wrapper .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #the-list-page-wrapper .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        #the-list-page-wrapper .caption {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            width: calc(100% - 4px);
+            box-sizing: border-box;
+            color: #fff;
+            text-align: center;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            font-family: sans-serif;
+        }
     </style>
 
     <h1 class="glitch-title">
@@ -139,6 +243,16 @@
         <div class="loading">Loading list...</div>
     </div>
     <div id="about-content" style="display:none; width: 100%; max-width: 800px; text-align: left; line-height: 1.6; font-size: 1.1rem;"></div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <div id="lightbox-spinner" class="spinner"></div>
+            <img id="lightbox-img" src="" alt="Full view" style="display:none;">
+            <div id="lightbox-caption" class="caption"></div>
+        </div>
+    </div>
 
     <script>
         (function() {
@@ -263,6 +377,39 @@
                     }
                 }
 
+                function handleHashChange() {
+                    const hash = window.location.hash;
+                    if (!hash || hash === '#') return;
+
+                    const dateStr = decodeURIComponent(hash.substring(1)); // Remove the '#' and decode
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+
+                    if (entries.length === 0) return;
+
+                    let found = false;
+                    for (let entry of entries) {
+                        const h2 = entry.querySelector('h2');
+                        if (h2 && h2.textContent.trim() === dateStr) {
+                            found = true;
+                            // Hide intro
+                            const intro = contentContainer.querySelector('.intro-text');
+                            if (intro) intro.style.display = 'none';
+
+                            // Hide all other entries
+                            entries.forEach(e => e.style.display = 'none');
+
+                            // Show matching entry
+                            entry.style.display = 'block';
+
+                            updateNavForRandom(); // Uses back link logic
+                            break;
+                        }
+                    }
+
+                    // If hash didn't match anything, maybe just show all entries?
+                    // Currently we do nothing and let it be, but showing all might be safer
+                }
+
                 function showRandomEntry(e) {
                     if (e) e.preventDefault();
 
@@ -274,7 +421,17 @@
 
                     entries.forEach(entry => entry.style.display = 'none');
                     const randomIndex = Math.floor(Math.random() * entries.length);
-                    entries[randomIndex].style.display = 'block';
+                    const randomEntry = entries[randomIndex];
+                    randomEntry.style.display = 'block';
+
+                    const h2 = randomEntry.querySelector('h2');
+                    if (h2) {
+                        const dateStr = h2.textContent.trim();
+                        // Use pushState so they can use the browser back button to go to previous randoms or main list
+                        history.pushState(null, null, `#${encodeURIComponent(dateStr)}`);
+                    } else if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
 
                     updateNavForRandom();
                 }
@@ -287,6 +444,10 @@
 
                     if (intro) intro.style.display = 'block';
                     entries.forEach(entry => entry.style.display = 'block');
+
+                    if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
 
                     updateNavForMain();
                 }
@@ -390,12 +551,75 @@
                             setLinksTargetBlank(contentContainer);
                             setupEntries();
                             bindNavEvents();
+
+                            if (window.location.hash) {
+                                handleHashChange();
+                            }
                         })
                         .catch(error => {
                             console.error('Error loading list:', error);
                             contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading list content.</div>';
                         });
                 }
+
+                // --- Lightbox Logic ---
+                const lightbox = wrapper.querySelector('#lightbox-modal');
+                const lightboxImg = wrapper.querySelector('#lightbox-img');
+                const lightboxSpinner = wrapper.querySelector('#lightbox-spinner');
+                const lightboxCaption = wrapper.querySelector('#lightbox-caption');
+                const closeBtn = wrapper.querySelector('.close-btn');
+
+                function openLightbox(src, altText) {
+                    lightboxImg.style.display = 'none';
+                    lightboxSpinner.style.display = 'block';
+                    lightboxCaption.style.display = 'none'; // hide until loaded
+
+                    lightboxImg.src = ''; // reset
+                    lightboxImg.src = src;
+
+                    lightboxImg.onload = () => {
+                        lightboxSpinner.style.display = 'none';
+                        lightboxImg.style.display = 'block';
+
+                        if (altText) {
+                            lightboxCaption.textContent = altText;
+                            lightboxCaption.style.display = 'block';
+                        }
+                    };
+
+                    lightbox.classList.add('active');
+                }
+
+                // Event delegation for dynamically loaded images
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'IMG' && (contentContainer.contains(e.target) || aboutContainer.contains(e.target))) {
+                        openLightbox(e.target.src, e.target.alt);
+                    }
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                });
+
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
+                window.addEventListener('hashchange', () => {
+                    if (window.location.hash) {
+                        handleHashChange();
+                    } else {
+                        showAllEntries();
+                    }
+                });
 
                 loadMarked(fetchAndRenderList);
             }
