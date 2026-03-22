@@ -1,3 +1,6 @@
+## 3-19-26
+My last update failed yesterday and I lost what I typed. 
+
 ## 3-15-26
 I saw Akhnaten yesterday. There was a good bit of I did not remember from when I saw this production a decade ago. Maybe I am a more attentive listener now. Maybe my tastes have mature. Maybe sitting in the balcony gave me a new perspective on the music (a lot of tuba, which I enjoyed). 
 
