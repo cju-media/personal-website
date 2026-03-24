@@ -897,6 +897,13 @@
                             closeModal();
                         }
                     });
+
+                    // Add Escape key handler
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+                            closeModal();
+                        }
+                    });
                 }
             }
 
