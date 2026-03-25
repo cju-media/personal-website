@@ -257,9 +257,6 @@
                     <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     <svg id="icon-pause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                 </button>
-                <button id="osmd-stop-btn" disabled title="Stop">
-                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
-                </button>
             </div>
 
             <div class="visualizers-container">
@@ -582,7 +579,6 @@
                     const title = document.getElementById('midi-modal-title');
                     const loading = document.getElementById('osmd-loading');
                     const playPauseBtn = document.getElementById('osmd-play-pause-btn');
-                    const stopBtn = document.getElementById('osmd-stop-btn');
                     const iconPlay = document.getElementById('icon-play');
                     const iconPause = document.getElementById('icon-pause');
 
@@ -590,7 +586,6 @@
 
                     // Reset UI
                     playPauseBtn.disabled = true;
-                    stopBtn.disabled = true;
                     iconPlay.style.display = 'block';
                     iconPause.style.display = 'none';
                     playPauseBtn.title = "Play";
@@ -630,6 +625,7 @@
                     }
 
                     modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
 
                     // Fetch and Load the XML file
                     fetch(xmlUrl)
@@ -812,7 +808,6 @@
                             loading.style.display = 'none';
 
                             playPauseBtn.disabled = false;
-                            stopBtn.disabled = false;
 
                             // State tracking for the toggle button
                             let isPlaying = false;
@@ -848,19 +843,6 @@
                                     setPlayState();
                                 }
                             };
-
-                            stopBtn.onclick = () => {
-                                audioPlayerInstance.stop();
-                                // Send panic (all notes off) to RNBO device if exists
-                                if (rnboDevice) {
-                                    for (let i = 0; i < 128; i++) {
-                                        rnboDevice.scheduleEvent(new RNBO.MIDIEvent(rnboDevice.context.currentTime, 0, [128, i, 0]));
-                                    }
-                                }
-                                osmdInstance.cursor.reset();
-                                container.scrollTop = 0; // Reset scroll
-                                setPauseState(); // Reset icon
-                            };
                         }).catch(audioError => {
                             console.error("OSMD Audio Load Error:", audioError);
                             loading.textContent = "Failed to load audio instruments.";
@@ -877,6 +859,7 @@
                     const closeBtn = document.getElementById('midi-modal-close');
                     const closeModal = () => {
                         modalOverlay.style.display = 'none';
+                        document.body.style.overflow = '';
                         if (audioPlayerInstance) {
                             audioPlayerInstance.stop();
                         }
@@ -900,12 +883,24 @@
                         }
                     });
 
-                    // Add Escape key handler
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
-                            closeModal();
-                        }
-                    });
+                    // Add Keydown Handler
+                    // Important: only add once, not on every open. We check if the handler is already attached.
+                    if (!window.wayKeydownAttached) {
+                        document.addEventListener('keydown', (e) => {
+                            if (modalOverlay.style.display === 'flex') {
+                                if (e.key === 'Escape') {
+                                    closeModal();
+                                } else if (e.code === 'Space') {
+                                    e.preventDefault(); // Prevent page scrolling
+                                    const playBtn = document.getElementById('osmd-play-pause-btn');
+                                    if (playBtn && !playBtn.disabled) {
+                                        playBtn.click();
+                                    }
+                                }
+                            }
+                        });
+                        window.wayKeydownAttached = true;
+                    }
                 }
             }
 
