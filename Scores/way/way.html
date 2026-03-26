@@ -257,14 +257,13 @@
                     <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     <svg id="icon-pause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                 </button>
-                <button id="osmd-stop-btn" disabled title="Stop">
-                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
-                </button>
             </div>
 
             <div class="visualizers-container">
+                <div id="osmd-loading-wrapper" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+                    <div id="osmd-loading" style="color: #000; background: rgba(255,255,255,0.9); padding: 10px 20px; border-radius: 4px; text-align: center; font-family: monospace; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Loading Score...</div>
+                </div>
                 <div id="osmd-container">
-                    <div id="osmd-loading" style="color: #000; padding: 20px; text-align: center; font-family: monospace; display: none;">Loading Score...</div>
                 </div>
             </div>
         </div>
@@ -402,7 +401,7 @@
 
                 // Fetch GitHub Directory
                 const container = wrapper.querySelector('#button-container');
-                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/The%20Way?ref=main';
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/The%20Way/';
 
                 fetch(apiUrl)
@@ -415,8 +414,46 @@
                     .then(data => {
                         container.innerHTML = ''; // Clear loading message
 
-                        // Filter for directories, exclude TEMPLATES
-                        let directories = data.filter(item => item.type === 'dir' && item.name.toUpperCase() !== 'TEMPLATES' && item.name.toUpperCase() !== 'TEMPLATE');
+                        // Parse Git Tree to find folders and their files under 'The Way/'
+                        const tree = data.tree || [];
+                        const wayData = {}; // Format: { "03-02-26": [ {path, type}, ... ] }
+
+                        tree.forEach(item => {
+                            if (item.path.startsWith('The Way/')) {
+                                const relativePath = item.path.substring(8); // Remove 'The Way/' prefix
+                                const parts = relativePath.split('/');
+
+                                if (parts.length > 0) {
+                                    const dirName = parts[0];
+
+                                    // Ignore root files or unwanted directories directly under The Way
+                                    if (dirName === '' || dirName.toUpperCase() === 'TEMPLATES' || dirName.toUpperCase() === 'TEMPLATE') {
+                                        return;
+                                    }
+
+                                    if (!wayData[dirName]) {
+                                        wayData[dirName] = [];
+                                    }
+
+                                    if (parts.length > 1) {
+                                        // This is a file inside the directory
+                                        const fileName = parts.slice(1).join('/');
+                                        wayData[dirName].push({
+                                            name: fileName,
+                                            type: item.type === 'tree' ? 'dir' : 'file',
+                                            path: item.path
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
+                        let directories = Object.keys(wayData).map(dirName => {
+                            return {
+                                name: dirName,
+                                files: wayData[dirName]
+                            };
+                        });
 
                         if (directories.length === 0) {
                             container.innerHTML = '<div class="loading">No folders found.</div>';
@@ -475,43 +512,30 @@
                                 e.preventDefault();
                                 if (isFetching) return;
 
-                                const dirContentsUrl = `https://api.github.com/repos/cju-media/Scores/contents/The%20Way/${encodeURIComponent(dir.name)}?ref=main`;
-
                                 isFetching = true;
                                 const originalText = link.innerText;
                                 // Temporarily show loading without destroying spans
                                 link.style.color = '#888';
 
-                                fetch(dirContentsUrl)
-                                    .then(res => {
-                                        if(!res.ok) throw new Error("Failed to fetch dir contents");
-                                        return res.json();
-                                    })
-                                    .then(files => {
-                                        const xmlFile = files.find(f => f.name.toLowerCase().endsWith('.musicxml') || f.name.toLowerCase().endsWith('.xml'));
-                                        const rnboJsonFile = files.find(f => f.name.toLowerCase().endsWith('.json') && (f.name.toLowerCase().includes('rnbo') || f.name.toLowerCase().includes('export')));
+                                const files = dir.files;
+                                const xmlFile = files.find(f => f.name.toLowerCase().endsWith('.musicxml') || f.name.toLowerCase().endsWith('.xml'));
+                                const rnboJsonFile = files.find(f => f.name.toLowerCase().endsWith('.json') && (f.name.toLowerCase().includes('rnbo') || f.name.toLowerCase().includes('export')));
 
-                                        if (xmlFile) {
-                                            const rawXmlUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(xmlFile.name)}`;
-                                            let rawRnboUrl = null;
-                                            if (rnboJsonFile) {
-                                                rawRnboUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(rnboJsonFile.name)}`;
-                                            }
-                                            openXmlModal(rawXmlUrl, dir.name, rawRnboUrl);
-                                        } else {
-                                            alert("No MusicXML file found in this folder. Please make sure a .musicxml or .xml file is uploaded.");
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert("Error fetching folder contents. You may have hit the GitHub API rate limit, please try again later.");
-                                    })
-                                    .finally(() => {
-                                        isFetching = false;
-                                        link.style.color = ''; // Restore original color via CSS
-                                        const chars = link.querySelectorAll('.button-char');
-                                        chars.forEach(span => Glitch.reset(span)); // Ensure spans are back to normal if glitch stopped
-                                    });
+                                if (xmlFile) {
+                                    const rawXmlUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(xmlFile.name)}`;
+                                    let rawRnboUrl = null;
+                                    if (rnboJsonFile) {
+                                        rawRnboUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/The%20Way/${encodeURIComponent(dir.name)}/${encodeURIComponent(rnboJsonFile.name)}`;
+                                    }
+                                    openXmlModal(rawXmlUrl, dir.name, rawRnboUrl);
+                                } else {
+                                    alert("No MusicXML file found in this folder. Please make sure a .musicxml or .xml file is uploaded.");
+                                }
+
+                                isFetching = false;
+                                link.style.color = ''; // Restore original color via CSS
+                                const chars = link.querySelectorAll('.button-char');
+                                chars.forEach(span => Glitch.reset(span)); // Ensure spans are back to normal if glitch stopped
                             });
 
                             container.appendChild(link);
@@ -555,7 +579,6 @@
                     const title = document.getElementById('midi-modal-title');
                     const loading = document.getElementById('osmd-loading');
                     const playPauseBtn = document.getElementById('osmd-play-pause-btn');
-                    const stopBtn = document.getElementById('osmd-stop-btn');
                     const iconPlay = document.getElementById('icon-play');
                     const iconPause = document.getElementById('icon-pause');
 
@@ -563,7 +586,6 @@
 
                     // Reset UI
                     playPauseBtn.disabled = true;
-                    stopBtn.disabled = true;
                     iconPlay.style.display = 'block';
                     iconPause.style.display = 'none';
                     playPauseBtn.title = "Play";
@@ -603,6 +625,7 @@
                     }
 
                     modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
 
                     // Fetch and Load the XML file
                     fetch(xmlUrl)
@@ -785,7 +808,6 @@
                             loading.style.display = 'none';
 
                             playPauseBtn.disabled = false;
-                            stopBtn.disabled = false;
 
                             // State tracking for the toggle button
                             let isPlaying = false;
@@ -821,19 +843,6 @@
                                     setPlayState();
                                 }
                             };
-
-                            stopBtn.onclick = () => {
-                                audioPlayerInstance.stop();
-                                // Send panic (all notes off) to RNBO device if exists
-                                if (rnboDevice) {
-                                    for (let i = 0; i < 128; i++) {
-                                        rnboDevice.scheduleEvent(new RNBO.MIDIEvent(rnboDevice.context.currentTime, 0, [128, i, 0]));
-                                    }
-                                }
-                                osmdInstance.cursor.reset();
-                                container.scrollTop = 0; // Reset scroll
-                                setPauseState(); // Reset icon
-                            };
                         }).catch(audioError => {
                             console.error("OSMD Audio Load Error:", audioError);
                             loading.textContent = "Failed to load audio instruments.";
@@ -850,6 +859,7 @@
                     const closeBtn = document.getElementById('midi-modal-close');
                     const closeModal = () => {
                         modalOverlay.style.display = 'none';
+                        document.body.style.overflow = '';
                         if (audioPlayerInstance) {
                             audioPlayerInstance.stop();
                         }
@@ -872,6 +882,25 @@
                             closeModal();
                         }
                     });
+
+                    // Add Keydown Handler
+                    // Important: only add once, not on every open. We check if the handler is already attached.
+                    if (!window.wayKeydownAttached) {
+                        document.addEventListener('keydown', (e) => {
+                            if (modalOverlay.style.display === 'flex') {
+                                if (e.key === 'Escape') {
+                                    closeModal();
+                                } else if (e.code === 'Space') {
+                                    e.preventDefault(); // Prevent page scrolling
+                                    const playBtn = document.getElementById('osmd-play-pause-btn');
+                                    if (playBtn && !playBtn.disabled) {
+                                        playBtn.click();
+                                    }
+                                }
+                            }
+                        });
+                        window.wayKeydownAttached = true;
+                    }
                 }
             }
 
