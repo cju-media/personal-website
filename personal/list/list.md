@@ -1,3 +1,7 @@
+## 3-25-26
+I am thinking about *The Founder,* the biopic about the founder of the McDonald's franchise. The film does a great job of highlighting the problem with the "fast food" of the 50s. It shows exactly why Ray Croc saw the appeal of making McDonald's a national resturant. In comparison to *Hamilton*, where the second act does a poor job explaining the circumstance of the protagonist's work. Hamilton as Treasury Secretary spends most of the act fighting for to establish the national bank. A big driver of the conflict in this half of the musical is the political fight to establish the bank. Theres a lot more emotional strings but the motivation of those strings is the political plot of the act. You can say the same about *The Founder.* There is a emotional component that is driven by the business/political plot of the film. To just sidestep the motivation of plot and not go into the details of why these things are important is detrimental to the work itself. 
+
+
 ## 3-24-26
 Went to go see Salome, an opera premiere at a LA Phil green umbrella concert by Gerald Berry. 
 
