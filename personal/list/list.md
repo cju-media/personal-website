@@ -1,3 +1,14 @@
+## 3-30-36
+Five days since my last update OOF.
+
+I am going to defend myself by saying I have had quite a busy week. 20 hours at USC and a couple of late nights at church. Plus Tiffany was out of town so I had to juggle that plus taking care of the dogs. Poor beans.
+
+I am very happy to have recorded and posted a [Max tutorial](https://www.youtube.com/watch?v=aDpGMGaH1Ok) today. I attempted to record it last week at work but I was unhappy about the quality. I rerecorded it and edited it all in the same day, which is big for me. I saw that my [multitext tutorial](https://www.youtube.com/watch?v=ty0EHauomkk) had good interaction and good viewership. Max tutorials are a reliable niche for me, I think.
+
+This tutorial was inspired by Stand Up Maths [video](https://www.youtube.com/watch?v=kT4p1GXq4HY) on dithering. I thought it would be a good tutorial on the basics of jit.gl.pix rebuilding those effects. Also I love to flex on non-realtime programming with some Max superiority.
+
+Anyway I'm tired. Just wanted to push myself.
+
 ## 3-25-26
 I am thinking about *The Founder,* the biopic about the founder of the McDonald's franchise. The film does a great job of highlighting the problem with the "fast food" of the 50s. It shows exactly why Ray Croc saw the appeal of making McDonald's a national resturant. In comparison to *Hamilton*, where the second act does a poor job explaining the circumstance of the protagonist's work. Hamilton as Treasury Secretary spends most of the act fighting for to establish the national bank. A big driver of the conflict in this half of the musical is the political fight to establish the bank. Theres a lot more emotional strings but the motivation of those strings is the political plot of the act. You can say the same about *The Founder.* There is a emotional component that is driven by the business/political plot of the film. To just sidestep the motivation of plot and not go into the details of why these things are important is detrimental to the work itself. 
 
