@@ -1,3 +1,7 @@
+## 4-1-26
+I saw *Project Hail Mary* yesterday. Loved the movie and the score was awesome. I see a movement to very electronic and produced music for film scores. I especially like [Time To Go Fishing](https://youtu.be/OsSRIjgJDnI?si=1mYcczJpUnLbap6C). The melody is like some segmented vocal line, instead of a traditional orchestra instrument. Electronics have been a big part of film scores for a long time but now Ableton-style sampling is available to everyone. It has drastically changed the soundscape of film scores. 
+
+
 ## 3-30-36
 Five days since my last update OOF.
 
