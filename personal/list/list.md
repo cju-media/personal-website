@@ -1,8 +1,22 @@
+## 4-19-26
+Wow it's been awhile. I had a busy couple of weeks and this fell sort of by the wayside. I could have been better but what can you do. I thought of moving **THE LIST** to a new repo and link to that one. That way I do not need to push all my website code when I update **THE LIST** but the switching cost is intense.
 
+*Switching Cost* is the infrastructure cost of any upgrade. I need to make a new repo, change the website code to link to the new repo, change my shortcuts to load the correct list.md. Its a lot of work that may not be worth it. It works why should I upgrade it? I feel like thats my problem. I have no follow through on anything. I should build everything I do to be modular, to be ready to change and upgrade. *Everything Modular*.
+
+I need to push myself more on these. I do the bare minimum to just to say I did it when it does nothing to improve my skillset or my writing or whatever but these little entries accomplish nothing. I need to push myself harder to do this. I need to think of better words. I need to push myself to type faster. I need to read more. IM STUPID AND I HAVE.A MASTERS. SCROLLING HAS RUINED MY BRAIN. I am no better than the Gen Alpha kids who cannot read. I can't read either. All I am missing is the roblox addiction. Like what it's been 30 minutes and I could barely put together 3 paragraphs. The Artist's Way is supposed to be **3** pages. These little tiny entrances aren't doing anything to improve my skills at this rate. I need to do more.
+
+I am working on a new tutorial. I did a [Max tutorial](https://www.youtube.com/watch?v=aDpGMGaH1Ok) on randomly dithering inspired by Stand Up Maths [Video](https://www.youtube.com/watch?v=kT4p1GXq4HY) on the subject. I actually decided to get back into tutorials because my [Random Text Positions Tutorial](https://www.youtube.com/watch?v=ty0EHauomkk) was fairly successful (1.8k) views. So maybe there is a niche for that. I like tutorials too. A couple of simple things that I thought was useless to do a tutorial I think have the ability to catch on. 
+
+What more do I need to speak about?
+
+## 4-2-26
+I am bored and have some free time. My attempts to de-distract myself I guess is marginally successful. I have nothing to do so I decide to do something productive. It took a bit longer than I would have liked but I got there. Eventually.
+I decided to try and work on Ise (version 2 of La Mer for the Ise competition). I am not quite liking it. I had the idea for a solo horn to open on the motif. Right now I have an envelope follower, side chained to the horn, driving an ocean sample delayed from the actual input.
+
+I am thinking there is going to be two versions of this piece. A max-only version and a live version. The live version will use real inputs from instruments to drive the processing. 
 
 ## 4-1-26
 I saw *Project Hail Mary* yesterday. Loved the movie and the score was awesome. I see a movement to very electronic and produced music for film scores. I especially like [Time To Go Fishing](https://youtu.be/OsSRIjgJDnI?si=1mYcczJpUnLbap6C). The melody is like some segmented vocal line, instead of a traditional orchestra instrument. Electronics have been a big part of film scores for a long time but now Ableton-style sampling is available to everyone. It has drastically changed the soundscape of film scores. 
-`commentary`
 
 
 ## 3-30-36
