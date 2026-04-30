@@ -1,3 +1,22 @@
+## 4-29-26
+Welcome back.
+
+I have had some distractions recently. I should not have to open every entry by excusing my absense but that's where we are I guess. I think this is a big step for me. I am doing an entry while I am at a shift at USC. It's an easy show so it is not very typical. I am going to take any win that I Can at this point. I am locking in. Locking the fuck in. I am staring straight at my screen and typing like a madman. No disctractions just typing. *Hard*. 
+
+Markup documents are truly magical. The efficeny of never coming up from your keyboard. Able to write any formating that I like. It is not perfect, no control of font for example but I think it's neat regardless. 
+
+This is my 10th straight day of work. I have put a lot of thought into my working habits recently. I work a lot and for what? I barely see my wife, I barely see my dogs, I have no time to have any hobbies. I had to quit band because my schedule is too inconsistent. I have not been able to finish any sort of project in two months. What is this all for? 
+
+I'm torn. I like what I do. I clearly do. I bought all of this equipment. I really care about providing a good product. I am constantly learning and thinking of new ways to approach and be smart about AV. If I did not want to do this I wouldn't care. I am constantly cutting corners in things I do not care about. *THE LIST** for for example. I feel like I do not have to force myself to do stuff like that. I am addictedly researching and learning about AV tech. But that leaves no time to do the things I want to do. My music. My art. It is falling to the wayside. It has been. For years.
+
+Since I graduated, I have been waiting and waiting for my real career to start. My real artistic jpurney. Where is that? What work have I put in. What progress have I really made? That first year or two I did a couple of festivals. I did not gain any satisfication from those experiences. Although realistically I probably did not take the most advantage of those events, I think there was a reason for that. Do I even enjoy art? Do I have it in me to create something good? Something meaningful.
+
+I have this core belief that I am a fraud. I have been an imposter or having imposter syndrome my whole college experience. I had always thought my stuff was shit. I always had a noise in the back of my head that my professors were gaslighting me. I saw how they treated the students who had objectively shitty work. They treated them with kiddie gloves. What if I was one of them? What if I was being appeased. Just being pushed through the program with the rest of them. Every time I get into something or I get any noterity I think it's fake. I do not think its earned. I do not think I am worthy. 
+
+I think it comes from my mindset when it comes to my work. I half ass it. Or I am in the mindset that "something is better than nothing right?" Having some sort of output is better than not? Right? And I end up doing something half-ass, I hate it and I think it isn't worthy of any sort of recongition. Part of the reason to is I try and do shit, I procrastinate or I do not have the time, whatever it is and then I half ass something and then I hate it. 
+
+This is all at the heels of watching some [work](https://www.youtube.com/live/bBYIySGXS84) by a cohort of mine. It was geninuely good. 
+
 ## 4-19-26
 Wow it's been awhile. I had a busy couple of weeks and this fell sort of by the wayside. I could have been better but what can you do. I thought of moving **THE LIST** to a new repo and link to that one. That way I do not need to push all my website code when I update **THE LIST** but the switching cost is intense.
 
