@@ -1,3 +1,17 @@
+## 4-30-26
+Another day another USC gig.
+
+I am locking in right now. No distractions. Gonna write a nice and long post.
+
+I feel like I am falling of the wagon a bit. Today I confused my start times for my USC gig and was almost late. I would have been without a little reminder. It has been a long week and I was taking things for granted. If I was off of USC for a while I would be double and triple checking. Since I had so many BEOs and events to keep track of I ended up getting a little confused. 
+
+I said I was locked in but it took me an hour to write that. TO BE FAIR I was trying to do something productive. I found a call for scores for some online concert feature very short works (less than 2 minutes) and very long works (longer than 20 minutes). I ended up submitting [*King George VI*](https://www.youtube.com/watch?v=egxa0Z4y0PY), which is 50 minutes mind you. I am hard on myself so it is hard to listen without cringing. I think it was good, at the end of the day at least the parts I can bare to get through without skipping. Maybe some of the transition pieces are too long but that doesn't make the piece terrible. It does not make it unworthy. idk its something thats for the submission. At least I did something with that piece.
+
+I got distracted again filling out an application for an xAI Audio Tutor. I have no idea what that job would look like but it is offering up to $70/hr so fuck it. They immediately sent me a CodeSignal test? On a DAW? It will take two hours and I can't pause it so I will have to take it tomorrow. Lets see how I do. Again, I am doubting myself. Some fuckers on the xAI_Community subreddit were saying "oh I only play guitar, do you think I will do good on the assessment?" THAT'S MY COMPETITION??? I gotta take every opportunity I can. I make $50 an hour. They would have to beat that shit at least. I would keep my job at the church because I can and why would I turn down free money for not that much work? Also the church gives me plenty of benefits like potentially performances in the future. Also once all this AI shit goes tits up I will have a job. But the xAI stuff will help me pay off all of our debt and start saving up for a house or something. If I get the full time job I would make 200k **A YEAR**.
+
+Much to think about. My head hurts.
+
+
 ## 4-29-26
 Welcome back.
 
