@@ -99,7 +99,7 @@
         #filter-container {
             width: 100%;
             max-width: 600px;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
             display: none; /* Hidden until tags are loaded */
             text-align: center;
         }
@@ -288,18 +288,17 @@
     </div>
 
 
+            <div id="filter-container">
+            <select id="tag-filter">
+                <option value="all">All Original Scores</option>
+            </select>
+        </div>
+
     <div class="content-wrapper">
         <div id="text-container">
             <p>
               I like to write original music. For study, for work, for playing. Here you can find a collection of them.
             </p>
-        </div>
-
-
-        <div id="filter-container">
-            <select id="tag-filter">
-                <option value="all">All Original Scores</option>
-            </select>
         </div>
 
         <div id="button-container">
@@ -635,7 +634,7 @@
                                 Array.from(allTags).sort().forEach(tag => {
                                     const option = document.createElement('option');
                                     option.value = tag;
-                                    option.textContent = `#${tag}`;
+                                    option.textContent = tag;
                                     tagFilter.appendChild(option);
                                 });
 
