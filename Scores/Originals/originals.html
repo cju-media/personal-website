@@ -51,6 +51,7 @@
         #originals-page-wrapper .content-wrapper {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
             justify-content: center;
             width: 100%;
             max-width: 1000px;
@@ -98,7 +99,7 @@
         /* Filter Styles */
         #filter-container {
             width: 100%;
-            max-width: 600px;
+            flex: 1 1 100%;
             margin: 0 auto 20px auto;
             display: none; /* Hidden until tags are loaded */
             text-align: center;
@@ -288,13 +289,13 @@
     </div>
 
 
-            <div id="filter-container">
+    <div class="content-wrapper">
+        <div id="filter-container">
             <select id="tag-filter">
                 <option value="all">All Original Scores</option>
             </select>
         </div>
 
-    <div class="content-wrapper">
         <div id="text-container">
             <p>
               I like to write original music. For study, for work, for playing. Here you can find a collection of them.
@@ -584,7 +585,10 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
+                                        const basePdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
+
+                                        // Use Google Docs viewer to bypass Mobile Safari iframe 1-page limits
+                                        rawPdfUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(basePdfUrl)}&embedded=true`;
                                     }
 
                                     openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
