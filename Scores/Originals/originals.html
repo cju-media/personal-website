@@ -127,6 +127,107 @@
             color: #666;
             font-size: 1.2rem;
         }
+
+        /* Modal Styles */
+        #original-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        #original-modal-content {
+            background: #222;
+            color: #ddd;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        #original-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        #original-modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #d3d3d3;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .original-visualizers-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #markdown-container {
+            background: #333;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: sans-serif;
+            line-height: 1.6;
+        }
+
+        #markdown-container h1, #markdown-container h2, #markdown-container h3 {
+            color: #fff;
+        }
+
+        #markdown-container a {
+            color: #4da6ff;
+            text-decoration: none;
+        }
+
+        #markdown-container a:hover {
+            text-decoration: underline;
+        }
+
+        #pdf-container {
+            width: 100%;
+            height: 60vh;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        @media (max-width: 768px) {
+            #original-modal-content {
+                padding: 20px 15px;
+                width: 95%;
+            }
+            #pdf-container {
+                height: 50vh;
+            }
+            #original-modal-title {
+                font-size: 1.5rem;
+            }
+        }
+
     </style>
 
     <div class="text-block1">
@@ -142,6 +243,22 @@
             <span class="span-class">S</span>
         </h1>
     </div>
+
+    <!-- Original Modal -->
+    <div id="original-modal-overlay">
+        <div id="original-modal-content">
+            <button id="original-modal-close">&times;</button>
+            <h2 id="original-modal-title">Original Details</h2>
+
+            <div class="original-visualizers-container">
+                <div id="markdown-container">
+                    <div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>
+                </div>
+                <iframe id="pdf-container" src="" frameborder="0" style="display: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
 
     <div class="content-wrapper">
         <div id="text-container">
@@ -245,10 +362,91 @@
                     Glitch.start(span);
                 });
 
-                // Fetch GitHub Directory
+                // Fetch GitHub Directory using git trees API
                 const container = wrapper.querySelector('#button-container');
-                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/Originals?ref=main';
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Originals/';
+
+                // Load marked.js dynamically
+                function loadMarked(callback) {
+                    if (window.marked) {
+                        callback();
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                    script.onload = callback;
+                    document.head.appendChild(script);
+                }
+
+                function openOriginalModal(readmeUrl, pdfUrl, titleText) {
+                    const modal = document.getElementById('original-modal-overlay');
+                    if (!modal) return;
+
+                    const title = document.getElementById('original-modal-title');
+                    const mdContainer = document.getElementById('markdown-container');
+                    const pdfContainer = document.getElementById('pdf-container');
+
+                    if (title) title.textContent = titleText;
+
+                    // Reset containers
+                    mdContainer.innerHTML = '<div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>';
+                    pdfContainer.style.display = 'none';
+                    pdfContainer.src = '';
+
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+
+                    // Fetch and render README
+                    fetch(readmeUrl)
+                        .then(res => {
+                            if (!res.ok) throw new Error("Failed to fetch README");
+                            return res.text();
+                        })
+                        .then(mdText => {
+                            loadMarked(() => {
+                                mdContainer.innerHTML = marked.parse(mdText);
+                            });
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            mdContainer.innerHTML = '<div style="color: red;">Failed to load description.</div>';
+                        });
+
+                    // Set PDF if available
+                    if (pdfUrl) {
+                        pdfContainer.src = pdfUrl;
+                        pdfContainer.style.display = 'block';
+                    }
+                }
+
+                // Modal close logic
+                const modalOverlay = document.getElementById('original-modal-overlay');
+                if (modalOverlay) {
+                    const closeBtn = document.getElementById('original-modal-close');
+                    const closeModal = () => {
+                        modalOverlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                        const pdfContainer = document.getElementById('pdf-container');
+                        if (pdfContainer) {
+                            pdfContainer.src = ''; // Stop loading/playing
+                        }
+                    };
+
+                    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                    modalOverlay.addEventListener('click', (e) => {
+                        if (e.target === modalOverlay) closeModal();
+                    });
+
+                    if (!window.originalsKeydownAttached) {
+                        document.addEventListener('keydown', (e) => {
+                            if (modalOverlay.style.display === 'flex' && e.key === 'Escape') {
+                                closeModal();
+                            }
+                        });
+                        window.originalsKeydownAttached = true;
+                    }
+                }
 
                 fetch(apiUrl)
                     .then(response => {
@@ -260,8 +458,35 @@
                     .then(data => {
                         container.innerHTML = ''; // Clear loading message
 
-                        // Filter for directories
-                        const directories = data.filter(item => item.type === 'dir');
+                        const tree = data.tree || [];
+                        const originalsData = {}; // Format: { "folder-name": [ {path, type}, ... ] }
+
+                        tree.forEach(item => {
+                            if (item.path.startsWith('Originals/')) {
+                                const relativePath = item.path.substring(10); // Remove 'Originals/' prefix
+                                const parts = relativePath.split('/');
+
+                                if (parts.length > 0) {
+                                    const dirName = parts[0];
+                                    // Ignore the root 'Originals' itself if it somehow appears, and ignore empty names
+                                    if (dirName && dirName !== '') {
+                                        if (!originalsData[dirName]) {
+                                            originalsData[dirName] = { files: [], path: dirName };
+                                        }
+                                        if (parts.length > 1) {
+                                            // It's a file inside the directory
+                                            originalsData[dirName].files.push({
+                                                name: parts.slice(1).join('/'),
+                                                path: item.path,
+                                                type: item.type
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        const directories = Object.values(originalsData);
 
                         if (directories.length === 0) {
                             container.innerHTML = '<div class="loading">No originals found.</div>';
@@ -270,13 +495,13 @@
 
                         directories.forEach(dir => {
                             const link = document.createElement('a');
-                            link.href = repoUrlBase + dir.name;
+                            link.href = repoUrlBase + encodeURIComponent(dir.path);
                             link.className = 'repo-button';
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
 
                             // Build spans for button text
-                            const text = dir.name;
+                            const text = dir.path;
                             for (let char of text) {
                                 const span = document.createElement('span');
                                 span.textContent = char;
@@ -296,6 +521,26 @@
                                 const chars = link.querySelectorAll('.button-char');
                                 chars.forEach(span => Glitch.stop(span));
                             });
+
+                            // Check for README
+                            const readmeFile = dir.files.find(f => f.name.toLowerCase() === 'readme.md');
+                            const pdfFile = dir.files.find(f => f.name.toLowerCase().endsWith('.pdf'));
+
+                            if (readmeFile) {
+                                let isFetching = false;
+                                link.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    if (isFetching) return;
+
+                                    const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
+                                    let rawPdfUrl = null;
+                                    if (pdfFile) {
+                                        rawPdfUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
+                                    }
+
+                                    openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
+                                });
+                            }
 
                             container.appendChild(link);
                         });
