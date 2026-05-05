@@ -94,7 +94,35 @@
         }
 
         /* Button Styles */
+
+        /* Filter Styles */
+        #filter-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            display: none; /* Hidden until tags are loaded */
+            text-align: center;
+        }
+
+        #tag-filter {
+            padding: 10px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background: #222;
+            color: #fff;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #tag-filter:focus {
+            outline: none;
+            border-color: #888;
+        }
+
         #originals-page-wrapper .repo-button {
+
             display: block;
             padding: 15px 20px;
             background-color: #333;
@@ -260,6 +288,12 @@
     </div>
 
 
+            <div id="filter-container">
+            <select id="tag-filter">
+                <option value="all">All Original Scores</option>
+            </select>
+        </div>
+
     <div class="content-wrapper">
         <div id="text-container">
             <p>
@@ -268,6 +302,7 @@
         </div>
 
         <div id="button-container">
+
             <div class="loading">Loading originals...</div>
         </div>
     </div>
@@ -397,6 +432,9 @@
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
 
+                    // Update URL hash
+                    history.pushState(null, null, '#' + encodeURIComponent(titleText));
+
                     // Fetch and render README
                     fetch(readmeUrl)
                         .then(res => {
@@ -406,6 +444,11 @@
                         .then(mdText => {
                             loadMarked(() => {
                                 mdContainer.innerHTML = marked.parse(mdText);
+                                const links = mdContainer.querySelectorAll('a');
+                                links.forEach(link => {
+                                    link.setAttribute('target', '_blank');
+                                    link.setAttribute('rel', 'noopener noreferrer');
+                                });
                             });
                         })
                         .catch(err => {
@@ -430,6 +473,11 @@
                         const pdfContainer = document.getElementById('pdf-container');
                         if (pdfContainer) {
                             pdfContainer.src = ''; // Stop loading/playing
+                        }
+
+                        // Clear URL hash
+                        if (window.location.hash) {
+                            history.replaceState(null, null, window.location.pathname + window.location.search);
                         }
                     };
 
@@ -499,6 +547,7 @@
                             link.className = 'repo-button';
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
+                            link.dataset.dirPath = dir.path;
 
                             // Build spans for button text
                             const text = dir.path;
@@ -535,7 +584,7 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        rawPdfUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
+                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
                                     }
 
                                     openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
@@ -544,6 +593,93 @@
 
                             container.appendChild(link);
                         });
+
+                        // Fetch all READMEs to build the tag filter
+                        const fetchPromises = directories.map(dir => {
+                            const readmeFile = dir.files.find(f => f.name.toLowerCase() === 'readme.md');
+                            if (readmeFile) {
+                                const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
+                                return fetch(rawReadmeUrl)
+                                    .then(res => res.ok ? res.text() : null)
+                                    .then(text => ({ dirPath: dir.path, text }));
+                            }
+                            return Promise.resolve({ dirPath: dir.path, text: null });
+                        });
+
+                        Promise.all(fetchPromises).then(results => {
+                            const tagMap = new Map(); // Tag -> Set of dirPaths
+                            const allTags = new Set();
+
+                            results.forEach(({ dirPath, text }) => {
+                                if (text) {
+                                    // Extract hashtags (e.g. #classical #piano)
+                                    const regex = /(?:^|\s)#([a-zA-Z0-9_\-]+)/g;
+                                    let match;
+                                    while ((match = regex.exec(text)) !== null) {
+                                        const tag = match[1].toLowerCase();
+                                        allTags.add(tag);
+                                        if (!tagMap.has(tag)) {
+                                            tagMap.set(tag, new Set());
+                                        }
+                                        tagMap.get(tag).add(dirPath);
+                                    }
+                                }
+                            });
+
+                            if (allTags.size > 0) {
+                                const filterContainer = document.getElementById('filter-container');
+                                const tagFilter = document.getElementById('tag-filter');
+
+                                // Sort tags alphabetically and populate the select
+                                Array.from(allTags).sort().forEach(tag => {
+                                    const option = document.createElement('option');
+                                    option.value = tag;
+                                    option.textContent = tag;
+                                    tagFilter.appendChild(option);
+                                });
+
+                                filterContainer.style.display = 'block';
+
+                                tagFilter.addEventListener('change', (e) => {
+                                    const selectedTag = e.target.value;
+                                    const allButtons = container.querySelectorAll('.repo-button');
+
+                                    allButtons.forEach(btn => {
+                                        const dirPath = btn.dataset.dirPath;
+                                        if (selectedTag === 'all') {
+                                            btn.style.display = 'block';
+                                        } else {
+                                            if (tagMap.has(selectedTag) && tagMap.get(selectedTag).has(dirPath)) {
+                                                btn.style.display = 'block';
+                                            } else {
+                                                btn.style.display = 'none';
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
+
+                        // Check if there's a hash in the URL to automatically open a modal
+                        if (window.location.hash) {
+                            const hashValue = decodeURIComponent(window.location.hash.substring(1));
+                            const matchingLink = Array.from(container.querySelectorAll('.repo-button')).find(link => {
+                                const textSpans = link.querySelectorAll('.button-char');
+                                let text = '';
+                                textSpans.forEach(span => text += span.dataset.original);
+                                return text === hashValue;
+                            });
+
+                            if (matchingLink) {
+                                // Some browsers drop standard .click() on anchors if not trusted. Dispatch a custom event.
+                                const event = new MouseEvent('click', {
+                                    view: window,
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                matchingLink.dispatchEvent(event);
+                            }
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching originals:', error);
