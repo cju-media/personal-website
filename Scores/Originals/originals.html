@@ -443,8 +443,11 @@
                             return res.text();
                         })
                         .then(mdText => {
+                            // Strip hashtags before rendering so they are hidden from visitors
+                            const cleanText = mdText.replace(/(?:^|\s)#[a-zA-Z0-9_\-]+/g, '');
+
                             loadMarked(() => {
-                                mdContainer.innerHTML = marked.parse(mdText);
+                                mdContainer.innerHTML = marked.parse(cleanText);
                                 const links = mdContainer.querySelectorAll('a');
                                 links.forEach(link => {
                                     link.setAttribute('target', '_blank');
