@@ -397,6 +397,9 @@
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
 
+                    // Update URL hash
+                    history.pushState(null, null, '#' + encodeURIComponent(titleText));
+
                     // Fetch and render README
                     fetch(readmeUrl)
                         .then(res => {
@@ -435,6 +438,11 @@
                         const pdfContainer = document.getElementById('pdf-container');
                         if (pdfContainer) {
                             pdfContainer.src = ''; // Stop loading/playing
+                        }
+
+                        // Clear URL hash
+                        if (window.location.hash) {
+                            history.replaceState(null, null, window.location.pathname + window.location.search);
                         }
                     };
 
@@ -549,6 +557,27 @@
 
                             container.appendChild(link);
                         });
+
+                        // Check if there's a hash in the URL to automatically open a modal
+                        if (window.location.hash) {
+                            const hashValue = decodeURIComponent(window.location.hash.substring(1));
+                            const matchingLink = Array.from(container.querySelectorAll('.repo-button')).find(link => {
+                                const textSpans = link.querySelectorAll('.button-char');
+                                let text = '';
+                                textSpans.forEach(span => text += span.dataset.original);
+                                return text === hashValue;
+                            });
+
+                            if (matchingLink) {
+                                // Some browsers drop standard .click() on anchors if not trusted. Dispatch a custom event.
+                                const event = new MouseEvent('click', {
+                                    view: window,
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                matchingLink.dispatchEvent(event);
+                            }
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching originals:', error);
