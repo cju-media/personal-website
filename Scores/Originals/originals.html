@@ -535,7 +535,7 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        rawPdfUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
+                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
                                     }
 
                                     openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
