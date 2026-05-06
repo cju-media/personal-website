@@ -445,8 +445,8 @@
                             return res.text();
                         })
                         .then(mdText => {
-                            // Strip hashtags before rendering so they are hidden from visitors
-                            const cleanText = mdText.replace(/(?:^|\s)#[a-zA-Z0-9_\-]+/g, '');
+                            // Strip hashtag lines before rendering so they are hidden from visitors
+                            const cleanText = mdText.replace(/(?:^|\n)#\s*.+/g, '').trim();
 
                             loadMarked(() => {
                                 mdContainer.innerHTML = marked.parse(cleanText);
@@ -629,11 +629,11 @@
 
                             results.forEach(({ dirPath, text }) => {
                                 if (text) {
-                                    // Extract hashtags (e.g. #classical #piano)
-                                    const regex = /(?:^|\s)#([a-zA-Z0-9_\-]+)/g;
+                                    // Extract full-line tags starting with #
+                                    const regex = /(?:^|\n)#\s*(.+)/g;
                                     let match;
                                     while ((match = regex.exec(text)) !== null) {
-                                        const tag = match[1].toLowerCase();
+                                        const tag = match[1].trim().toLowerCase();
                                         allTags.add(tag);
                                         if (!tagMap.has(tag)) {
                                             tagMap.set(tag, new Set());
