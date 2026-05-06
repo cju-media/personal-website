@@ -588,10 +588,7 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        const basePdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
-
-                                        // Use Google Docs viewer to bypass Mobile Safari iframe 1-page limits
-                                        rawPdfUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(basePdfUrl)}&embedded=true`;
+                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
                                     }
 
                                     openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
