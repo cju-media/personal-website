@@ -285,6 +285,7 @@
                 </div>
                 <iframe id="pdf-container" src="" frameborder="0" style="display: none;"></iframe>
             </div>
+            <a id="github-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Open in GitHub</a>
         </div>
     </div>
 
@@ -415,13 +416,14 @@
                     document.head.appendChild(script);
                 }
 
-                function openOriginalModal(readmeUrl, pdfUrl, titleText) {
+                function openOriginalModal(readmeUrl, pdfUrl, titleText, githubUrl) {
                     const modal = document.getElementById('original-modal-overlay');
                     if (!modal) return;
 
                     const title = document.getElementById('original-modal-title');
                     const mdContainer = document.getElementById('markdown-container');
                     const pdfContainer = document.getElementById('pdf-container');
+                    const githubLink = document.getElementById('github-link');
 
                     if (title) title.textContent = titleText;
 
@@ -464,6 +466,14 @@
                     if (pdfUrl) {
                         pdfContainer.src = pdfUrl;
                         pdfContainer.style.display = 'block';
+                    }
+
+                    // Set GitHub link
+                    if (githubUrl && githubLink) {
+                        githubLink.href = githubUrl;
+                        githubLink.style.display = 'block';
+                    } else if (githubLink) {
+                        githubLink.style.display = 'none';
                     }
                 }
 
@@ -588,13 +598,11 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        const basePdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
-
-                                        // Use Google Docs viewer to bypass Mobile Safari iframe 1-page limits
-                                        rawPdfUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(basePdfUrl)}&embedded=true`;
+                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
                                     }
 
-                                    openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
+                                    const githubUrl = repoUrlBase + encodeURIComponent(dir.path);
+                                    openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path, githubUrl);
                                 });
                             }
 
