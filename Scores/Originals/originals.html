@@ -50,9 +50,8 @@
         /* Layout Styles */
         #originals-page-wrapper .content-wrapper {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             max-width: 1000px;
             gap: 40px;
@@ -60,8 +59,9 @@
         }
 
         #originals-page-wrapper #text-container {
-            flex: 1;
-            text-align: left;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
             /* font-family: 'Playfair Display', serif; */
             /* font-size: 1.2rem; */
             line-height: 1.6;
@@ -69,7 +69,8 @@
         }
 
         #originals-page-wrapper #button-container {
-            flex: 1;
+            width: 100%;
+            max-width: 600px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -78,19 +79,8 @@
 
         /* Mobile / Vertical Styles */
         @media (max-width: 768px) {
-            #originals-page-wrapper .content-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-
             #originals-page-wrapper #text-container {
-                text-align: center;
                 margin-bottom: 20px;
-            }
-
-            #originals-page-wrapper #button-container {
-                width: 100%;
-                max-width: 600px;
             }
         }
 
@@ -99,7 +89,7 @@
         /* Filter Styles */
         #filter-container {
             width: 100%;
-            flex: 1 1 100%;
+            max-width: 600px;
             margin: 0 auto 20px auto;
             display: none; /* Hidden until tags are loaded */
             text-align: center;
