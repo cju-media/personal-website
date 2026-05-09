@@ -599,7 +599,7 @@
                                     e.preventDefault();
                                     if (isFetching) return;
 
-                                    const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
+                                    const rawReadmeUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
                                         const basePdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
@@ -625,7 +625,7 @@
                         const fetchPromises = directories.map(dir => {
                             const readmeFile = dir.files.find(f => f.name.toLowerCase() === 'readme.md');
                             if (readmeFile) {
-                                const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
+                                const rawReadmeUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                 return fetch(rawReadmeUrl)
                                     .then(res => res.ok ? res.text() : null)
                                     .then(text => ({ dirPath: dir.path, text }));
