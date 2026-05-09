@@ -273,9 +273,7 @@
                 <div id="markdown-container">
                     <div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>
                 </div>
-                <div id="pdf-header" style="display: none; justify-content: flex-end; margin-bottom: 5px;">
-                    <button id="reload-pdf-btn" style="background: #444; color: #fff; border: 1px solid #666; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-family: monospace;">⟳ Reload PDF</button>
-                </div>
+
                 <iframe id="pdf-container" src="" frameborder="0" style="display: none;"></iframe>
             </div>
             <a id="parts-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Parts</a>
@@ -417,8 +415,7 @@
                     const title = document.getElementById('original-modal-title');
                     const mdContainer = document.getElementById('markdown-container');
                     const pdfContainer = document.getElementById('pdf-container');
-                    const pdfHeader = document.getElementById('pdf-header');
-                    const reloadPdfBtn = document.getElementById('reload-pdf-btn');
+
                     const githubLink = document.getElementById('github-link');
                     const partsLink = document.getElementById('parts-link');
 
@@ -463,18 +460,6 @@
                     if (pdfUrl) {
                         pdfContainer.src = pdfUrl;
                         pdfContainer.style.display = 'block';
-                        if (pdfHeader) pdfHeader.style.display = 'flex';
-
-                        if (reloadPdfBtn) {
-                            reloadPdfBtn.onclick = () => {
-                                // Add/update a random param to force bypass cache again on manual reload
-                                const urlObj = new URL(pdfUrl);
-                                urlObj.searchParams.set('t', Date.now());
-                                pdfContainer.src = urlObj.toString();
-                            };
-                        }
-                    } else {
-                        if (pdfHeader) pdfHeader.style.display = 'none';
                     }
 
                     // Set Parts link
@@ -505,8 +490,6 @@
                         if (pdfContainer) {
                             pdfContainer.src = ''; // Stop loading/playing
                         }
-                        const pdfHeader = document.getElementById('pdf-header');
-                        if (pdfHeader) pdfHeader.style.display = 'none';
 
                         // Clear URL hash
                         if (window.location.hash) {
