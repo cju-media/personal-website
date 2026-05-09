@@ -8,8 +8,8 @@
     const path = 'homepage/homepageFull.html';
     const branch = 'main'; // Ensure this matches your branch name (e.g., 'main' or 'master')
     
-    // Switch from api.github.com to raw.githubusercontent.com
-    const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+    // Switch from api.github.com to cdn.jsdelivr.net/gh
+    const url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${path}`;
 
     // 2. Fetch without special headers
     fetch(url)
