@@ -248,9 +248,9 @@
                     Glitch.start(span);
                 });
 
-                // Fetch GitHub Directory
+                // Fetch GitHub Directory using git trees API
                 const container = wrapper.querySelector('#button-container');
-                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/contents/Arrangements?ref=main';
+                const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Arrangements/';
 
                 fetch(apiUrl)
@@ -263,8 +263,26 @@
                     .then(data => {
                         container.innerHTML = ''; // Clear loading message
 
-                        // Filter for directories
-                        const directories = data.filter(item => item.type === 'dir');
+                        const tree = data.tree || [];
+                        const directoriesData = {};
+
+                        tree.forEach(item => {
+                            if (item.path.startsWith('Arrangements/')) {
+                                const relativePath = item.path.substring(13); // Remove 'Arrangements/' prefix
+                                const parts = relativePath.split('/');
+
+                                if (parts.length > 0) {
+                                    const dirName = parts[0];
+                                    if (dirName && dirName !== '') {
+                                        if (!directoriesData[dirName]) {
+                                            directoriesData[dirName] = { files: [], path: dirName };
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        const directories = Object.values(directoriesData);
 
                         if (directories.length === 0) {
                             container.innerHTML = '<div class="loading">No arrangements found.</div>';
@@ -273,13 +291,13 @@
 
                         directories.forEach(dir => {
                             const link = document.createElement('a');
-                            link.href = repoUrlBase + dir.name;
+                            link.href = repoUrlBase + encodeURIComponent(dir.path);
                             link.className = 'repo-button';
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
 
                             // Build spans for button text
-                            const text = dir.name;
+                            const text = dir.path;
                             for (let char of text) {
                                 const span = document.createElement('span');
                                 span.textContent = char;
