@@ -231,8 +231,22 @@
             height: 85vh;
             border: 1px solid #555;
             border-radius: 5px;
-            background: #fff;
+            background: #e6e6e6;
             -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .pdf-page-canvas {
+            max-width: 95%;
+            height: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: #fff;
         }
 
         @media (max-width: 768px) {
@@ -275,7 +289,7 @@
                     <div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>
                 </div>
 
-                <iframe id="pdf-container" src="" frameborder="0" style="display: none;"></iframe>
+                <div id="pdf-container" style="display: none;"></div>
             </div>
             <a id="parts-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Parts</a>
             <a id="github-link" class="repo-button" style="margin-top: 10px; display: none;" target="_blank" rel="noopener noreferrer">Open in GitHub</a>
@@ -397,6 +411,22 @@
                 const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Originals/';
 
+                // Load pdf.js dynamically
+                function loadPdfJs(callback) {
+                    if (window['pdfjs-dist/build/pdf']) {
+                        callback();
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+                    script.onload = () => {
+                        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                        callback();
+                    };
+                    document.head.appendChild(script);
+                }
+
                 // Load marked.js dynamically
                 function loadMarked(callback) {
                     if (window.marked) {
@@ -425,7 +455,7 @@
                     // Reset containers
                     mdContainer.innerHTML = '<div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>';
                     pdfContainer.style.display = 'none';
-                    pdfContainer.src = '';
+                    pdfContainer.innerHTML = ''; // Clear old canvases
 
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
@@ -459,8 +489,62 @@
 
                     // Set PDF if available
                     if (pdfUrl) {
-                        pdfContainer.src = pdfUrl;
                         pdfContainer.style.display = 'block';
+                        pdfContainer.innerHTML = '<div style="color: #999; text-align: center; font-family: monospace; padding: 20px;">Loading PDF...</div>';
+
+                        loadPdfJs(() => {
+                            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                                pdfContainer.innerHTML = ''; // Clear loading text
+
+                                const numPages = pdf.numPages;
+                                const renderPage = (pageNum) => {
+                                    pdf.getPage(pageNum).then(page => {
+                                        // Calculate scale based on container width
+                                        // Standard portrait PDF is ~600px wide at scale 1.0. Let's aim for a comfortable width or fixed scale.
+                                        // Since container is responsive, we'll try to fit it.
+                                        let desiredWidth = pdfContainer.clientWidth - 40; // 40px for scrollbar/padding margin
+                                        if (desiredWidth < 300) desiredWidth = window.innerWidth - 40;
+
+                                        const unscaledViewport = page.getViewport({ scale: 1.0 });
+                                        const scale = desiredWidth / unscaledViewport.width;
+                                        const viewport = page.getViewport({ scale: scale });
+
+                                        const canvas = document.createElement('canvas');
+                                        canvas.className = 'pdf-page-canvas';
+                                        const context = canvas.getContext('2d');
+                                        canvas.height = viewport.height;
+                                        canvas.width = viewport.width;
+
+                                        // Support HiDPI displays
+                                        const outputScale = window.devicePixelRatio || 1;
+                                        canvas.width = Math.floor(viewport.width * outputScale);
+                                        canvas.height = Math.floor(viewport.height * outputScale);
+                                        canvas.style.width = Math.floor(viewport.width) + "px";
+                                        canvas.style.height = Math.floor(viewport.height) + "px";
+
+                                        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+                                        const renderContext = {
+                                            canvasContext: context,
+                                            transform: transform,
+                                            viewport: viewport
+                                        };
+
+                                        pdfContainer.appendChild(canvas);
+                                        page.render(renderContext).promise.then(() => {
+                                            if (pageNum < numPages) {
+                                                renderPage(pageNum + 1);
+                                            }
+                                        });
+                                    });
+                                };
+
+                                renderPage(1);
+                            }).catch(err => {
+                                console.error('Error loading PDF: ', err);
+                                pdfContainer.innerHTML = '<div style="color: red; padding: 20px; text-align: center;">Failed to load PDF viewer. Please try opening in GitHub.</div>';
+                            });
+                        });
                     }
 
                     // Set Parts link
@@ -489,7 +573,7 @@
                         document.body.style.overflow = '';
                         const pdfContainer = document.getElementById('pdf-container');
                         if (pdfContainer) {
-                            pdfContainer.src = ''; // Stop loading/playing
+                            pdfContainer.innerHTML = ''; // Clear loaded canvases
                         }
 
                         // Clear URL hash
