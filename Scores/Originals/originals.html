@@ -497,12 +497,11 @@
                                 pdfContainer.innerHTML = ''; // Clear loading text
 
                                 const numPages = pdf.numPages;
+                                const CHUNK_SIZE = 5; // Load 5 pages at a time to prevent Safari memory crashes
+
                                 const renderPage = (pageNum) => {
                                     pdf.getPage(pageNum).then(page => {
-                                        // Calculate scale based on container width
-                                        // Standard portrait PDF is ~600px wide at scale 1.0. Let's aim for a comfortable width or fixed scale.
-                                        // Since container is responsive, we'll try to fit it.
-                                        let desiredWidth = pdfContainer.clientWidth - 40; // 40px for scrollbar/padding margin
+                                        let desiredWidth = pdfContainer.clientWidth - 40;
                                         if (desiredWidth < 300) desiredWidth = window.innerWidth - 40;
 
                                         const unscaledViewport = page.getViewport({ scale: 1.0 });
@@ -515,7 +514,6 @@
                                         canvas.height = viewport.height;
                                         canvas.width = viewport.width;
 
-                                        // Support HiDPI displays
                                         const outputScale = window.devicePixelRatio || 1;
                                         canvas.width = Math.floor(viewport.width * outputScale);
                                         canvas.height = Math.floor(viewport.height * outputScale);
@@ -533,7 +531,18 @@
                                         pdfContainer.appendChild(canvas);
                                         page.render(renderContext).promise.then(() => {
                                             if (pageNum < numPages) {
-                                                renderPage(pageNum + 1);
+                                                // If we hit a chunk boundary, pause and wait for scroll
+                                                if (pageNum % CHUNK_SIZE === 0) {
+                                                    const observer = new IntersectionObserver((entries) => {
+                                                        if (entries[0].isIntersecting) {
+                                                            observer.disconnect();
+                                                            renderPage(pageNum + 1);
+                                                        }
+                                                    }, { root: pdfContainer, rootMargin: "0px 0px 500px 0px" }); // Load next chunk when 500px away
+                                                    observer.observe(canvas);
+                                                } else {
+                                                    renderPage(pageNum + 1);
+                                                }
                                             }
                                         });
                                     });
