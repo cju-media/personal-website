@@ -242,11 +242,9 @@
         }
 
         .pdf-page-canvas {
-            max-width: 95%;
-            height: auto;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            background: #fff;
+            max-width: 100%;
+            height: 100%;
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -497,58 +495,82 @@
                                 pdfContainer.innerHTML = ''; // Clear loading text
 
                                 const numPages = pdf.numPages;
-                                const CHUNK_SIZE = 5; // Load 5 pages at a time to prevent Safari memory crashes
 
-                                const renderPage = (pageNum) => {
-                                    pdf.getPage(pageNum).then(page => {
-                                        let desiredWidth = pdfContainer.clientWidth - 40;
-                                        if (desiredWidth < 300) desiredWidth = window.innerWidth - 40;
+                                // Fetch page 1 just to establish the baseline aspect ratio and scale
+                                pdf.getPage(1).then(firstPage => {
+                                    let desiredWidth = pdfContainer.clientWidth - 40;
+                                    if (desiredWidth < 300) desiredWidth = window.innerWidth - 40;
 
-                                        const unscaledViewport = page.getViewport({ scale: 1.0 });
-                                        const scale = desiredWidth / unscaledViewport.width;
-                                        const viewport = page.getViewport({ scale: scale });
+                                    const unscaledViewport = firstPage.getViewport({ scale: 1.0 });
+                                    const scale = desiredWidth / unscaledViewport.width;
+                                    const viewport = firstPage.getViewport({ scale: scale });
+                                    const pageHeight = viewport.height;
+                                    const pageWidth = viewport.width;
 
-                                        const canvas = document.createElement('canvas');
-                                        canvas.className = 'pdf-page-canvas';
-                                        const context = canvas.getContext('2d');
-                                        canvas.height = viewport.height;
-                                        canvas.width = viewport.width;
+                                    // Create an observer to manage the virtual window
+                                    // rootMargin roughly tall enough to cover ~10 pages above and 10 pages below
+                                    // Let's use a dynamic pixel height
+                                    const margin = Math.floor(pageHeight * 10) + "px";
 
-                                        const outputScale = window.devicePixelRatio || 1;
-                                        canvas.width = Math.floor(viewport.width * outputScale);
-                                        canvas.height = Math.floor(viewport.height * outputScale);
-                                        canvas.style.width = Math.floor(viewport.width) + "px";
-                                        canvas.style.height = Math.floor(viewport.height) + "px";
+                                    const pageObserver = new IntersectionObserver((entries) => {
+                                        entries.forEach(entry => {
+                                            const pageNum = parseInt(entry.target.dataset.pageNumber, 10);
+                                            if (entry.isIntersecting) {
+                                                // Page scrolled into the buffer window, render it
+                                                if (!entry.target.dataset.rendering) {
+                                                    entry.target.dataset.rendering = "true";
 
-                                        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+                                                    pdf.getPage(pageNum).then(page => {
+                                                        const canvas = document.createElement('canvas');
+                                                        canvas.className = 'pdf-page-canvas';
+                                                        const context = canvas.getContext('2d');
 
-                                        const renderContext = {
-                                            canvasContext: context,
-                                            transform: transform,
-                                            viewport: viewport
-                                        };
+                                                        const outputScale = window.devicePixelRatio || 1;
+                                                        canvas.width = Math.floor(pageWidth * outputScale);
+                                                        canvas.height = Math.floor(pageHeight * outputScale);
+                                                        canvas.style.width = Math.floor(pageWidth) + "px";
+                                                        canvas.style.height = Math.floor(pageHeight) + "px";
 
-                                        pdfContainer.appendChild(canvas);
-                                        page.render(renderContext).promise.then(() => {
-                                            if (pageNum < numPages) {
-                                                // If we hit a chunk boundary, pause and wait for scroll
-                                                if (pageNum % CHUNK_SIZE === 0) {
-                                                    const observer = new IntersectionObserver((entries) => {
-                                                        if (entries[0].isIntersecting) {
-                                                            observer.disconnect();
-                                                            renderPage(pageNum + 1);
-                                                        }
-                                                    }, { root: pdfContainer, rootMargin: "0px 0px 500px 0px" }); // Load next chunk when 500px away
-                                                    observer.observe(canvas);
-                                                } else {
-                                                    renderPage(pageNum + 1);
+                                                        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+                                                        const renderContext = {
+                                                            canvasContext: context,
+                                                            transform: transform,
+                                                            viewport: page.getViewport({ scale: scale })
+                                                        };
+
+                                                        // Store reference to cancel if needed, or just append
+                                                        entry.target.appendChild(canvas);
+                                                        page.render(renderContext);
+                                                    });
                                                 }
+                                            } else {
+                                                // Page left the buffer window, clear it from memory
+                                                entry.target.innerHTML = '';
+                                                entry.target.dataset.rendering = "";
                                             }
                                         });
-                                    });
-                                };
+                                    }, { root: pdfContainer, rootMargin: `${margin} 0px ${margin} 0px` });
 
-                                renderPage(1);
+                                    // Create empty placeholder wrappers for all pages
+                                    for (let i = 1; i <= numPages; i++) {
+                                        const wrapper = document.createElement('div');
+                                        wrapper.className = 'pdf-page-wrapper';
+                                        wrapper.dataset.pageNumber = i;
+                                        wrapper.style.width = Math.floor(pageWidth) + "px";
+                                        wrapper.style.height = Math.floor(pageHeight) + "px";
+                                        wrapper.style.marginBottom = "20px";
+                                        wrapper.style.backgroundColor = "#fff";
+                                        wrapper.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+                                        wrapper.style.display = "flex";
+                                        wrapper.style.alignItems = "center";
+                                        wrapper.style.justifyContent = "center";
+
+                                        pdfContainer.appendChild(wrapper);
+                                        pageObserver.observe(wrapper);
+                                    }
+                                });
+
                             }).catch(err => {
                                 console.error('Error loading PDF: ', err);
                                 pdfContainer.innerHTML = '<div style="color: red; padding: 20px; text-align: center;">Failed to load PDF viewer. Please try opening in GitHub.</div>';
