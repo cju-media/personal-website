@@ -289,7 +289,8 @@
 
                 <div id="pdf-container" style="display: none;"></div>
             </div>
-            <a id="parts-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Parts</a>
+            <a id="score-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Open Score in New Tab</a>
+            <a id="parts-link" class="repo-button" style="margin-top: 10px; display: none;" target="_blank" rel="noopener noreferrer">Parts</a>
             <a id="github-link" class="repo-button" style="margin-top: 10px; display: none;" target="_blank" rel="noopener noreferrer">Open in GitHub</a>
         </div>
     </div>
@@ -447,6 +448,7 @@
 
                     const githubLink = document.getElementById('github-link');
                     const partsLink = document.getElementById('parts-link');
+                    const scoreLink = document.getElementById('score-link');
 
                     if (title) title.textContent = titleText;
 
@@ -591,6 +593,14 @@
                         githubLink.style.display = 'block';
                     } else if (githubLink) {
                         githubLink.style.display = 'none';
+                    }
+
+                    // Set Score Link
+                    if (pdfUrl && scoreLink) {
+                        scoreLink.href = pdfUrl;
+                        scoreLink.style.display = 'block';
+                    } else if (scoreLink) {
+                        scoreLink.style.display = 'none';
                     }
                 }
 
