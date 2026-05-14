@@ -499,8 +499,9 @@
                                 // Fetch page 1 just to establish the baseline aspect ratio and scale
                                 pdf.getPage(1).then(firstPage => {
                                     const unscaledViewport = firstPage.getViewport({ scale: 1.0 });
-                                    // Base scale on container height so 1 page fits exactly in the view
-                                    const scale = pdfContainer.clientHeight / unscaledViewport.height;
+                                    // Base scale on container width so it fits horizontally on mobile
+                                    const padding = 20; // Allow some margin
+                                    const scale = (pdfContainer.clientWidth - padding) / unscaledViewport.width;
                                     const viewport = firstPage.getViewport({ scale: scale });
                                     const pageHeight = viewport.height;
                                     const pageWidth = viewport.width;
