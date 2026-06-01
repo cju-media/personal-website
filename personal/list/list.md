@@ -1,3 +1,11 @@
+## 6-1-26
+Welcome back.
+
+I am deciding to be productive today and picking this back up. Its been a bit of a tough month. 
+
+Granny passed. I think I am still realing from that. I have had a ton of work this month. At the expense of spending time with my family. I have missed countless dinners and oppertunities to have quality time. I am sitting here at USC looking at one hell of a week asking why? Whats the point of all of this. I hate every time I come in. It is so frustrating dealing with gear I do not control and have no guarantee for the quality of the show. Then I get blamed when shows arent up to snuff. I do not know how much more I can take.
+
+
 ## 5-5-26
 After writing all of that yesterday, I went to go see *The Drama*. It is an A24 film featuring Zendaya and Robert Pattinson. The film is sort of a play on romcoms but the score was anything but traditional. The entirity of the score was performed by solo flute. That's it. That was the whole instrumentation. I think for reasons that worked for what the movie was trying to convey. You can do a long analysis for why that's the case but at the end of the day I do not think that is even necessary. If the reason was just to stand out, I think that is justification enough, at the end of the day. I do not think the score is going to get any notority. The film isn't as big as *Oppenheimer* nor dealt with themes as big as nuclear annihilation. Oppenheimer's score would not have worked with *The Drama* and the reverse is true as well. The common theme between the both of them is that the went outside the traditional orchestral instrumental score. 
 
