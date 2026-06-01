@@ -8,11 +8,9 @@
     const path = 'resume/resume.html';
     
     // The 'Accept' header tells GitHub to send the raw file content instead of JSON metadata
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    const url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/${path}`;
 
-    fetch(url, {
-      headers: { 'Accept': 'application/vnd.github.v3.raw' }
-    })
+    fetch(url)
       .then(response => {
         if (!response.ok) throw new Error('GitHub API delay');
         return response.text();

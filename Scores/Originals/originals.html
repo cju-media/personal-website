@@ -50,9 +50,8 @@
         /* Layout Styles */
         #originals-page-wrapper .content-wrapper {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             max-width: 1000px;
             gap: 40px;
@@ -60,8 +59,9 @@
         }
 
         #originals-page-wrapper #text-container {
-            flex: 1;
-            text-align: left;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
             /* font-family: 'Playfair Display', serif; */
             /* font-size: 1.2rem; */
             line-height: 1.6;
@@ -69,7 +69,8 @@
         }
 
         #originals-page-wrapper #button-container {
-            flex: 1;
+            width: 100%;
+            max-width: 600px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -78,19 +79,8 @@
 
         /* Mobile / Vertical Styles */
         @media (max-width: 768px) {
-            #originals-page-wrapper .content-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-
             #originals-page-wrapper #text-container {
-                text-align: center;
                 margin-bottom: 20px;
-            }
-
-            #originals-page-wrapper #button-container {
-                width: 100%;
-                max-width: 600px;
             }
         }
 
@@ -99,7 +89,7 @@
         /* Filter Styles */
         #filter-container {
             width: 100%;
-            flex: 1 1 100%;
+            max-width: 600px;
             margin: 0 auto 20px auto;
             display: none; /* Hidden until tags are loaded */
             text-align: center;
@@ -238,10 +228,23 @@
 
         #pdf-container {
             width: 100%;
-            height: 60vh;
+            height: 85vh;
             border: 1px solid #555;
             border-radius: 5px;
-            background: #fff;
+            background: #e6e6e6;
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .pdf-page-canvas {
+            max-width: 100%;
+            height: 100%;
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -250,7 +253,7 @@
                 width: 95%;
             }
             #pdf-container {
-                height: 50vh;
+                height: 80vh;
             }
             #original-modal-title {
                 font-size: 1.5rem;
@@ -283,8 +286,12 @@
                 <div id="markdown-container">
                     <div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>
                 </div>
-                <iframe id="pdf-container" src="" frameborder="0" style="display: none;"></iframe>
+
+                <div id="pdf-container" style="display: none;"></div>
             </div>
+            <a id="score-link" class="repo-button" style="margin-top: 20px; display: none;" target="_blank" rel="noopener noreferrer">Open Score in New Tab</a>
+            <a id="parts-link" class="repo-button" style="margin-top: 10px; display: none;" target="_blank" rel="noopener noreferrer">Parts</a>
+            <a id="github-link" class="repo-button" style="margin-top: 10px; display: none;" target="_blank" rel="noopener noreferrer">Open in GitHub</a>
         </div>
     </div>
 
@@ -403,6 +410,22 @@
                 const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Originals/';
 
+                // Load pdf.js dynamically
+                function loadPdfJs(callback) {
+                    if (window['pdfjs-dist/build/pdf']) {
+                        callback();
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+                    script.onload = () => {
+                        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                        callback();
+                    };
+                    document.head.appendChild(script);
+                }
+
                 // Load marked.js dynamically
                 function loadMarked(callback) {
                     if (window.marked) {
@@ -415,7 +438,7 @@
                     document.head.appendChild(script);
                 }
 
-                function openOriginalModal(readmeUrl, pdfUrl, titleText) {
+                function openOriginalModal(readmeUrl, pdfUrl, titleText, githubUrl, partsUrl) {
                     const modal = document.getElementById('original-modal-overlay');
                     if (!modal) return;
 
@@ -423,12 +446,16 @@
                     const mdContainer = document.getElementById('markdown-container');
                     const pdfContainer = document.getElementById('pdf-container');
 
+                    const githubLink = document.getElementById('github-link');
+                    const partsLink = document.getElementById('parts-link');
+                    const scoreLink = document.getElementById('score-link');
+
                     if (title) title.textContent = titleText;
 
                     // Reset containers
                     mdContainer.innerHTML = '<div style="color: #999; text-align: center; font-family: monospace;">Loading description...</div>';
                     pdfContainer.style.display = 'none';
-                    pdfContainer.src = '';
+                    pdfContainer.innerHTML = ''; // Clear old canvases
 
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
@@ -443,8 +470,8 @@
                             return res.text();
                         })
                         .then(mdText => {
-                            // Strip hashtags before rendering so they are hidden from visitors
-                            const cleanText = mdText.replace(/(?:^|\s)#[a-zA-Z0-9_\-]+/g, '');
+                            // Strip hashtag lines before rendering so they are hidden from visitors
+                            const cleanText = mdText.replace(/(?:^|\n)#\s*.+/g, '').trim();
 
                             loadMarked(() => {
                                 mdContainer.innerHTML = marked.parse(cleanText);
@@ -462,8 +489,118 @@
 
                     // Set PDF if available
                     if (pdfUrl) {
-                        pdfContainer.src = pdfUrl;
                         pdfContainer.style.display = 'block';
+                        pdfContainer.innerHTML = '<div style="color: #999; text-align: center; font-family: monospace; padding: 20px;">Loading PDF...</div>';
+
+                        loadPdfJs(() => {
+                            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                                pdfContainer.innerHTML = ''; // Clear loading text
+
+                                const numPages = pdf.numPages;
+
+                                // Fetch page 1 just to establish the baseline aspect ratio and scale
+                                pdf.getPage(1).then(firstPage => {
+                                    const unscaledViewport = firstPage.getViewport({ scale: 1.0 });
+                                    // Base scale on container width so it fits horizontally on mobile
+                                    const padding = 20; // Allow some margin
+                                    const scale = (pdfContainer.clientWidth - padding) / unscaledViewport.width;
+                                    const viewport = firstPage.getViewport({ scale: scale });
+                                    const pageHeight = viewport.height;
+                                    const pageWidth = viewport.width;
+
+                                    // Create an observer to manage the virtual window
+                                    // rootMargin roughly tall enough to cover ~10 pages above and 10 pages below
+                                    // Let's use a dynamic pixel height
+                                    const margin = Math.floor(pageHeight * 10) + "px";
+
+                                    const pageObserver = new IntersectionObserver((entries) => {
+                                        entries.forEach(entry => {
+                                            const pageNum = parseInt(entry.target.dataset.pageNumber, 10);
+                                            if (entry.isIntersecting) {
+                                                // Page scrolled into the buffer window, render it
+                                                if (!entry.target.dataset.rendering) {
+                                                    entry.target.dataset.rendering = "true";
+
+                                                    pdf.getPage(pageNum).then(page => {
+                                                        const canvas = document.createElement('canvas');
+                                                        canvas.className = 'pdf-page-canvas';
+                                                        const context = canvas.getContext('2d');
+
+                                                        const outputScale = window.devicePixelRatio || 1;
+                                                        canvas.width = Math.floor(pageWidth * outputScale);
+                                                        canvas.height = Math.floor(pageHeight * outputScale);
+                                                        canvas.style.width = Math.floor(pageWidth) + "px";
+                                                        canvas.style.height = Math.floor(pageHeight) + "px";
+
+                                                        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+                                                        const renderContext = {
+                                                            canvasContext: context,
+                                                            transform: transform,
+                                                            viewport: page.getViewport({ scale: scale })
+                                                        };
+
+                                                        // Store reference to cancel if needed, or just append
+                                                        entry.target.appendChild(canvas);
+                                                        page.render(renderContext);
+                                                    });
+                                                }
+                                            } else {
+                                                // Page left the buffer window, clear it from memory
+                                                entry.target.innerHTML = '';
+                                                entry.target.dataset.rendering = "";
+                                            }
+                                        });
+                                    }, { root: pdfContainer, rootMargin: `${margin} 0px ${margin} 0px` });
+
+                                    // Create empty placeholder wrappers for all pages
+                                    for (let i = 1; i <= numPages; i++) {
+                                        const wrapper = document.createElement('div');
+                                        wrapper.className = 'pdf-page-wrapper';
+                                        wrapper.dataset.pageNumber = i;
+                                        wrapper.style.width = Math.floor(pageWidth) + "px";
+                                        wrapper.style.height = Math.floor(pageHeight) + "px";
+                                        wrapper.style.margin = "0 auto 20px auto";
+                                        wrapper.style.backgroundColor = "#fff";
+                                        wrapper.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+                                        wrapper.style.display = "flex";
+                                        wrapper.style.alignItems = "center";
+                                        wrapper.style.justifyContent = "center";
+
+                                        pdfContainer.appendChild(wrapper);
+                                        pageObserver.observe(wrapper);
+                                    }
+                                });
+
+                            }).catch(err => {
+                                console.error('Error loading PDF: ', err);
+                                pdfContainer.innerHTML = '<div style="color: red; padding: 20px; text-align: center;">Failed to load PDF viewer. Please try opening in GitHub.</div>';
+                            });
+                        });
+                    }
+
+                    // Set Parts link
+                    if (partsUrl && partsLink) {
+                        partsLink.href = partsUrl;
+                        partsLink.style.display = 'block';
+                    } else if (partsLink) {
+                        partsLink.style.display = 'none';
+                    }
+
+                    // Set GitHub link
+                    if (githubUrl && githubLink) {
+                        githubLink.href = githubUrl;
+                        githubLink.style.display = 'block';
+                    } else if (githubLink) {
+                        githubLink.style.display = 'none';
+                    }
+
+                    // Set Score Link
+                    if (pdfUrl && scoreLink) {
+                        scoreLink.href = pdfUrl;
+                        scoreLink.style.display = 'block';
+                    } else if (scoreLink) {
+                        scoreLink.style.display = 'none';
                     }
                 }
 
@@ -476,7 +613,7 @@
                         document.body.style.overflow = '';
                         const pdfContainer = document.getElementById('pdf-container');
                         if (pdfContainer) {
-                            pdfContainer.src = ''; // Stop loading/playing
+                            pdfContainer.innerHTML = ''; // Clear loaded canvases
                         }
 
                         // Clear URL hash
@@ -577,7 +714,9 @@
 
                             // Check for README
                             const readmeFile = dir.files.find(f => f.name.toLowerCase() === 'readme.md');
-                            const pdfFile = dir.files.find(f => f.name.toLowerCase().endsWith('.pdf'));
+                            // Ensure we only grab the top-level PDF, not ones inside 'Parts'
+                            const pdfFile = dir.files.find(f => f.name.toLowerCase().endsWith('.pdf') && !f.name.toLowerCase().includes('/'));
+                            const hasPartsFolder = dir.files.some(f => f.name.toLowerCase().startsWith('parts/') || (f.name.toLowerCase() === 'parts' && f.type === 'tree'));
 
                             if (readmeFile) {
                                 let isFetching = false;
@@ -588,13 +727,17 @@
                                     const rawReadmeUrl = `https://raw.githubusercontent.com/cju-media/Scores/main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(readmeFile.name)}`;
                                     let rawPdfUrl = null;
                                     if (pdfFile) {
-                                        const basePdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
-
-                                        // Use Google Docs viewer to bypass Mobile Safari iframe 1-page limits
-                                        rawPdfUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(basePdfUrl)}&embedded=true`;
+                                        rawPdfUrl = `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/${encodeURIComponent(pdfFile.name)}`;
                                     }
 
-                                    openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path);
+                                    const githubUrl = repoUrlBase + encodeURIComponent(dir.path);
+
+                                    let partsUrl = null;
+                                    if (hasPartsFolder) {
+                                        partsUrl = repoUrlBase + encodeURIComponent(dir.path) + '/Parts';
+                                    }
+
+                                    openOriginalModal(rawReadmeUrl, rawPdfUrl, dir.path, githubUrl, partsUrl);
                                 });
                             }
 
@@ -619,11 +762,11 @@
 
                             results.forEach(({ dirPath, text }) => {
                                 if (text) {
-                                    // Extract hashtags (e.g. #classical #piano)
-                                    const regex = /(?:^|\s)#([a-zA-Z0-9_\-]+)/g;
+                                    // Extract full-line tags starting with #
+                                    const regex = /(?:^|\n)#\s*(.+)/g;
                                     let match;
                                     while ((match = regex.exec(text)) !== null) {
-                                        const tag = match[1].toLowerCase();
+                                        const tag = match[1].trim().toLowerCase();
                                         allTags.add(tag);
                                         if (!tagMap.has(tag)) {
                                             tagMap.set(tag, new Set());
