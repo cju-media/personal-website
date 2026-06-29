@@ -1,3 +1,9 @@
+## 6-28-26
+I networked my way into writing music for a space documentary on Youtube. Which is awesome to write some music. I have been working on some sketches for about a week now and at first I really struggled finding something I liked. I eventually got to somewhere that I could build on. Ironically it was the first idea I just played with the phrase length so it flowed a little better. As I mature I realise there is so much for composing that exists in phrasing or what I like to call "flow." I watched a great [video](https://www.youtube.com/watch?v=tizP7IFyWig) on Philip Glass's *Mad Rush* which was a piece I had dismissed in the past. I was never really a fan but this analysis really helped illustrate what Glass is doing with his music. His music is an exercise in form. The piece breaks the piece into simple motivic structures that allow for the form to become the main element of the work. Once the notes give way in the repeative structure, the form is the last thing to explore. In music with more density the form gets lost in the varying notes, rhythms and harmonies. *Mad Rush* has 2 chords for 99% of the piece and the few times it moves away from those two familiar chords the piece comes alive. Its just not something that is possible in any other genre of music. Tonal music is dominated by the dominant, atonal music uses every note with no heirarchy so harmonic changes do nothing. The simple music allows you to accent the macro pattern of the whole work. 
+
+I need to become unapologetic. My music is my music. Philip's music is his music. He never once apologized that its repeative. Rothko never apologized his work was one color. I do not do "weird" music. I write my music. I write it because it is the music I want to write and I think it adds to the film or media. 
+
+
 ## 6-1-26
 Welcome back.
 
