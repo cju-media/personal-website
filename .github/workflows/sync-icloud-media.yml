@@ -34,4 +34,3 @@ jobs:
         with:
           commit_message: "Automated: Sync media from iCloud Shared Albums"
           file_pattern: "assets/content/* assets/media.json"
-          branch: main
