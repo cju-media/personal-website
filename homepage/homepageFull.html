@@ -625,13 +625,12 @@
 
                 if (timeouts[elementId]) clearTimeout(timeouts[elementId]);
 
-                const oldEl = holder.firstChild;
-                if (oldEl) {
-                    oldEl.style.opacity = "0";
-                }
+                // Clear out the element entirely (except the noise background)
+                const mediaEls = holder.querySelectorAll('img, video');
+                mediaEls.forEach(el => el.remove());
 
+                // Wait 2000ms showing the static background, then inject next
                 setTimeout(() => {
-                    if (oldEl) oldEl.remove();
                     injectMedia(elementId, mediaList);
                 }, 2000);
             }
@@ -651,8 +650,7 @@
                     el.autoplay = true;
                     el.muted = true;
                     el.playsInline = true;
-                    el.style.opacity = "0";
-                    el.style.transition = "opacity 0.8s ease";
+
                     el.style.position = "absolute";
                     el.style.top = "50%";
                     el.style.left = "50%";
@@ -660,26 +658,23 @@
                     el.style.width = "100%";
                     el.style.height = "100%";
                     el.style.objectFit = "cover";
-                    holder.appendChild(el);
 
                     el.onended = () => swapWithDelay(elementId, mediaList);
 
-                    const timerPromise = new Promise(resolve => setTimeout(resolve, 800));
                     const mediaReadyPromise = new Promise(resolve => {
                         el.oncanplaythrough = resolve;
                         setTimeout(resolve, 3000);
                     });
 
-                    Promise.all([timerPromise, mediaReadyPromise]).then(() => {
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
                         el.play().catch(() => {});
-                        el.style.opacity = "1";
                     });
                 } else {
                     el = document.createElement("img");
                     el.src = url;
                     el.className = "cropped-image";
-                    el.style.opacity = "0";
-                    el.style.transition = "opacity 0.8s ease";
+
                     el.style.position = "absolute";
                     el.style.top = "50%";
                     el.style.left = "50%";
@@ -687,16 +682,14 @@
                     el.style.width = "100%";
                     el.style.height = "100%";
                     el.style.objectFit = "cover";
-                    holder.appendChild(el);
 
-                    const timerPromise = new Promise(resolve => setTimeout(resolve, 800));
                     const mediaReadyPromise = new Promise(resolve => {
                         el.onload = resolve;
                         el.onerror = resolve;
                     });
 
-                    Promise.all([timerPromise, mediaReadyPromise]).then(() => {
-                        el.style.opacity = "1";
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
                         const randomDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
                         timeouts[elementId] = setTimeout(() => {
                             swapWithDelay(elementId, mediaList);
