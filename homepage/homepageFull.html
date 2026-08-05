@@ -381,11 +381,17 @@
     }
 
     .hp-mid-wrapper .cropped-image,
+    .hp-mid-wrapper .media-holder,
+    .hp-mid-wrapper .media-holder video,
+    .hp-mid-wrapper .media-holder img,
     .hp-mid-wrapper .cropped-video {
+        width: 100%;
+        height: 100%;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) scale(1.15) !important;
+        object-fit: cover;
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
@@ -396,7 +402,15 @@
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
-    .hp-mid-wrapper .video-container:hover .cropped-video {
+    .hp-mid-wrapper .video-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .media-holder,
+    .hp-mid-wrapper .video-container:hover .media-holder,
+    .hp-mid-wrapper .image-container:hover .media-holder video,
+    .hp-mid-wrapper .video-container:hover .media-holder video,
+    .hp-mid-wrapper .image-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .cropped-image {
         filter: blur(0px);
     }
 
@@ -454,14 +468,14 @@
     }
 </style>
 
-    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
         <a href="/director/laptop-ensemble" class="video-container">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
-            <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
+            <div id='mid-laptop' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
     </section>
@@ -469,15 +483,15 @@
     <section class="hidden-slide">
         <a href="/videoart" class="video-container">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
-            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
+            <div id='mid-video' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
-    <section class="hidden-slide"><a href="/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
-    <section class="hidden-slide"><a href="#" class="image-container"><img id='mid-lighting' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/programming" class="image-container"><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/albums" class="image-container"><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="#" class="image-container"><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {
@@ -598,79 +612,138 @@
 
             let timeouts = {};
 
-            function swapWithDelay(elementId, videoList) {
-                const v = document.getElementById(elementId);
-                if (!v) return;
+            function swapWithDelay(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder) return;
 
-                if(timeouts[elementId]) clearTimeout(timeouts[elementId]);
+                if (timeouts[elementId]) clearTimeout(timeouts[elementId]);
 
-                v.style.opacity = "0";
+                const oldEl = holder.firstChild;
+                if (oldEl) {
+                    oldEl.style.opacity = "0";
+                }
 
-                const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
-
-                v.src = getNextVideo(elementId, videoList);
-                v.load();
-
-                const videoReadyPromise = new Promise(resolve => {
-                    v.oncanplaythrough = resolve;
-                });
-
-                Promise.all([timerPromise, videoReadyPromise]).then(() => {
-                    v.play().catch(() => {});
-                    v.style.opacity = "1";
-                    startWatchdog(elementId, videoList);
-                });
+                setTimeout(() => {
+                    if (oldEl) oldEl.remove();
+                    injectMedia(elementId, mediaList);
+                }, 800);
             }
 
-            function startWatchdog(elementId, videoList) {
-                timeouts[elementId] = setTimeout(() => {
-                    swapWithDelay(elementId, videoList);
-                }, 10000);
+            function injectMedia(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder || !mediaList || mediaList.length === 0) return;
+
+                const url = getNextVideo(elementId, mediaList);
+                const isVideo = url.match(/\.(mp4|mov|webm)(\?.*)?$/i);
+
+                let el;
+                if (isVideo) {
+                    el = document.createElement("video");
+                    el.src = url;
+                    el.className = "cropped-video";
+                    el.autoplay = true;
+                    el.muted = true;
+                    el.playsInline = true;
+                    el.style.opacity = "0";
+                    el.style.transition = "opacity 0.8s ease";
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+                    holder.appendChild(el);
+
+                    el.onended = () => swapWithDelay(elementId, mediaList);
+
+                    const timerPromise = new Promise(resolve => setTimeout(resolve, 800));
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.oncanplaythrough = resolve;
+                        setTimeout(resolve, 3000);
+                    });
+
+                    Promise.all([timerPromise, mediaReadyPromise]).then(() => {
+                        el.play().catch(() => {});
+                        el.style.opacity = "1";
+                    });
+                } else {
+                    el = document.createElement("img");
+                    el.src = url;
+                    el.className = "cropped-image";
+                    el.style.opacity = "0";
+                    el.style.transition = "opacity 0.8s ease";
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+                    holder.appendChild(el);
+
+                    const timerPromise = new Promise(resolve => setTimeout(resolve, 800));
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.onload = resolve;
+                        el.onerror = resolve;
+                    });
+
+                    Promise.all([timerPromise, mediaReadyPromise]).then(() => {
+                        el.style.opacity = "1";
+                        const randomDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+                        timeouts[elementId] = setTimeout(() => {
+                            swapWithDelay(elementId, mediaList);
+                        }, randomDelay);
+                    });
+                }
             }
 
             function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
-                // 1. SETUP IMAGES
-                const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics, "mid-lighting": lightPics};
-                for (let id in pics) {
-                    const el = document.getElementById(id);
-                    if(el && pics[id] && pics[id].length > 0) {
-                        el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
+                const mediaMaps = {
+                    "mid-av": avPics,
+                    "mid-composer": compPics,
+                    "mid-producer": prodPics,
+                    "mid-programmer": progPics,
+                    "sound": soundPics,
+                    "mid-conductor": condPics,
+                    "mid-lighting": lightPics,
+                    "mid-video": artVids,
+                    "mid-laptop": perfVids
+                };
+
+                for (let id in mediaMaps) {
+                    const list = mediaMaps[id];
+                    if (list && list.length > 0) {
+                        injectMedia(id, list);
                     }
                 }
 
-                // 2. SETUP VIDEOS
-                const v = document.getElementById("mid-video");
-                const l = document.getElementById("mid-laptop");
-
-                if(v && artVids.length > 0) {
-                    v.src = getNextVideo("mid-video", artVids);
-                    v.onended = () => swapWithDelay("mid-video", artVids);
-                    startWatchdog("mid-video", artVids);
-                }
-                if(l && perfVids.length > 0) {
-                    l.src = getNextVideo("mid-laptop", perfVids);
-                    l.onended = () => swapWithDelay("mid-laptop", perfVids);
-                    startWatchdog("mid-laptop", perfVids);
-                }
-
-                // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
-                // const visited = sessionStorage.getItem('visited');
                 
-                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    // Slide in from left only
-                    // On mobile, reduce the offset so it's not too far off-screen
-                    const isMobile = window.innerWidth <= 768;
-                    const startX = isMobile ? -50 : -500;
-                    el.style.transform = `translate(${startX}px, 0px)`;
+                // 3. SETUP RANDOM FLY-IN (for scrolling observer)
+                const slides = document.querySelectorAll('.hp-mid-wrapper .hidden-slide');
+                slides.forEach(slide => {
+                    const directions = [
+                        'translate(500px, 0)',
+                        'translate(-500px, 0)',
+                        'translate(0, 500px)',
+                        'translate(0, -500px)'
+                    ];
+                    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+                    slide.style.transform = randomDirection;
                 });
 
-                // 4. OBSERVER (ONE WAY)
+                // 4. SCROLL ANIMATION (Fade in as they enter viewport)
                 const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
+                    entries.forEach((entry) => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('show-slide');
-                            observer.unobserve(entry.target);
+                            // Start animations only when visible
+                            // Note: glitch animations are now started on hover/mobile always on, see step 6
                         }
+                        // Optional: remove class when out of view to re-animate on scroll up
+                        // else {
+                        //     entry.target.classList.remove('show-slide');
+                        // }
                     });
                 }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
 
@@ -695,7 +768,7 @@
                     });
                 } else {
                     // Desktop: Hover behavior
-                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container, .hp-mid-wrapper .media-container').forEach(container => {
                         container.addEventListener('mouseenter', () => {
                             const spans = container.querySelectorAll('.glitch-char');
                             const now = Date.now();
@@ -714,7 +787,6 @@
                     });
                 }
             }
-
             const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
 
             if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
