@@ -477,6 +477,7 @@
     <section class="hidden-slide"><a href="/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
     <section class="hidden-slide"><a href="/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
     <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="#" class="image-container"><img id='mid-lighting' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {
@@ -494,11 +495,12 @@
                 const progPics = mediaData.progPics || [];
                 const soundPics = mediaData.soundPics || [];
                 const condPics = mediaData.condPics || [];
+                const lightPics = mediaData.lightPics || [];
 
-                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
             }
 
-            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
+            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
                 const urns = {};
                 function getNextVideo(elementId, videoList) {
                     if (!urns[elementId] || urns[elementId].length === 0) {
@@ -626,9 +628,9 @@
                 }, 10000);
             }
 
-            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
+            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
                 // 1. SETUP IMAGES
-                const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics};
+                const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics, "mid-lighting": lightPics};
                 for (let id in pics) {
                     const el = document.getElementById(id);
                     if(el && pics[id] && pics[id].length > 0) {
@@ -713,7 +715,7 @@
                 }
             }
 
-            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
 
             if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
                 runInit();
