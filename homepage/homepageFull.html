@@ -725,11 +725,9 @@
                 // The original logic translated elements based on parity.
                 const slides = document.querySelectorAll('.hp-mid-wrapper .hidden-slide');
                 slides.forEach((slide, index) => {
-                    // Only apply horizontal translation on desktop to avoid IntersectionObserver issues on mobile
-                    if (window.innerWidth > 768) {
-                        const direction = index % 2 === 0 ? '-10%' : '10%';
-                        slide.style.transform = `translateX(${direction})`;
-                    }
+                    // Apply horizontal translation on all screen sizes for slide-in effect
+                    const direction = index % 2 === 0 ? '-10%' : '10%';
+                    slide.style.transform = `translateX(${direction})`;
                 });
 
                 // 4. SCROLL ANIMATION (Fade in as they enter viewport)
