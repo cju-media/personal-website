@@ -8,7 +8,8 @@ import shutil
 # Add new iCloud shared album tokens here.
 # The key should match the object array in assets/media.json
 ALBUMS = {
-    "headshots": "B2N5yeZFhGgD1sx"
+    "headshots": "B2N5yeZFhGgD1sx",
+    "avPics": "B2N5ON9t3GFCbtv"
 }
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
