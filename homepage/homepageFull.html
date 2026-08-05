@@ -381,11 +381,17 @@
     }
 
     .hp-mid-wrapper .cropped-image,
+    .hp-mid-wrapper .media-holder,
+    .hp-mid-wrapper .media-holder video,
+    .hp-mid-wrapper .media-holder img,
     .hp-mid-wrapper .cropped-video {
+        width: 100%;
+        height: 100%;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) scale(1.15) !important;
+        object-fit: cover;
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
@@ -396,7 +402,15 @@
     }
 
     .hp-mid-wrapper .image-container:hover .cropped-image,
-    .hp-mid-wrapper .video-container:hover .cropped-video {
+    .hp-mid-wrapper .video-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .media-holder,
+    .hp-mid-wrapper .video-container:hover .media-holder,
+    .hp-mid-wrapper .image-container:hover .media-holder video,
+    .hp-mid-wrapper .video-container:hover .media-holder video,
+    .hp-mid-wrapper .image-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .cropped-image {
         filter: blur(0px);
     }
 
@@ -454,14 +468,17 @@
     }
 </style>
 
-    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><img id='mid-av' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><img id='mid-composer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><img id='sound' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="/media/avengineering" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/music" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/max" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
         <a href="/director/laptop-ensemble" class="video-container">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
-            <video playsinline autoplay muted id='mid-laptop' class='cropped-video'></video>
+            <div id='mid-laptop' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
     </section>
@@ -469,14 +486,19 @@
     <section class="hidden-slide">
         <a href="/videoart" class="video-container">
             <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
-            <video playsinline autoplay muted id='mid-video' class='cropped-video'></video>
+            <div id='mid-video' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
-    <section class="hidden-slide"><a href="/programming" class="image-container"><img id='mid-programmer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/albums" class="image-container"><img id='mid-producer' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><img id='mid-conductor' class='cropped-image'><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="/programming" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/albums" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="#" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {
@@ -494,11 +516,12 @@
                 const progPics = mediaData.progPics || [];
                 const soundPics = mediaData.soundPics || [];
                 const condPics = mediaData.condPics || [];
+                const lightPics = mediaData.lightPics || [];
 
-                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
             }
 
-            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
+            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
                 const urns = {};
                 function getNextVideo(elementId, videoList) {
                     if (!urns[elementId] || urns[elementId].length === 0) {
@@ -596,79 +619,131 @@
 
             let timeouts = {};
 
-            function swapWithDelay(elementId, videoList) {
-                const v = document.getElementById(elementId);
-                if (!v) return;
+            function swapWithDelay(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder) return;
 
-                if(timeouts[elementId]) clearTimeout(timeouts[elementId]);
+                if (timeouts[elementId]) clearTimeout(timeouts[elementId]);
 
-                v.style.opacity = "0";
+                // Clear out the element entirely (except the noise background)
+                const mediaEls = holder.querySelectorAll('img, video');
+                mediaEls.forEach(el => el.remove());
 
-                const timerPromise = new Promise(resolve => setTimeout(resolve, 1500));
-
-                v.src = getNextVideo(elementId, videoList);
-                v.load();
-
-                const videoReadyPromise = new Promise(resolve => {
-                    v.oncanplaythrough = resolve;
-                });
-
-                Promise.all([timerPromise, videoReadyPromise]).then(() => {
-                    v.play().catch(() => {});
-                    v.style.opacity = "1";
-                    startWatchdog(elementId, videoList);
-                });
+                // Wait 2000ms showing the static background, then inject next
+                setTimeout(() => {
+                    injectMedia(elementId, mediaList);
+                }, 2000);
             }
 
-            function startWatchdog(elementId, videoList) {
-                timeouts[elementId] = setTimeout(() => {
-                    swapWithDelay(elementId, videoList);
-                }, 10000);
+            function injectMedia(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder || !mediaList || mediaList.length === 0) return;
+
+                const url = getNextVideo(elementId, mediaList);
+                const isVideo = url.match(/\.(mp4|mov|webm)(\?.*)?$/i);
+
+                let el;
+                if (isVideo) {
+                    el = document.createElement("video");
+                    el.src = url;
+                    el.className = "cropped-video";
+                    el.autoplay = true;
+                    el.muted = true;
+                    el.playsInline = true;
+
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+
+                    el.onended = () => swapWithDelay(elementId, mediaList);
+
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.oncanplaythrough = resolve;
+                        setTimeout(resolve, 3000);
+                    });
+
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
+                        el.play().catch(() => {});
+                    });
+                } else {
+                    el = document.createElement("img");
+                    el.src = url;
+                    el.className = "cropped-image";
+
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.onload = resolve;
+                        el.onerror = resolve;
+                    });
+
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
+                        const randomDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+                        timeouts[elementId] = setTimeout(() => {
+                            swapWithDelay(elementId, mediaList);
+                        }, randomDelay);
+                    });
+                }
             }
 
-            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics) {
-                // 1. SETUP IMAGES
-                const pics = {"mid-av": avPics, "mid-composer": compPics, "mid-producer": prodPics, "mid-programmer": progPics, "sound": soundPics, "mid-conductor": condPics};
-                for (let id in pics) {
-                    const el = document.getElementById(id);
-                    if(el && pics[id] && pics[id].length > 0) {
-                        el.src = pics[id][Math.floor(Math.random() * pics[id].length)];
+            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
+                const mediaMaps = {
+                    "mid-av": avPics,
+                    "mid-composer": compPics,
+                    "mid-producer": prodPics,
+                    "mid-programmer": progPics,
+                    "sound": soundPics,
+                    "mid-conductor": condPics,
+                    "mid-lighting": lightPics,
+                    "mid-video": artVids,
+                    "mid-laptop": perfVids
+                };
+
+                for (let id in mediaMaps) {
+                    const list = mediaMaps[id];
+                    if (list && list.length > 0) {
+                        injectMedia(id, list);
                     }
                 }
 
-                // 2. SETUP VIDEOS
-                const v = document.getElementById("mid-video");
-                const l = document.getElementById("mid-laptop");
-
-                if(v && artVids.length > 0) {
-                    v.src = getNextVideo("mid-video", artVids);
-                    v.onended = () => swapWithDelay("mid-video", artVids);
-                    startWatchdog("mid-video", artVids);
-                }
-                if(l && perfVids.length > 0) {
-                    l.src = getNextVideo("mid-laptop", perfVids);
-                    l.onended = () => swapWithDelay("mid-laptop", perfVids);
-                    startWatchdog("mid-laptop", perfVids);
-                }
-
-                // 3. SETUP RANDOM FLY-IN (CONDITIONAL)
-                // const visited = sessionStorage.getItem('visited');
                 
-                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
-                    // Slide in from left only
-                    // On mobile, reduce the offset so it's not too far off-screen
-                    const isMobile = window.innerWidth <= 768;
-                    const startX = isMobile ? -50 : -500;
-                    el.style.transform = `translate(${startX}px, 0px)`;
+                // 3. SETUP RANDOM FLY-IN (for scrolling observer)
+                // Note: To avoid breaking the IntersectionObserver (especially on mobile where screen width < 500px),
+                // we set initial transforms via CSS or inline styles in a way that doesn't push the element's bounding box outside the viewport.
+                // The original logic translated elements based on parity.
+                const slides = document.querySelectorAll('.hp-mid-wrapper .hidden-slide');
+                slides.forEach((slide, index) => {
+                    // Only apply horizontal translation on desktop to avoid IntersectionObserver issues on mobile
+                    if (window.innerWidth > 768) {
+                        const direction = index % 2 === 0 ? '-10%' : '10%';
+                        slide.style.transform = `translateX(${direction})`;
+                    }
                 });
 
-                // 4. OBSERVER (ONE WAY)
+                // 4. SCROLL ANIMATION (Fade in as they enter viewport)
                 const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
+                    entries.forEach((entry) => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('show-slide');
-                            observer.unobserve(entry.target);
+                            // Start animations only when visible
+                            // Note: glitch animations are now started on hover/mobile always on, see step 6
                         }
+                        // Optional: remove class when out of view to re-animate on scroll up
+                        // else {
+                        //     entry.target.classList.remove('show-slide');
+                        // }
                     });
                 }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
 
@@ -693,7 +768,7 @@
                     });
                 } else {
                     // Desktop: Hover behavior
-                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container').forEach(container => {
+                    document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container, .hp-mid-wrapper .media-container').forEach(container => {
                         container.addEventListener('mouseenter', () => {
                             const spans = container.querySelectorAll('.glitch-char');
                             const now = Date.now();
@@ -712,8 +787,7 @@
                     });
                 }
             }
-
-            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics);
+            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
 
             if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
                 runInit();
@@ -807,57 +881,63 @@
             transform: translateX(0);
         }
 
+        .bio-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%; /* Prevent horizontal overflow */
+        }
+
         .image-left {
-          width: 100%;
-            height: 90%;
+            flex: 1 1 50%;
+            max-width: 50%;
+            width: 50%; /* Force width */
+            height: auto;
+            object-fit: contain;
+            margin-right: 0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            min-width: 0; /* Prevent intrinsic width overflow */
+        }
 
-        max-width: 435.5px;
-            max-height: 652.92px;
-            float: left;
-            /* floats the image to the left */
-            margin-right: 20px;
-            /* adds a margin to the right of the image */
-            display: block;
-          border-radius: 10px;
-            /* set the image as block element */
-
-
+        .text-block {
+            flex: 1 1 50%;
+            max-width: 50%;
+            width: 50%; /* Force width */
+            text-align: left;
+            padding-left: 20px;
+            box-sizing: border-box;
+            min-width: 0; /* Prevent intrinsic width overflow */
+            word-wrap: break-word; /* Ensure long words break */
         }
 
         @media only screen and (max-width: 1000px) {
             .bio-container {
-                flex-direction: column-reverse;
+                flex-direction: column;
             }
 
             .bio-container img {
                 margin-bottom: 0;
                 margin-top: 20px;
             }
-          .text-block {
-            overflow: hidden;
-            /* clears the float */
-            text-align: center;
-
+            .text-block {
+                flex: 0 0 100%;
+                max-width: 100%;
+                text-align: center;
+                padding-left: 0;
+            }
+            .image-left {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
         }
-          .image-left{
-            width: 50%;
-            height: 50%;
-
-
-          }
-        }
-           .text-block {
-            overflow: hidden;
-            /* clears the float */
-            text-align: left;
-
-        }
-
-
 
     </style>
 
-    <div class="bio-container bio-hidden" style="display: flex; align-items: center; justify-content: center;">
+    <div class="bio-container bio-hidden">
         <img id="myHeadshot" class="image-left">
 
         <div class="text-block">
