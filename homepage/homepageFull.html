@@ -468,9 +468,12 @@
     }
 </style>
 
-    <section class="hidden-slide"><a href="/media/avengineering" class="image-container"><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/music" class="image-container"><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/highlights/max" class="image-container"><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+    <section class="hidden-slide"><a href="/media/avengineering" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/music" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/highlights/max" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
         <a href="/director/laptop-ensemble" class="video-container">
@@ -488,10 +491,14 @@
         </a>
     </section>
 
-    <section class="hidden-slide"><a href="/programming" class="image-container"><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/albums" class="image-container"><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
-    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container"><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
-    <section class="hidden-slide"><a href="#" class="image-container"><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/programming" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/albums" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/director/new-music-ensemble" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="#" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {
@@ -626,7 +633,7 @@
                 setTimeout(() => {
                     if (oldEl) oldEl.remove();
                     injectMedia(elementId, mediaList);
-                }, 800);
+                }, 2000);
             }
 
             function injectMedia(elementId, mediaList) {
@@ -720,16 +727,16 @@
 
                 
                 // 3. SETUP RANDOM FLY-IN (for scrolling observer)
+                // Note: To avoid breaking the IntersectionObserver (especially on mobile where screen width < 500px),
+                // we set initial transforms via CSS or inline styles in a way that doesn't push the element's bounding box outside the viewport.
+                // The original logic translated elements based on parity.
                 const slides = document.querySelectorAll('.hp-mid-wrapper .hidden-slide');
-                slides.forEach(slide => {
-                    const directions = [
-                        'translate(500px, 0)',
-                        'translate(-500px, 0)',
-                        'translate(0, 500px)',
-                        'translate(0, -500px)'
-                    ];
-                    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
-                    slide.style.transform = randomDirection;
+                slides.forEach((slide, index) => {
+                    // Only apply horizontal translation on desktop to avoid IntersectionObserver issues on mobile
+                    if (window.innerWidth > 768) {
+                        const direction = index % 2 === 0 ? '-10%' : '10%';
+                        slide.style.transform = `translateX(${direction})`;
+                    }
                 });
 
                 // 4. SCROLL ANIMATION (Fade in as they enter viewport)
