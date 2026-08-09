@@ -9,7 +9,8 @@ import shutil
 # The key should match the object array in assets/media.json
 ALBUMS = {
     "headshots": "B2N5yeZFhGgD1sx",
-    "lightPics": "B2NJEsNWnGt7OnR"
+    "lightPics": "B2NJEsNWnGt7OnR",
+    "artVids": "B2NGqkRUitcdZS"
 }
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
