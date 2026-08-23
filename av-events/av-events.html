@@ -1,0 +1,428 @@
+<div id="av-events-page-wrapper">
+    <div class="header-container">
+        <h1>
+            <span class="glitch-char">A</span>
+            <span class="glitch-char">V</span>
+            <span class="glitch-char">&nbsp;</span>
+            <span class="glitch-char">E</span>
+            <span class="glitch-char">V</span>
+            <span class="glitch-char">E</span>
+            <span class="glitch-char">N</span>
+            <span class="glitch-char">T</span>
+            <span class="glitch-char">S</span>
+        </h1>
+    </div>
+
+    <div id="loading-message">Loading events...</div>
+    <div id="events-list" class="events-list"></div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <div id="lightbox-spinner" class="spinner"></div>
+            <img id="lightbox-img" src="" alt="Full view" style="display:none;">
+            <div id="lightbox-caption" class="caption"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Scoped Styles */
+    #av-events-page-wrapper {
+        font-family: 'Courier New', Courier, monospace;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        color: #333;
+    }
+
+    #av-events-page-wrapper #loading-message {
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+        color: #666;
+    }
+
+    /* Glitch Title Styles */
+    #av-events-page-wrapper h1 {
+        text-align: center;
+        font-size: min(9vw, 3rem);
+        margin-bottom: 40px;
+        letter-spacing: 0.15em;
+        font-weight: normal;
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+
+    #av-events-page-wrapper .glitch-char {
+        display: inline-block;
+        width: 0.8em;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+    /* Events List */
+    #av-events-page-wrapper .events-list {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+    }
+
+    #av-events-page-wrapper .event-card {
+        border-top: 1px solid #ddd;
+        padding-top: 30px;
+    }
+
+    #av-events-page-wrapper .event-card:first-child {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    #av-events-page-wrapper .event-title {
+        font-size: 1.6rem;
+        margin: 0 0 6px 0;
+        color: #222;
+        font-weight: bold;
+    }
+
+    #av-events-page-wrapper .event-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.85rem;
+        color: #888;
+        margin-bottom: 14px;
+    }
+
+    #av-events-page-wrapper .event-description {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        color: #333;
+        margin-bottom: 18px;
+    }
+
+    /* Photo Grid (per event) */
+    #av-events-page-wrapper .photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+    }
+
+    #av-events-page-wrapper .photo-item {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+    }
+
+    #av-events-page-wrapper .photo-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #av-events-page-wrapper .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+
+    #av-events-page-wrapper .photo-item img.loaded {
+        opacity: 1;
+    }
+
+    #av-events-page-wrapper .empty-state {
+        text-align: center;
+        color: #888;
+        font-style: italic;
+        padding: 40px 0;
+    }
+
+    /* Lightbox Styles */
+    #av-events-page-wrapper .lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #av-events-page-wrapper .lightbox.active {
+        display: flex;
+    }
+
+    #av-events-page-wrapper .lightbox-content {
+        max-width: 90%;
+        max-height: 80vh;
+        position: relative;
+    }
+
+    #av-events-page-wrapper .lightbox-content img {
+        max-width: 100%;
+        max-height: 80vh;
+        display: block;
+        margin: 0 auto;
+        border: 2px solid white;
+        box-sizing: border-box;
+    }
+
+    #av-events-page-wrapper .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #fff;
+        width: 40px;
+        height: 40px;
+        animation: av-events-spin 1s linear infinite;
+        margin: 0 auto;
+        display: none;
+    }
+
+    @keyframes av-events-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #av-events-page-wrapper .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    #av-events-page-wrapper .caption {
+        margin-top: 15px;
+        color: #fff;
+        text-align: center;
+        font-size: 1.1rem;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 90%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Glitch Fonts */
+    #av-events-page-wrapper .font1 { font-family: Arial, sans-serif; }
+    #av-events-page-wrapper .font2 { font-family: 'Times New Roman', serif; }
+    #av-events-page-wrapper .font3 { font-family: 'Courier New', monospace; }
+    #av-events-page-wrapper .font4 { font-family: Impact, sans-serif; }
+    #av-events-page-wrapper .font5 { font-family: Georgia, serif; }
+    #av-events-page-wrapper .font6 { font-family: Verdana, sans-serif; }
+
+    @media (max-width: 600px) {
+        #av-events-page-wrapper .event-title { font-size: 1.3rem; }
+    }
+</style>
+
+<script>
+(function() {
+    // --- INIT GUARD ---
+    if (window.avEventsInitialized) return;
+    window.avEventsInitialized = true;
+
+    // --- GLITCH EFFECT (title only) ---
+    const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+    const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+    const katakanaMap = {
+        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+    };
+
+    function changeFontRandomly(span) {
+        if (!span.dataset.original) {
+            span.dataset.original = span.innerText;
+        }
+        fontClasses.forEach(c => span.classList.remove(c));
+        const randomIndex = Math.floor(Math.random() * fontClasses.length);
+        span.classList.add(fontClasses[randomIndex]);
+
+        if (Math.random() < 0.05) {
+            const originalChar = span.dataset.original.toUpperCase();
+            if (katakanaMap[originalChar]) {
+                span.innerText = katakanaMap[originalChar];
+            }
+        } else {
+            span.innerText = span.dataset.original;
+        }
+
+        const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+        setTimeout(() => changeFontRandomly(span), interval);
+    }
+
+    function changeColorRandomly(span) {
+        const randomColorIndex = Math.floor(Math.random() * colors.length);
+        span.style.color = colors[randomColorIndex];
+        const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+        setTimeout(() => changeColorRandomly(span), interval);
+    }
+
+    const wrapper = document.getElementById('av-events-page-wrapper');
+    if (!wrapper) return;
+
+    wrapper.querySelectorAll('.glitch-char').forEach(span => {
+        changeFontRandomly(span);
+        changeColorRandomly(span);
+    });
+
+    // --- EVENTS LOGIC ---
+    const list = wrapper.querySelector('#events-list');
+    const loadingMsg = wrapper.querySelector('#loading-message');
+
+    // REPO CONFIG
+    const REPO_BASE = 'https://raw.githack.com/cju-media/personal-website/main/av-events/';
+    const JSON_URL = REPO_BASE + 'events.json?t=' + Date.now();
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        // Avoid timezone shift on plain YYYY-MM-DD strings
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        return dateStr;
+    }
+
+    function renderEvents(events) {
+        list.innerHTML = '';
+
+        if (!events || events.length === 0) {
+            list.innerHTML = '<div class="empty-state">No events yet &mdash; check back soon!</div>';
+            return;
+        }
+
+        events.forEach(event => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+
+            const title = document.createElement('h2');
+            title.className = 'event-title';
+            title.textContent = event.title || 'Untitled Event';
+            card.appendChild(title);
+
+            const meta = document.createElement('div');
+            meta.className = 'event-meta';
+            if (event.date) {
+                const dateSpan = document.createElement('span');
+                dateSpan.textContent = formatDate(event.date);
+                meta.appendChild(dateSpan);
+            }
+            if (event.location) {
+                const locSpan = document.createElement('span');
+                locSpan.textContent = event.location;
+                meta.appendChild(locSpan);
+            }
+            if (meta.children.length) card.appendChild(meta);
+
+            if (event.description) {
+                const desc = document.createElement('div');
+                desc.className = 'event-description';
+                desc.textContent = event.description;
+                card.appendChild(desc);
+            }
+
+            const photos = event.photos || [];
+            if (photos.length) {
+                const grid = document.createElement('div');
+                grid.className = 'photos-grid';
+
+                photos.forEach(photo => {
+                    const item = document.createElement('div');
+                    item.className = 'photo-item';
+
+                    const src = REPO_BASE + photo.src;
+
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.loading = 'lazy';
+                    img.alt = photo.caption || event.title || 'Event photo';
+                    img.onload = () => img.classList.add('loaded');
+
+                    item.appendChild(img);
+                    item.addEventListener('click', () => openLightbox(photo, src, event.title));
+
+                    grid.appendChild(item);
+                });
+
+                card.appendChild(grid);
+            }
+
+            list.appendChild(card);
+        });
+    }
+
+    fetch(JSON_URL)
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load events manifest');
+            return response.json();
+        })
+        .then(events => {
+            loadingMsg.style.display = 'none';
+
+            // Newest first
+            const sorted = [...events].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            renderEvents(sorted);
+        })
+        .catch(err => {
+            console.error(err);
+            loadingMsg.textContent = 'Error loading events.';
+            loadingMsg.style.color = 'red';
+        });
+
+    // --- LIGHTBOX ---
+    const lightbox = wrapper.querySelector('#lightbox-modal');
+    const lightboxImg = wrapper.querySelector('#lightbox-img');
+    const lightboxCaption = wrapper.querySelector('#lightbox-caption');
+    const lightboxSpinner = wrapper.querySelector('#lightbox-spinner');
+    const closeBtn = wrapper.querySelector('.close-btn');
+
+    function openLightbox(photo, src, eventTitle) {
+        lightboxImg.style.display = 'none';
+        lightboxSpinner.style.display = 'block';
+        lightboxImg.src = '';
+
+        lightboxImg.src = src;
+        lightboxImg.onload = () => {
+            lightboxSpinner.style.display = 'none';
+            lightboxImg.style.display = 'block';
+        };
+
+        lightboxCaption.textContent = photo.caption || eventTitle || '';
+        lightbox.classList.add('active');
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
+})();
+</script>
