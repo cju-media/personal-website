@@ -127,6 +127,74 @@
             color: #666;
             font-size: 1.2rem;
         }
+
+        /* Parts Modal Styles */
+        #parts-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        #parts-modal-content {
+            background: #222;
+            color: #ddd;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        #parts-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        #parts-modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding: 0 30px;
+            color: #d3d3d3;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        #parts-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            #parts-modal-content {
+                padding: 20px 15px;
+                width: 95%;
+            }
+            #parts-modal-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 
     <div class="text-block1">
@@ -155,6 +223,15 @@
 
         <div id="button-container">
             <div class="loading">Loading arrangements...</div>
+        </div>
+    </div>
+
+    <!-- Parts Modal -->
+    <div id="parts-modal-overlay">
+        <div id="parts-modal-content">
+            <button id="parts-modal-close">&times;</button>
+            <h2 id="parts-modal-title">Parts</h2>
+            <div id="parts-list-container"></div>
         </div>
     </div>
 
@@ -253,6 +330,78 @@
                 const apiUrl = 'https://api.github.com/repos/cju-media/Scores/git/trees/main?recursive=1';
                 const repoUrlBase = 'https://github.com/cju-media/Scores/tree/main/Arrangements/';
 
+                // Build a glitchy repo-button styled item, matching the arrangement list buttons
+                function buildGlitchButton(labelText) {
+                    const link = document.createElement('a');
+                    link.className = 'repo-button';
+
+                    for (let char of labelText) {
+                        const span = document.createElement('span');
+                        span.textContent = char;
+                        span.className = 'button-char';
+                        span.dataset.original = char;
+                        link.appendChild(span);
+                    }
+
+                    link.addEventListener('mouseenter', () => {
+                        link.querySelectorAll('.button-char').forEach(span => Glitch.start(span, false));
+                    });
+                    link.addEventListener('mouseleave', () => {
+                        link.querySelectorAll('.button-char').forEach(span => Glitch.stop(span));
+                    });
+
+                    return link;
+                }
+
+                // Function to open the Parts modal with one item per part
+                function openPartsModal(titleText, partsFiles) {
+                    const modal = document.getElementById('parts-modal-overlay');
+                    if (!modal) return;
+
+                    const title = document.getElementById('parts-modal-title');
+                    const list = document.getElementById('parts-list-container');
+                    if (title) title.textContent = titleText + ' \u2014 Parts';
+                    list.innerHTML = '';
+
+                    partsFiles
+                        .slice()
+                        .sort((a, b) => a.label.localeCompare(b.label))
+                        .forEach(part => {
+                            const link = buildGlitchButton(part.label);
+                            link.href = part.url;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            list.appendChild(link);
+                        });
+
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+
+                // Parts modal close logic
+                const partsOverlay = document.getElementById('parts-modal-overlay');
+                if (partsOverlay) {
+                    const partsCloseBtn = document.getElementById('parts-modal-close');
+                    const closePartsModal = () => {
+                        partsOverlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                    };
+
+                    if (partsCloseBtn) partsCloseBtn.addEventListener('click', closePartsModal);
+                    partsOverlay.addEventListener('click', (e) => {
+                        if (e.target === partsOverlay) closePartsModal();
+                    });
+
+                    if (!window.arrangementsPartsKeydownAttached) {
+                        document.addEventListener('keydown', (e) => {
+                            if (partsOverlay.style.display === 'flex' && e.key === 'Escape') {
+                                closePartsModal();
+                            }
+                        });
+                        window.arrangementsPartsKeydownAttached = true;
+                    }
+                }
+
                 fetch(apiUrl)
                     .then(response => {
                         if (!response.ok) {
@@ -276,6 +425,14 @@
                                     if (dirName && dirName !== '') {
                                         if (!directoriesData[dirName]) {
                                             directoriesData[dirName] = { files: [], path: dirName };
+                                        }
+                                        if (parts.length > 1) {
+                                            // It's a file inside the directory
+                                            directoriesData[dirName].files.push({
+                                                name: parts.slice(1).join('/'),
+                                                path: item.path,
+                                                type: item.type
+                                            });
                                         }
                                     }
                                 }
@@ -317,6 +474,27 @@
                                 const chars = link.querySelectorAll('.button-char');
                                 chars.forEach(span => Glitch.stop(span));
                             });
+
+                            // Collect individual part files (PDFs living inside the 'Parts' folder)
+                            const partsFiles = dir.files
+                                .filter(f => f.name.toLowerCase().startsWith('parts/') && f.name.toLowerCase().endsWith('.pdf'))
+                                .map(f => {
+                                    const subPath = f.name.substring(f.name.indexOf('/') + 1); // strip 'Parts/'
+                                    const baseName = subPath.replace(/\.pdf$/i, '');
+                                    const label = baseName.split(' - ').pop().trim() || baseName;
+                                    return {
+                                        label: label,
+                                        url: `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Arrangements/${encodeURIComponent(dir.path)}/Parts/${encodeURIComponent(subPath)}`
+                                    };
+                                });
+
+                            // If this arrangement has parts, clicking the button opens the parts modal
+                            if (partsFiles.length) {
+                                link.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    openPartsModal(dir.path, partsFiles);
+                                });
+                            }
 
                             container.appendChild(link);
                         });
