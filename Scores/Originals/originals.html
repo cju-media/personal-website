@@ -312,6 +312,34 @@
             font-size: 2rem;
         }
 
+        #parts-sort-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        #parts-sort-toggle button {
+            padding: 6px 14px;
+            background: #333;
+            color: #aaa;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        #parts-sort-toggle button:hover {
+            color: #fff;
+        }
+
+        #parts-sort-toggle button.active {
+            background: #555;
+            color: #fff;
+        }
+
         #parts-list-container {
             display: flex;
             flex-direction: column;
@@ -368,6 +396,10 @@
         <div id="parts-modal-content">
             <button id="parts-modal-close">&times;</button>
             <h2 id="parts-modal-title">Parts</h2>
+            <div id="parts-sort-toggle">
+                <button type="button" data-sort="score" class="active">Score order</button>
+                <button type="button" data-sort="alpha">A-Z</button>
+            </div>
             <div id="parts-list-container"></div>
         </div>
     </div>
@@ -705,26 +737,88 @@
                     return link;
                 }
 
+                // Standard orchestral score order (top of the score to the bottom).
+                // More specific terms are matched before generic ones (longest-first).
+                const ORCHESTRAL_ORDER = [
+                    'piccolo', 'alto flute', 'flute',
+                    'oboe d\'amore', 'oboe', 'english horn', 'cor anglais',
+                    'e-flat clarinet', 'bass clarinet', 'contrabass clarinet', 'clarinet',
+                    'contrabassoon', 'double bassoon', 'bassoon',
+                    'soprano saxophone', 'alto saxophone', 'tenor saxophone', 'baritone saxophone', 'saxophone',
+                    'horn in f', 'french horn', 'horn',
+                    'piccolo trumpet', 'trumpet', 'cornet', 'flugelhorn',
+                    'bass trombone', 'alto trombone', 'trombone',
+                    'euphonium', 'baritone horn',
+                    'tuba', 'contrabass tuba',
+                    'timpani',
+                    'snare drum', 'bass drum', 'cymbals', 'tam-tam', 'triangle', 'tambourine', 'woodblock', 'percussion',
+                    'glockenspiel', 'xylophone', 'vibraphone', 'marimba', 'tubular bells', 'crotales', 'mallets',
+                    'melodica',
+                    'harp',
+                    'piano', 'celesta', 'celeste', 'harpsichord', 'organ',
+                    'synthesizer', 'synth', 'keyboard', 'laptop', 'electronics', 'tape',
+                    'electric guitar', 'bass guitar', 'guitar',
+                    'soprano', 'mezzo-soprano', 'mezzo soprano', 'countertenor', 'contralto', 'alto',
+                    'tenor', 'bass-baritone', 'baritone', 'bass', 'voice', 'vocal',
+                    'choir', 'chorus', 'satb',
+                    'violin ii', 'violin 2', 'violin i', 'violin 1', 'violin',
+                    'viola', 'violoncello', 'cello',
+                    'double bass', 'contrabass', 'string bass'
+                ];
+                const ORCHESTRAL_ORDER_BY_LENGTH = ORCHESTRAL_ORDER.slice().sort((a, b) => b.length - a.length);
+
+                function orchestralRank(label) {
+                    // For combined parts ("Flute and Mezzo-Soprano") rank by the first-listed instrument
+                    const s = label.toLowerCase().split(/\s+(?:and|&|\+|\/|,)\s+/)[0].trim();
+                    for (const key of ORCHESTRAL_ORDER_BY_LENGTH) {
+                        if (s.indexOf(key) !== -1) return ORCHESTRAL_ORDER.indexOf(key);
+                    }
+                    return 999; // Unknown instruments sort to the end (alphabetically among themselves)
+                }
+
+                let currentPartsFiles = [];
+                let currentPartsSort = 'score'; // 'score' = orchestral order, 'alpha' = A-Z
+
+                function renderPartsList() {
+                    const list = document.getElementById('parts-list-container');
+                    if (!list) return;
+                    list.innerHTML = '';
+
+                    const sorted = currentPartsFiles.slice().sort((a, b) => {
+                        if (currentPartsSort === 'score') {
+                            const diff = orchestralRank(a.label) - orchestralRank(b.label);
+                            if (diff !== 0) return diff;
+                        }
+                        return a.label.localeCompare(b.label, undefined, { numeric: true });
+                    });
+
+                    sorted.forEach(part => {
+                        const link = buildGlitchButton(part.label);
+                        link.href = part.url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        list.appendChild(link);
+                    });
+                }
+
+                function updatePartsSortUI() {
+                    document.querySelectorAll('#parts-sort-toggle button').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.sort === currentPartsSort);
+                    });
+                }
+
                 // Function to open the Parts modal with one item per part
                 function openPartsModal(titleText, partsFiles) {
                     const modal = document.getElementById('parts-modal-overlay');
                     if (!modal) return;
 
                     const title = document.getElementById('parts-modal-title');
-                    const list = document.getElementById('parts-list-container');
                     if (title) title.textContent = titleText + ' \u2014 Parts'; // em dash via escape so it renders regardless of page charset
-                    list.innerHTML = '';
 
-                    partsFiles
-                        .slice()
-                        .sort((a, b) => a.label.localeCompare(b.label))
-                        .forEach(part => {
-                            const link = buildGlitchButton(part.label);
-                            link.href = part.url;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            list.appendChild(link);
-                        });
+                    currentPartsFiles = partsFiles;
+                    currentPartsSort = 'score';
+                    updatePartsSortUI();
+                    renderPartsList();
 
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
@@ -746,6 +840,14 @@
                     if (partsCloseBtn) partsCloseBtn.addEventListener('click', closePartsModal);
                     partsOverlay.addEventListener('click', (e) => {
                         if (e.target === partsOverlay) closePartsModal();
+                    });
+
+                    document.querySelectorAll('#parts-sort-toggle button').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            currentPartsSort = btn.dataset.sort;
+                            updatePartsSortUI();
+                            renderPartsList();
+                        });
                     });
 
                     if (!window.originalsPartsKeydownAttached) {
