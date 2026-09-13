@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="logo">cju.media</a>
+    <nav class="primary-nav">
+      {% for item in nav %}
+      <div class="nav-item">
+        <a href="{{ item.href }}">{{ item.label }}{% if item.children %}<span class="nav-caret">▾</span>{% endif %}</a>
+        {% if item.children %}
+        <div class="nav-folder">
+          {% for child in item.children %}
+          <a href="{{ child.href }}"{% if child.external %} target="_blank" rel="noopener"{% endif %}>{{ child.label }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </nav>
+  </div>
+</header>

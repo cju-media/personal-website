@@ -1,0 +1,219 @@
+:root{
+  /* The real site is NOT dark throughout — only the header/footer bars are.
+     The content well (<main>) is a light grey, with dark grey body text.
+     Measured directly off the live site: header #473f3e, main #dbdbdb,
+     footer #1b1c1d, body text #4d4d4d. */
+  --bg: #dbdbdb;            /* main content surface */
+  --header-bg: #473f3e;     /* header bar */
+  --footer-bg: #1b1c1d;     /* footer bar (darker than the header, on purpose) */
+  --ink: #333333;           /* headings on the light surface */
+  --ink-dim: #4d4d4d;       /* body copy on the light surface */
+  --ink-faint: #8a8a8a;     /* muted/secondary text on the light surface */
+  --nav-ink: rgba(194,201,204,.78);   /* nav links — sit on the dark header */
+  --nav-ink-hover: #f1eee9;           /* nav link hover — dark header */
+  --logo-ink: #a0a4a7;                /* logo — dark header */
+  --rule: rgba(0,0,0,.14);            /* borders/dividers on the light surface */
+  --accent: #b98a5a;                  /* accent on dark surfaces (header/footer) */
+  --accent-content: #8c5a2b;          /* darker accent for use on the light surface */
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--footer-bg);
+  color:var(--ink-dim);
+  font-family:'Cormorant', Georgia, serif;
+  font-size:17px;
+  line-height:1.55;
+}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+
+/* ---------- Header / nav ---------- */
+header.site-header{
+  background:var(--header-bg);
+  position:relative;
+  z-index:50;
+}
+.header-inner{
+  max-width:1400px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:22px 40px;
+}
+.logo{
+  font-family:'Cormorant SC', 'Cormorant', serif;
+  font-weight:500;
+  font-size:19px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--logo-ink);
+  white-space:nowrap;
+}
+nav.primary-nav{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  column-gap:26px;
+  row-gap:6px;
+  font-family:'Barlow Condensed', sans-serif;
+}
+.nav-item{position:relative;z-index:1;}
+/* Raise the whole item (link + its floating panel) above sibling nav
+   items when open — otherwise a neighboring item's link text, painted
+   later in DOM order, shows through on top of this item's dropdown. */
+.nav-item:hover, .nav-item:focus-within, .nav-item.open{z-index:30;}
+.nav-item > a{
+  display:block;
+  font-size:15px;
+  font-weight:400;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--nav-ink);
+  padding:6px 2px;
+  transition:color .2s ease;
+}
+.nav-item:hover > a, .nav-item:focus-within > a{color:var(--nav-ink-hover);}
+.nav-folder{
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:var(--header-bg);
+  border:1px solid var(--rule);
+  min-width:200px;
+  padding:10px 0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease;
+  box-shadow:0 12px 24px rgba(0,0,0,.35);
+}
+.nav-item:hover .nav-folder, .nav-item:focus-within .nav-folder, .nav-item.open .nav-folder{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateX(-50%) translateY(0);
+}
+.nav-folder a{
+  display:block;
+  padding:8px 20px;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--nav-ink);
+  white-space:nowrap;
+}
+.nav-folder a:hover{color:var(--accent);background:rgba(255,255,255,.03);}
+.nav-caret{
+  display:inline-block;
+  margin-left:5px;
+  font-size:10px;
+  transition:transform .2s ease;
+  vertical-align:1px;
+}
+.nav-item.open .nav-caret{transform:rotate(180deg);}
+
+/* Dropdowns always float (position:absolute) — they overlay the page,
+   they never push sibling nav items around, on any screen size. */
+@media (max-width:980px){
+  .header-inner{flex-direction:column;align-items:flex-start;padding:18px 20px;gap:14px;}
+  nav.primary-nav{justify-content:flex-start;column-gap:18px;}
+  .nav-folder{
+    left:0;
+    transform:translateY(4px);
+    min-width:190px;
+    max-width:min(80vw,260px);
+  }
+  .nav-item:hover .nav-folder, .nav-item:focus-within .nav-folder, .nav-item.open .nav-folder{
+    transform:translateY(0);
+  }
+}
+
+/* ---------- Footer ---------- */
+footer.site-footer{
+  background:var(--footer-bg);
+  margin-top:70px;
+  padding:40px 20px 34px;
+  text-align:center;
+  font-family:'Barlow Condensed', sans-serif;
+}
+.footer-links{
+  display:flex;
+  justify-content:center;
+  gap:22px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+  font-size:14px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.footer-links a{color:var(--nav-ink);border-bottom:1px solid transparent;}
+.footer-links a:hover{color:var(--accent);border-color:var(--accent);}
+.footer-fine{color:var(--ink-faint);font-size:13px;letter-spacing:.04em;}
+
+/* ---------- Plain content pages (pages authored directly for the new
+   site, without their own Squarespace-block styling) ---------- */
+.content-page{
+  max-width:760px;
+  margin:0 auto;
+  padding:50px 24px 90px;
+}
+.content-page h1{
+  font-family:'Cormorant SC', 'Cormorant', serif;
+  font-weight:500;
+  font-size:clamp(28px,4vw,42px);
+  letter-spacing:.04em;
+  color:var(--ink);
+  text-transform:uppercase;
+  margin:0 0 30px;
+}
+.content-page h2{
+  font-family:'Barlow Condensed', sans-serif;
+  font-weight:500;
+  font-size:20px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--accent-content);
+  margin:36px 0 10px;
+}
+.content-page p{margin:0 0 18px;}
+.content-page ul{margin:0 0 18px;padding-left:1.2em;}
+.content-page li{margin:0 0 10px;}
+.content-page a{color:var(--ink);border-bottom:1px solid var(--rule);}
+.content-page a:hover{color:var(--accent-content);border-color:var(--accent-content);}
+.content-page .section-links{
+  list-style:none;
+  padding:0;
+  display:grid;
+  gap:10px;
+}
+.content-page .section-links a{
+  display:block;
+  border:1px solid var(--rule);
+  padding:14px 18px;
+  font-family:'Barlow Condensed', sans-serif;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-size:15px;
+  color:var(--ink);
+}
+.content-page .section-links a:hover{border-color:var(--accent-content);background:rgba(0,0,0,.03);}
+.content-page .stub-note{
+  color:var(--ink-faint);
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:14px;
+  letter-spacing:.03em;
+  font-style:italic;
+}
+
+/* ---------- Page content wrapper (per-page content sits inside this) ---------- */
+main{
+  display:block;
+  background:var(--bg);
+  color:var(--ink-dim);
+  padding-top:48px;
+}
+main > *{max-width:2000px;margin-left:auto;margin-right:auto;}
+main .bio-container{padding:0 40px 10px;}
+@media (max-width:768px){main .bio-container{padding:0 20px 10px;}}

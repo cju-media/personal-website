@@ -1,0 +1,13 @@
+{% for item in nav %}
+{% if item.label == sectionLabel %}
+<div class="content-page">
+  <h1>{{ item.label }}</h1>
+  {% if sectionIntro %}<p>{{ sectionIntro | safe }}</p>{% endif %}
+  <ul class="section-links">
+    {% for child in item.children %}
+    <li><a href="{{ child.href }}"{% if child.external %} target="_blank" rel="noopener"{% endif %}>{{ child.label }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endfor %}

@@ -1,0 +1,48 @@
+# Old Squarespace URLs → new nested URLs. Cloudflare Pages reads this file
+# from the output root and serves each as a real 301, so old bookmarks and
+# search results land on the right page instead of 404ing.
+
+/about              /about/                       301
+/bio                /about/bio/                   301
+/resume             /about/resume/                301
+/education          /about/education/             301
+/ensembles          /about/ensembles/              301
+/press              /about/press/                 301
+/awards             /about/awards/                301
+
+/music-2            /music/                       301
+/arrangements       /music/arrangements/          301
+/originals          /music/originals/             301
+/media-scores       /music/media-scores/          301
+
+/videoart2          /video-art/                   301
+/videoart           /video-art/highlights/        301
+
+/conductor          /conductor/                   301
+/director/new-music-ensemble  /conductor/new-music-ensemble/  301
+/director/laptop-ensemble     /conductor/laptop-ensemble/     301
+/director/pile-of-wires       /conductor/pile-of-wires/       301
+
+/max-programming    /max-programming/             301
+/max                /max-programming/max/         301
+/programming        /max-programming/programming/ 301
+/vst                /max-programming/vst/         301
+/webdev             /max-programming/webdev/      301
+/externals          /max-programming/externals/   301
+
+/av-engineering             /av-engineering/               301
+/media/avengineering        /av-engineering/production/    301
+/highlights/media           /av-engineering/highlights/    301
+/media/podcasts             /av-engineering/podcasts/      301
+/media/video-editing        /av-engineering/video-editing/ 301
+/media/gear                 /av-engineering/gear/          301
+
+/affects            /affects/                     301
+/list               /affects/list/                301
+/photos             /affects/photos/              301
+/way                /affects/way/                 301
+
+/tools              /tools/                       301
+/stream-setup       /tools/stream-setup/          301
+/scales             /tools/scales/                301
+/hars               /tools/harvard-sentences/     301

@@ -1,0 +1,8 @@
+<footer class="site-footer">
+  <div class="footer-links">
+    {% for link in footerLinks %}
+    <a href="{{ link.href }}"{% if link.href.indexOf('http') == 0 %} target="_blank" rel="noopener"{% endif %}>{{ link.label }}</a>
+    {% endfor %}
+  </div>
+  <div class="footer-fine">Cameron Johnston-Ushijima — cju.media</div>
+</footer>

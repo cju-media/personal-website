@@ -1,0 +1,986 @@
+<script>
+    // Squarespace stub for standalone testing if needed
+    if (typeof Squarespace === 'undefined') {
+        var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
+        var Y = null;
+    }
+    // Media pool — baked in at build time from src/_data/media.json, no
+    // network fetch. Kept as a function returning a Promise so every
+    // existing `loadMedia().then(mediaData => ...)` call site below is
+    // unchanged.
+    const MEDIA_DATA = {{ media | dump | safe }};
+    function loadMedia() {
+        return Promise.resolve(MEDIA_DATA);
+    }
+
+    // Size the hero to exactly fill the viewport below the header, so the
+    // name centers in the actual visible window (not just within its own
+    // box) and the first tile below it sits right at the fold — no extra
+    // scroll needed to start revealing it. Runs independently of the
+    // loadMedia() fetch above so it doesn't wait on a network round trip.
+    function sizeHero() {
+        const container1 = document.querySelector('.container1');
+        const textBlock = document.querySelector('.text-block1');
+        if (!container1) return;
+        container1.style.height = '';
+        container1.style.minHeight = '';
+        const top = container1.getBoundingClientRect().top;
+        const h = Math.max(window.innerHeight - top, 320);
+        container1.style.height = h + 'px';
+        container1.style.minHeight = h + 'px';
+
+        // .text-block1's top:50% (from the stylesheet) centers it within
+        // container1's own box, not the viewport — container1 starts below
+        // the header, so that's off from true viewport-center by half the
+        // header's height. Override with the exact pixel offset (within
+        // container1) whose center lands at innerHeight/2.
+        if (textBlock) {
+            const centerPx = Math.max(window.innerHeight / 2 - top, 60);
+            textBlock.style.top = centerPx + 'px';
+        }
+    }
+    Squarespace.onInitialize(Y, sizeHero);
+    window.addEventListener('resize', sizeHero);
+
+    Squarespace.onInitialize(Y, init1)
+
+    function init1() {
+        loadMedia().then(mediaData => {
+            if (!mediaData) return;
+
+            // --- SETTINGS ---------------------------------------
+            let staggerTime = 0.7;
+            // ----------------------------------------------------
+
+            // CHECK SESSION STORAGE
+            const visited = sessionStorage.getItem('visited');
+            if (!visited) {
+                sessionStorage.setItem('visited', 'true');
+            }
+
+            // 1. Setup Headshots
+            var headshots = mediaData.headshots || [];
+            if (headshots.length > 0) {
+                var randomIndexHeadshots1 = Math.floor(Math.random() * headshots.length);
+                var headshot1 = headshots[randomIndexHeadshots1];
+                var myHeadshot1 = document.getElementById("myHeadshot1");
+                if(myHeadshot1) myHeadshot1.src = headshot1;
+            }
+
+            // Continue with letters setup...
+            setupLetters(staggerTime);
+        });
+    }
+
+    function setupLetters(staggerTime) {
+        // 2. Setup Letters
+        const columns = document.querySelectorAll('.text-block1 h1');
+        const allLetters = []; // Store elements to avoid requerying
+
+        // Phase 1: Setup initial state (teleport)
+        columns.forEach((col, colIndex) => {
+            const letters = col.querySelectorAll('.span-class');
+            letters.forEach((span, index) => {
+                span.dataset.wordIndex = colIndex;
+                // Store index for delay calculation later
+                span.dataset.charIndex = index;
+                allLetters.push(span);
+
+                // Keep the wide fly-in range
+                const randomX = (Math.random() - 0.5) * 2400;
+                const randomY = (Math.random() - 0.5) * 2400;
+                const randomRotate = (Math.random() - 0.5) * 360;
+
+                // Disable transition temporarily to apply initial state instantly
+                span.style.transition = 'none';
+                span.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+                span.style.opacity = "0";
+            });
+        });
+
+        // Phase 2: Force Reflow
+        void document.body.offsetWidth;
+
+        // Phase 3: Arm transition
+        allLetters.forEach((span) => {
+             // Restore CSS transition
+            span.style.transition = '';
+            // Delay is based on character index (column), so C, J, U (index 0) animate together
+            const charIndex = parseInt(span.dataset.charIndex);
+            span.style.transitionDelay = `${charIndex * staggerTime}s`;
+        });
+
+        // 3. Setup Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const letters = entry.target.querySelectorAll('.span-class');
+                    letters.forEach((letter) => {
+                        letter.classList.add('landed');
+                    });
+                    entry.target.classList.add('show1');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const textBlock = document.querySelector('.text-block1');
+        if(textBlock) observer.observe(textBlock);
+
+        const hiddenElements = document.querySelectorAll('.hidden1');
+        hiddenElements.forEach((el) => observer.observe(el));
+
+        // 3a. Setup Visibility Observer for Optimization
+        let isHeaderVisible = true;
+        const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isHeaderVisible = entry.isIntersecting;
+                if (isHeaderVisible) {
+                    // Restart loops if stopped
+                     const allSpans = document.querySelectorAll('.text-block1 .span-class');
+                     allSpans.forEach(span => {
+                         if (span.dataset.looping !== "true") {
+                             changeFontRandomly(span);
+                             changeColorRandomly(span);
+                         }
+                     });
+                }
+            });
+        });
+        const container1 = document.querySelector('.container1');
+        if (container1) visibilityObserver.observe(container1);
+
+        // 4. Animation Loops
+        const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+        const colors = ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'];
+        const katakanaMap = {
+            'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+            'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+            'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+            'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+            'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+        };
+
+        function changeFontRandomly(span) {
+            span.dataset.looping = "true";
+            if (!isHeaderVisible) {
+                span.dataset.looping = "false";
+                return;
+            }
+
+            if (!span.dataset.original) {
+                span.dataset.original = span.innerText;
+            }
+            fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+            const randomIndex = Math.floor(Math.random() * fontClasses.length);
+            span.classList.add(fontClasses[randomIndex]);
+
+            if (Math.random() < 0.05) {
+                const originalChar = span.dataset.original.toUpperCase();
+                const wordIndex = parseInt(span.dataset.wordIndex);
+
+                if (wordIndex === 2 && originalChar === 'J') {
+                     span.innerText = '島';
+                }
+                else if (katakanaMap[originalChar]) {
+                    span.innerText = katakanaMap[originalChar];
+                }
+            } else {
+                span.innerText = span.dataset.original;
+            }
+
+            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+            setTimeout(() => changeFontRandomly(span), interval);
+        }
+
+        function changeColorRandomly(span) {
+            if (!isHeaderVisible) return;
+
+            const randomColorIndex = Math.floor(Math.random() * colors.length);
+            span.style.color = colors[randomColorIndex];
+            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+            setTimeout(() => changeColorRandomly(span), interval);
+        }
+
+        const allSpans = document.querySelectorAll('.text-block1 .span-class');
+        allSpans.forEach(span => {
+            changeFontRandomly(span);
+            changeColorRandomly(span);
+        });
+    }
+</script>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+    /* REMOVED THE HTML/BODY LOCK HERE */
+
+    .font1 { font-family: Arial, sans-serif; }
+    .font2 { font-family: "Times New Roman", serif; }
+    .font3 { font-family: "Courier New", monospace; }
+    .font4 { font-family: "essay-text", monospace; }
+    .font5 { font-family: 'Playfair Display', serif; }
+    .font6 { font-family: 'VT323', monospace; font-size: 1.1em; }
+
+    .container1 {
+        /* FIXED HEIGHT SECTION: Prevents vertical shaking */
+        position: relative;
+
+        /* FULL WIDTH HACK FOR SQUARESPACE */
+        /* This ensures the container spans the full screen width */
+        width: 100vw;
+        left: 50%;
+        margin-left: -50vw;
+
+        /* THE FIX: Hide overflow LOCALLY */
+        /* This stops the horizontal scrollbar from appearing */
+        /* while still allowing the letters to appear from the edges */
+        overflow: hidden;
+
+        /* Fills the viewport on load, so the name sits centered in the
+           window (via .text-block1's own centering below) and the first
+           tile below it is just out of view — one small scroll away. */
+        height: 100vh;
+        min-height: 100vh;
+
+        /* LAYOUT CONTAINMENT: the glitching letters constantly swap fonts
+           (including one, font6, that bumps font-size — which changes that
+           letter's own box size since it's sized in em). Without this, that
+           can ripple out and nudge the tiles below up and down. `contain`
+           walls this box off as its own layout subtree so nothing inside it
+           can ever affect anything outside it. */
+        contain: layout;
+    }
+
+    .image-left1 {
+        flex: 0 1 35vw;
+        max-width: 450px;
+    }
+
+    .text-block1 {
+        /* ABSOLUTE POSITIONING: Centers text and ignores layout flow */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 40px;
+        perspective: 1000px;
+        width: 100%;
+
+        /* Prevent FOUC: Initially hidden, revealed by JS */
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .text-block1 br { display: none !important; }
+
+    .text-block1 h1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: clamp(16px, 3.5vw, 40px);
+        font-weight: normal;
+        margin: 0;
+        padding: 0;
+        line-height: 1.1;
+        height: auto;
+        width: auto;
+    }
+
+    .span-class {
+        /* FIXED LETTER SIZE */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 1.4em;
+        height: 1.4em;
+        overflow: hidden;
+
+        z-index: 4;
+        position: relative;
+        will-change: transform, opacity;
+        transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+        margin-bottom: 5px;
+        opacity: 1;
+    }
+
+    .span-class.landed {
+        transform: translate(0, 0) rotate(0deg) !important;
+        opacity: 1 !important;
+    }
+
+    @media only screen and (max-width: 800px) {
+        .text-block1 {
+            gap: 20px;
+        }
+        .text-block1 h1 {
+            font-size: 6vw;
+        }
+    }
+
+    .hidden1 {
+        opacity: 0;
+        filter: blur(5px);
+        transition: all 1s ease-out;
+    }
+
+    .show1 {
+        opacity: 1;
+        filter: blur(0);
+    }
+</style>
+
+    <div class="container1">
+        <div class="text-block1">
+            <h1>
+                <span class="span-class">C</span><span class="span-class">A</span><span class="span-class">M</span><span class="span-class">E</span><span class="span-class">R</span><span class="span-class">O</span><span class="span-class">N</span>
+            </h1>
+            <br>
+            <h1>
+                <span class="span-class">J</span><span class="span-class">O</span><span class="span-class">H</span><span class="span-class">N</span><span class="span-class">S</span><span class="span-class">T</span><span class="span-class">O</span><span class="span-class">N</span>
+            </h1>
+            <br>
+             <h1>
+                <span class="span-class">U</span><span class="span-class">S</span><span class="span-class">H</span><span class="span-class">I</span><span class="span-class">J</span><span class="span-class">I</span><span class="span-class">M</span><span class="span-class">A</span>
+            </h1>
+        </div>
+    </div>
+
+<div class="hp-mid-wrapper">
+<style>
+    /* 1. WRAPPER & LAYOUT */
+    .hp-mid-wrapper {
+        width: 100%;
+        /* .container1 above is already 100vh tall, so the first tile
+           starts right at the fold on its own — no extra gap needed here.
+           A small nudge keeps it just out of view at load (behind the
+           header's own height) so it still gets to fly in on first scroll. */
+        margin: 0 auto !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: visible;
+    }
+
+    .hp-mid-wrapper section {
+        display: block;
+        text-align: center;
+        width: 95%;
+        max-width: 2000px;
+        margin: 0 auto 100px auto;
+        padding: 0 !important;
+        /* Same reasoning as .container1 above: each tile's own glitch-text
+           hover effect shouldn't be able to nudge its neighbors. */
+        contain: layout;
+    }
+
+    /* 2. THE CONTAINER */
+    .hp-mid-wrapper .image-container,
+    .hp-mid-wrapper .video-container {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        background: #000;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
+    }
+
+    .hp-mid-wrapper .image-container:hover,
+    .hp-mid-wrapper .video-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        z-index: 20;
+    }
+
+    /* 3. VIDEO STACKING */
+    .hp-mid-wrapper .noise-bg {
+        position: absolute !important;
+        top: 0 !important; left: 0 !important;
+        width: 100% !important; height: 100% !important;
+        object-fit: cover !important;
+        z-index: 1;
+        opacity: 1 !important;
+    }
+
+    .hp-mid-wrapper .cropped-image,
+    .hp-mid-wrapper .media-holder,
+    .hp-mid-wrapper .media-holder video,
+    .hp-mid-wrapper .media-holder img,
+    .hp-mid-wrapper .cropped-video {
+        width: 100%;
+        height: 100%;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) scale(1.15) !important;
+        object-fit: cover;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        z-index: 2;
+        opacity: 1;
+        filter: blur(6px);
+        transition: transform 0.8s ease, filter 0.8s ease;
+    }
+
+    .hp-mid-wrapper .image-container:hover .cropped-image,
+    .hp-mid-wrapper .video-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .cropped-video,
+    .hp-mid-wrapper .image-container:hover .media-holder,
+    .hp-mid-wrapper .video-container:hover .media-holder,
+    .hp-mid-wrapper .image-container:hover .media-holder video,
+    .hp-mid-wrapper .video-container:hover .media-holder video,
+    .hp-mid-wrapper .image-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .media-holder img,
+    .hp-mid-wrapper .video-container:hover .cropped-image {
+        filter: blur(0px);
+    }
+
+    /* 4. TEXT OVERLAYS */
+    .hp-mid-wrapper .text-wrapper {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        width: 100%;
+        pointer-events: none;
+    }
+
+    .hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1 {
+        padding: 12px 24px;
+        border-radius: 8px;
+        backdrop-filter: blur(8px);
+        display: inline-block;
+        letter-spacing: 2px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .hp-mid-wrapper .text-overlay { background: rgba(255,255,255,0.7); color: black; }
+    .hp-mid-wrapper .text-overlay1 { background: rgba(0,0,0,0.6); color: white; }
+
+    /* 5. RANDOM FLY-IN ANIMATIONS */
+    .hp-mid-wrapper .hidden-slide {
+        opacity: 0;
+        filter: blur(5px);
+
+        /* CHANGED: Increased time to 2.5s */
+        transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 2.5s ease-out, filter 2.5s ease-out;
+
+        /* CHANGED: Added 0.5s delay */
+        transition-delay: 0.1s;
+
+        will-change: transform, opacity;
+    }
+
+    .hp-mid-wrapper .show-slide {
+        opacity: 1 !important;
+        filter: blur(0px);
+        transform: translate(0, 0) rotate(0deg) !important;
+    }
+
+    .glitch-char { 
+        display: inline-block; 
+    }
+
+    @media screen and (max-width: 768px) {
+        .hp-mid-wrapper { overflow-x: hidden; }
+        .hp-mid-wrapper section { width: 90% !important; margin: 0 auto 50px auto !important; }
+        .hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container { height: 360px !important; }
+    }
+</style>
+
+    <section class="hidden-slide"><a href="/av-engineering/production/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/music/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/music/sound-artist/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+
+    <section class="hidden-slide">
+        <a href="/conductor/laptop-ensemble/" class="video-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <div id='mid-laptop' class='media-holder'></div>
+            <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
+        </a>
+    </section>
+
+    <section class="hidden-slide">
+        <a href="/video-art/highlights/" class="video-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <div id='mid-video' class='media-holder'></div>
+            <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
+        </a>
+    </section>
+
+    <section class="hidden-slide"><a href="/max-programming/programming/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/music/originals/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+    <section class="hidden-slide"><a href="/conductor/new-music-ensemble/" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+    <section class="hidden-slide"><a href="#" class="image-container">
+            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
+
+    <script>
+        (function() {
+            // Wait for media loading
+            loadMedia().then(mediaData => {
+                if(mediaData) initMidSection(mediaData);
+            });
+
+            function initMidSection(mediaData) {
+                const perfVids = mediaData.perfVids || [];
+                const artVids = mediaData.artVids || [];
+                const avPics = mediaData.avPics || [];
+                const compPics = mediaData.compPics || [];
+                const prodPics = mediaData.prodPics || [];
+                const progPics = mediaData.progPics || [];
+                const soundPics = mediaData.soundPics || [];
+                const condPics = mediaData.condPics || [];
+                const lightPics = mediaData.lightPics || [];
+
+                startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
+            }
+
+            function startGlitchAndObserver(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
+                const urns = {};
+                function getNextVideo(elementId, videoList) {
+                    if (!urns[elementId] || urns[elementId].length === 0) {
+                        // Refill and shuffle
+                        urns[elementId] = [...videoList];
+                        // Fisher-Yates shuffle
+                        for (let i = urns[elementId].length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [urns[elementId][i], urns[elementId][j]] = [urns[elementId][j], urns[elementId][i]];
+                        }
+                    }
+                    return urns[elementId].pop();
+                }
+
+                // --- GLITCH EFFECT SETTINGS ---
+            const fontClasses = ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'];
+            const katakanaMap = {
+                'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+            };
+
+            function changeFontRandomly(span) {
+                if (!span.dataset.original) {
+                    span.dataset.original = span.innerText;
+                }
+
+                // CHECK ACTIVE FLAG
+                if (span.dataset.active !== "true") {
+                    // Reset to clean state
+                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                    span.innerText = span.dataset.original;
+                    return;
+                }
+
+                // SLOW BUILD UP LOGIC
+                const now = Date.now();
+                const start = parseInt(span.dataset.hoverStart || 0);
+                const elapsed = now - start;
+                const rampDuration = 600; // Matches CSS transition
+                const rampFactor = Math.min(elapsed / rampDuration, 1);
+
+                if (Math.random() > rampFactor) {
+                    // Build-up phase: keep default and retry quickly
+                    fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                    span.innerText = span.dataset.original;
+                    setTimeout(() => changeFontRandomly(span), 50);
+                    return;
+                }
+
+                fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                const randomIndex = Math.floor(Math.random() * fontClasses.length);
+                span.classList.add(fontClasses[randomIndex]);
+
+                if (Math.random() < 0.05) {
+                    const originalChar = span.dataset.original.toUpperCase();
+                    if (katakanaMap[originalChar]) {
+                        span.innerText = katakanaMap[originalChar];
+                    }
+                } else {
+                    span.innerText = span.dataset.original;
+                }
+
+                // SLOWED DOWN TOP SPEED
+                // Previous: 300-700ms. New: 600-1200ms
+                const interval = Math.floor(Math.random() * (1200 - 600 + 1)) + 600;
+                setTimeout(() => changeFontRandomly(span), interval);
+            }
+
+            function applyGlitchToElements(selector) {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                    // Prevent re-applying if already applied (check if children are spans with class glitch-char)
+                    if (el.querySelector('.glitch-char')) return;
+
+                    const text = el.innerText;
+                    el.innerHTML = ''; // Clear existing text
+                    for (let char of text) {
+                        const span = document.createElement('span');
+                        span.innerText = char;
+                        span.className = 'glitch-char';
+                        // Handle spaces visually
+                        if (char === ' ') {
+                           span.style.whiteSpace = 'pre';
+                        }
+                        el.appendChild(span);
+                        
+                        // DO NOT Start effects immediately
+                        // changeFontRandomly(span);
+                    }
+                });
+            }
+
+            let timeouts = {};
+
+            function swapWithDelay(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder) return;
+
+                if (timeouts[elementId]) clearTimeout(timeouts[elementId]);
+
+                // Clear out the element entirely (except the noise background)
+                const mediaEls = holder.querySelectorAll('img, video');
+                mediaEls.forEach(el => el.remove());
+
+                // Wait 2000ms showing the static background, then inject next
+                setTimeout(() => {
+                    injectMedia(elementId, mediaList);
+                }, 2000);
+            }
+
+            function injectMedia(elementId, mediaList) {
+                const holder = document.getElementById(elementId);
+                if (!holder || !mediaList || mediaList.length === 0) return;
+
+                const url = getNextVideo(elementId, mediaList);
+                const isVideo = url.match(/\.(mp4|mov|webm)(\?.*)?$/i);
+
+                let el;
+                if (isVideo) {
+                    el = document.createElement("video");
+                    el.src = url;
+                    el.className = "cropped-video";
+                    el.autoplay = true;
+                    el.muted = true;
+                    el.playsInline = true;
+
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+
+                    el.onended = () => swapWithDelay(elementId, mediaList);
+
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.oncanplaythrough = resolve;
+                        setTimeout(resolve, 3000);
+                    });
+
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
+                        el.play().catch(() => {});
+                    });
+                } else {
+                    el = document.createElement("img");
+                    el.src = url;
+                    el.className = "cropped-image";
+
+                    el.style.position = "absolute";
+                    el.style.top = "50%";
+                    el.style.left = "50%";
+                    el.style.transform = "translate(-50%, -50%) scale(1.15)";
+                    el.style.width = "100%";
+                    el.style.height = "100%";
+                    el.style.objectFit = "cover";
+
+                    const mediaReadyPromise = new Promise(resolve => {
+                        el.onload = resolve;
+                        el.onerror = resolve;
+                    });
+
+                    mediaReadyPromise.then(() => {
+                        holder.appendChild(el);
+                        const randomDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+                        timeouts[elementId] = setTimeout(() => {
+                            swapWithDelay(elementId, mediaList);
+                        }, randomDelay);
+                    });
+                }
+            }
+
+            function initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics) {
+                const mediaMaps = {
+                    "mid-av": avPics,
+                    "mid-composer": compPics,
+                    "mid-producer": prodPics,
+                    "mid-programmer": progPics,
+                    "sound": soundPics,
+                    "mid-conductor": condPics,
+                    "mid-lighting": lightPics,
+                    "mid-video": artVids,
+                    "mid-laptop": perfVids
+                };
+
+                for (let id in mediaMaps) {
+                    const list = mediaMaps[id];
+                    if (list && list.length > 0) {
+                        injectMedia(id, list);
+                    }
+                }
+
+                
+                // 3. SETUP RANDOM FLY-IN (for scrolling observer)
+                // Note: To avoid breaking the IntersectionObserver (especially on mobile where screen width < 500px),
+                // we set initial transforms via CSS or inline styles in a way that doesn't push the element's bounding box outside the viewport.
+                // The original logic translated elements based on parity.
+                const slides = document.querySelectorAll('.hp-mid-wrapper .hidden-slide');
+                slides.forEach((slide, index) => {
+                    // Apply horizontal translation on all screen sizes for slide-in effect
+                    const direction = index % 2 === 0 ? '-10%' : '10%';
+                    slide.style.transform = `translateX(${direction})`;
+                });
+
+                // 4. SCROLL ANIMATION (Fade in as they enter viewport)
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show-slide');
+                            // Start animations only when visible
+                            // Note: glitch animations are now started on hover/mobile always on, see step 6
+                        }
+                        // Optional: remove class when out of view to re-animate on scroll up
+                        // else {
+                        //     entry.target.classList.remove('show-slide');
+                        // }
+                    });
+                }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
+
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => observer.observe(el));
+
+                // 5. APPLY GLITCH EFFECT
+                applyGlitchToElements('.hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1');
+
+                // 6. SETUP HOVER TRIGGERS — glitch only runs while the pointer
+                // is actually over a tile, on every screen size.
+                document.querySelectorAll('.hp-mid-wrapper .image-container, .hp-mid-wrapper .video-container, .hp-mid-wrapper .media-container').forEach(container => {
+                    container.addEventListener('mouseenter', () => {
+                        const spans = container.querySelectorAll('.glitch-char');
+                        const now = Date.now();
+                        spans.forEach(span => {
+                            span.dataset.active = "true";
+                            span.dataset.hoverStart = now;
+                            changeFontRandomly(span);
+                        });
+                    });
+                    container.addEventListener('mouseleave', () => {
+                        const spans = container.querySelectorAll('.glitch-char');
+                        spans.forEach(span => {
+                            span.dataset.active = "false";
+                        });
+                    });
+                });
+            }
+            const runInit = () => initEverything(perfVids, artVids, avPics, compPics, prodPics, progPics, soundPics, condPics, lightPics);
+
+            if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
+                runInit();
+            } else {
+                const observer = new MutationObserver((mutations, obs) => {
+                    if (document.getElementById('mid-composer') || document.getElementById('mid-av')) {
+                        runInit();
+                        obs.disconnect();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                setTimeout(() => observer.disconnect(), 5000);
+            }
+            } // End startGlitchAndObserver
+        })();
+    </script>
+</div>
+
+    <script>
+        Squarespace.onInitialize(Y, initBio)
+
+        function initBio() {
+            loadMedia().then(mediaData => {
+                if(!mediaData) return;
+
+                var headshots = mediaData.headshots || [];
+                if (headshots.length > 0) {
+                    var randomIndexHeadshots = Math.floor(Math.random() * headshots.length);
+                    var headshot = headshots[randomIndexHeadshots];
+                    var myHeadshot = document.getElementById("myHeadshot");
+                    if (myHeadshot) myHeadshot.src = headshot;
+                }
+
+                startBioObserver();
+            });
+        }
+
+        function startBioObserver() {
+            const hiddenElements = document.querySelectorAll('.bio-hidden');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('bio-show');
+                    } else {
+                        entry.target.classList.remove('bio-show');
+                    }
+                });
+            });
+
+            hiddenElements.forEach((el) => observer.observe(el));
+        }
+    </script>
+
+    <style>
+        /*
+        section {
+            display: grid;
+            place-items: center;
+             min-height: 50vh;
+        }
+        */
+
+        .bio-hidden {
+            opacity: 0;
+            filter: blur(5px);
+            transform:
+                translateX(-100%);
+            transition: all 1s;
+            transition-delay: 500ms;
+
+        }
+
+        .bio-show {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+        }
+
+        .bio-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%; /* Prevent horizontal overflow */
+        }
+
+        .image-left {
+            flex: 1 1 50%;
+            max-width: 50%;
+            width: 50%; /* Force width */
+            height: auto;
+            object-fit: contain;
+            margin-right: 0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            min-width: 0; /* Prevent intrinsic width overflow */
+        }
+
+        .text-block {
+            flex: 1 1 50%;
+            max-width: 50%;
+            width: 50%; /* Force width */
+            text-align: left;
+            padding-left: 20px;
+            box-sizing: border-box;
+            min-width: 0; /* Prevent intrinsic width overflow */
+            word-wrap: break-word; /* Ensure long words break */
+        }
+
+        @media only screen and (max-width: 1000px) {
+            .bio-container {
+                flex-direction: column-reverse;
+            }
+
+            .bio-container img {
+                margin-bottom: 0;
+                margin-top: 20px;
+            }
+            .text-block {
+                flex: 0 0 100%;
+                max-width: 100%;
+                width: 100%;
+                text-align: center;
+                padding-left: 0;
+            }
+            .image-left {
+                flex: 0 0 100%;
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+
+    </style>
+
+    <div class="bio-container bio-hidden">
+        <img id="myHeadshot" class="image-left">
+
+        <div class="text-block">
+            <p>Cameron Johnston-Ushijima is a composer, sound artist, producer, and programmer. He describes himself as “media
+                agnostic” producing works in any medium that fits that particular project. Music and sound has been a
+                part
+                of his life since he was eight years old when he joined the school band. He started on trumpet,
+                eventually
+                switched to tuba for his primary instrument. Cameron started composing in high school where he made
+                arrangements as well as original works for chamber ensembles and wind band.
+
+                Cameron earned his bachelor’s degree in Music Composition from California State University, Long Beach.
+                Here
+                he wrote music for a number of collaborative projects: film, dance, video games, and theatre.
+                Additionally,
+                he gained skills in music production, recording, and mixing. Cameron developed a practice in
+                experimental
+                performance and electronics due to his time in New Music Ensemble and Laptop Ensemble. He values
+                collaborating with other artists, which lead him to his senior project: King George VI. This opera was
+                the
+                culmination of the collaborative work Cameron had developed during his time at CSULB. He has performed
+                original works in a variety of venues in the Los Angeles Area and in New York.
+
+                Cameron is earned his Master’s in Music Composition with Interactive Media from Cal State Long Beach in
+                2022. He graduated with an award in Distinguished Achievement in Creative Activity. He directed the New
+                Music Ensemble where he harbored an environment of creativity and collaboration, allowing the students
+                to
+                compose the bulk of the pieces for performances. He manages the live stream for the ensemble’s recent
+                concerts and mixes the ensemble for those performances. Diving deep into the virtual performance space,
+                Cameron has taken advantage of their all digital concerts by adding audio and visual effects to enhance
+                the
+                performance. He also was the graduate assistant for the university offered Max course and the
+                Logic/Garageband class. He premiered the first two acts of his opera _j0bs at First Congregational
+                Church of
+                Los Angeles.
+
+                Currently Cameron works as an Audio Visual Technician in the Anthropology Department at USC. He also
+                works
+                at First Congregational Church of Los Angeles as an Audio Visual and Live Stream Technician. Cameron
+                works
+                as a freelance AV and live stream tech in the Los Angeles area.</p>
+        </div>
+    </div>

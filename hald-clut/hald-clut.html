@@ -1,0 +1,902 @@
+<div id="hald-clut-page-wrapper">
+    <div class="header-container">
+        <h1>
+            <span class="glitch-char">H</span>
+            <span class="glitch-char">A</span>
+            <span class="glitch-char">L</span>
+            <span class="glitch-char">D</span>
+            <span class="glitch-char">&nbsp;</span>
+            <span class="glitch-char">C</span>
+            <span class="glitch-char">L</span>
+            <span class="glitch-char">U</span>
+            <span class="glitch-char">T</span>
+        </h1>
+    </div>
+
+    <p class="intro-text">
+        Drop in a Hald CLUT image (the square identity-grid PNG a LUT ships as)
+        to see exactly what it does to color. It's applied live, in your
+        browser &mdash; nothing is uploaded anywhere.
+    </p>
+
+    <div class="dropzones">
+        <div class="dropzone" id="clut-dropzone" tabindex="0" role="button" aria-label="Drop or choose a Hald CLUT image">
+            <input type="file" id="clut-file-input" accept="image/*" hidden>
+            <div class="dropzone-inner">
+                <span class="dz-icon">&#8681;</span>
+                <p class="dz-label">Drop Hald CLUT image<br>or click to browse</p>
+                <p class="dz-hint" id="clut-filename">No CLUT loaded</p>
+                <div class="url-row">
+                    <input type="url" class="url-input" id="clut-url-input" placeholder="or paste an image link&hellip;">
+                    <button class="url-btn" id="clut-url-btn" type="button">Load</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropzone" id="photo-dropzone" tabindex="0" role="button" aria-label="Drop or choose an optional test photo">
+            <input type="file" id="photo-file-input" accept="image/*" hidden>
+            <div class="dropzone-inner">
+                <span class="dz-icon">&#9635;</span>
+                <p class="dz-label">Optional: drop your own photo<br>or click to browse</p>
+                <p class="dz-hint" id="photo-filename">Loading sample photo&hellip;</p>
+                <div class="source-toggle" id="source-toggle">
+                    <button class="source-btn active" data-source="photo" type="button">Sample Photo</button>
+                    <button class="source-btn" data-source="chart" type="button">Test Chart</button>
+                </div>
+                <div class="url-row">
+                    <input type="url" class="url-input" id="photo-url-input" placeholder="or paste an image link&hellip;">
+                    <button class="url-btn" id="photo-url-btn" type="button">Load</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status" id="hald-status"></div>
+
+    <div class="preview-area" id="preview-area">
+        <div class="preview-toggle">
+            <button class="toggle-btn active" data-mode="split" type="button">Before / After</button>
+            <button class="toggle-btn" data-mode="after" type="button">Result Only</button>
+            <button class="toggle-btn" data-mode="before" type="button">Original Only</button>
+        </div>
+
+        <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="before-canvas"></canvas>
+            <canvas id="after-canvas"></canvas>
+            <div class="divider" id="divider">
+                <div class="divider-handle">&#8596;</div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="link-btn" id="view-result-btn" type="button">Open Result Link</button>
+            <button class="download-btn" id="download-btn" type="button">Download Result</button>
+        </div>
+        <p class="actions-hint">"Open Result Link" opens the image in a new tab to view, copy, or share &mdash; no file save needed.</p>
+    </div>
+</div>
+
+<style>
+    #hald-clut-page-wrapper {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
+        box-sizing: border-box;
+    }
+
+    #hald-clut-page-wrapper *,
+    #hald-clut-page-wrapper *::before,
+    #hald-clut-page-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    #hald-clut-page-wrapper .header-container h1 {
+        font-family: 'Courier New', Courier, monospace;
+        text-align: center;
+        font-size: min(9vw, 3rem);
+        margin: 0 0 20px 0;
+        letter-spacing: 0.15em;
+        font-weight: normal;
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+
+    #hald-clut-page-wrapper .glitch-char {
+        display: inline-block;
+        width: 0.8em;
+        text-align: center;
+        vertical-align: bottom;
+    }
+
+    #hald-clut-page-wrapper .intro-text {
+        text-align: center;
+        line-height: 1.6;
+        color: #666;
+        max-width: 640px;
+        margin: 0 auto 30px auto;
+    }
+
+    /* Dropzones: 2-column desktop, stacked mobile */
+    #hald-clut-page-wrapper .dropzones {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    #hald-clut-page-wrapper .dropzone {
+        flex: 1 1 0;
+        border: 2px dashed #bbb;
+        border-radius: 10px;
+        padding: 24px 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background-color 0.2s;
+        background: #fafafa;
+    }
+
+    #hald-clut-page-wrapper .dropzone:hover,
+    #hald-clut-page-wrapper .dropzone:focus {
+        border-color: #888;
+        outline: none;
+    }
+
+    #hald-clut-page-wrapper .dropzone.dragover {
+        border-color: #333;
+        background: #f0f0f0;
+    }
+
+    #hald-clut-page-wrapper .dropzone.has-file {
+        border-style: solid;
+        border-color: #4a4a4a;
+    }
+
+    #hald-clut-page-wrapper .dz-icon {
+        display: block;
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        color: #999;
+    }
+
+    #hald-clut-page-wrapper .dz-label {
+        margin: 0 0 6px 0;
+        font-size: 0.95rem;
+        color: #444;
+    }
+
+    #hald-clut-page-wrapper .dz-hint {
+        margin: 0 0 10px 0;
+        font-size: 0.8rem;
+        color: #999;
+        font-family: 'Courier New', Courier, monospace;
+        word-break: break-all;
+    }
+
+    #hald-clut-page-wrapper .source-toggle {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    #hald-clut-page-wrapper .url-row {
+        display: flex;
+        gap: 6px;
+        cursor: default;
+    }
+
+    #hald-clut-page-wrapper .url-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 0.8rem;
+        padding: 7px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        color: #333;
+        cursor: text;
+    }
+
+    #hald-clut-page-wrapper .url-input:focus {
+        outline: none;
+        border-color: #888;
+    }
+
+    #hald-clut-page-wrapper .url-btn {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.75rem;
+        padding: 7px 14px;
+        border: 1px solid #333;
+        background: #333;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 4px;
+        flex: 0 0 auto;
+    }
+
+    #hald-clut-page-wrapper .url-btn:hover {
+        background: #555;
+    }
+
+    #hald-clut-page-wrapper .url-btn:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    #hald-clut-page-wrapper .source-btn {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #666;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    #hald-clut-page-wrapper .source-btn:hover {
+        background: #f0f0f0;
+    }
+
+    #hald-clut-page-wrapper .source-btn.active {
+        background: #4a4a4a;
+        color: #fff;
+        border-color: #4a4a4a;
+    }
+
+    #hald-clut-page-wrapper .status {
+        text-align: center;
+        min-height: 1.4em;
+        font-size: 0.9rem;
+        color: #a33;
+        margin-bottom: 10px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    #hald-clut-page-wrapper .status.info {
+        color: #666;
+    }
+
+    #hald-clut-page-wrapper .preview-area {
+        display: none;
+    }
+
+    #hald-clut-page-wrapper .preview-area.visible {
+        display: block;
+    }
+
+    #hald-clut-page-wrapper .preview-toggle {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    #hald-clut-page-wrapper .toggle-btn {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        padding: 8px 14px;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    #hald-clut-page-wrapper .toggle-btn:hover {
+        background: #f0f0f0;
+    }
+
+    #hald-clut-page-wrapper .toggle-btn.active {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+    }
+
+    #hald-clut-page-wrapper .canvas-wrap {
+        position: relative;
+        width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #eee;
+        line-height: 0;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    #hald-clut-page-wrapper .canvas-wrap canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    #hald-clut-page-wrapper #before-canvas {
+        position: relative;
+    }
+
+    #hald-clut-page-wrapper #after-canvas {
+        clip-path: inset(0 0 0 50%);
+    }
+
+    #hald-clut-page-wrapper .divider {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        cursor: ew-resize;
+        touch-action: none;
+    }
+
+    #hald-clut-page-wrapper .divider::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -1px;
+        width: 2px;
+        background: #fff;
+        box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    }
+
+    #hald-clut-page-wrapper .divider-handle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 34px;
+        height: 34px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        font-size: 1rem;
+        color: #333;
+    }
+
+    #hald-clut-page-wrapper .preview-area.mode-after .divider,
+    #hald-clut-page-wrapper .preview-area.mode-before .divider {
+        display: none;
+    }
+
+    #hald-clut-page-wrapper .preview-area.mode-after #after-canvas {
+        clip-path: inset(0 0 0 0);
+    }
+
+    #hald-clut-page-wrapper .preview-area.mode-before #after-canvas {
+        clip-path: inset(0 0 0 100%);
+    }
+
+    #hald-clut-page-wrapper .actions {
+        text-align: center;
+        margin-top: 18px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    #hald-clut-page-wrapper .download-btn,
+    #hald-clut-page-wrapper .link-btn {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        padding: 10px 22px;
+        border: 1px solid #333;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    #hald-clut-page-wrapper .download-btn {
+        background: #333;
+        color: #fff;
+    }
+
+    #hald-clut-page-wrapper .download-btn:hover {
+        background: #555;
+    }
+
+    #hald-clut-page-wrapper .link-btn {
+        background: #fff;
+        color: #333;
+    }
+
+    #hald-clut-page-wrapper .link-btn:hover {
+        background: #f0f0f0;
+    }
+
+    #hald-clut-page-wrapper .download-btn:disabled,
+    #hald-clut-page-wrapper .link-btn:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    #hald-clut-page-wrapper .actions-hint {
+        text-align: center;
+        font-size: 0.78rem;
+        color: #999;
+        margin: 10px 0 0 0;
+    }
+
+    @media (max-width: 768px) {
+        #hald-clut-page-wrapper .dropzones {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+(function() {
+    function init() {
+        if (window.haldClutPageInitialized) return;
+        window.haldClutPageInitialized = true;
+
+        var wrapper = document.getElementById('hald-clut-page-wrapper');
+        if (!wrapper) return;
+
+        var clutDropzone = wrapper.querySelector('#clut-dropzone');
+        var clutInput = wrapper.querySelector('#clut-file-input');
+        var clutFilename = wrapper.querySelector('#clut-filename');
+
+        var photoDropzone = wrapper.querySelector('#photo-dropzone');
+        var photoInput = wrapper.querySelector('#photo-file-input');
+        var photoFilename = wrapper.querySelector('#photo-filename');
+        var sourceBtns = wrapper.querySelectorAll('.source-btn');
+
+        var clutUrlInput = wrapper.querySelector('#clut-url-input');
+        var clutUrlBtn = wrapper.querySelector('#clut-url-btn');
+        var photoUrlInput = wrapper.querySelector('#photo-url-input');
+        var photoUrlBtn = wrapper.querySelector('#photo-url-btn');
+
+        var statusEl = wrapper.querySelector('#hald-status');
+        var previewArea = wrapper.querySelector('#preview-area');
+        var canvasWrap = wrapper.querySelector('#canvas-wrap');
+        var beforeCanvas = wrapper.querySelector('#before-canvas');
+        var afterCanvas = wrapper.querySelector('#after-canvas');
+        var divider = wrapper.querySelector('#divider');
+        var downloadBtn = wrapper.querySelector('#download-btn');
+        var viewResultBtn = wrapper.querySelector('#view-result-btn');
+        var toggleBtns = wrapper.querySelectorAll('.toggle-btn');
+
+        var MAX_DIM = 1400; // cap preview/source resolution for speed
+        var DEFAULT_PHOTO_URL = 'https://raw.githack.com/cju-media/personal-website/main/hald-clut/sample-photo.jpg?t=' + Math.floor(Date.now() / 86400000);
+
+        var state = {
+            haldImg: null,
+            haldLevel: null,
+            cubeSize: null,
+            sourceCanvas: null, // offscreen canvas holding the (possibly downscaled) source image
+            sourceMode: 'photo', // 'photo' | 'chart' | 'custom'
+            defaultPhotoImg: null // cached Image once fetched
+        };
+
+        function setStatus(msg, isError) {
+            statusEl.textContent = msg || '';
+            statusEl.className = 'status' + (isError ? '' : ' info');
+        }
+
+        // ---------- Generic drag/drop + click wiring ----------
+        function wireDropzone(zone, input, onFile) {
+            zone.addEventListener('click', function() { input.click(); });
+            zone.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+            });
+            input.addEventListener('change', function() {
+                if (input.files && input.files[0]) onFile(input.files[0]);
+            });
+            ['dragenter', 'dragover'].forEach(function(evt) {
+                zone.addEventListener(evt, function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    zone.classList.add('dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(function(evt) {
+                zone.addEventListener(evt, function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    zone.classList.remove('dragover');
+                });
+            });
+            zone.addEventListener('drop', function(e) {
+                var files = e.dataTransfer && e.dataTransfer.files;
+                if (files && files[0]) onFile(files[0]);
+            });
+        }
+
+        function loadImageFromFile(file) {
+            return new Promise(function(resolve, reject) {
+                if (!file.type || file.type.indexOf('image/') !== 0) {
+                    reject(new Error('That file is not an image.'));
+                    return;
+                }
+                var url = URL.createObjectURL(file);
+                var img = new Image();
+                img.onload = function() { resolve(img); URL.revokeObjectURL(url); };
+                img.onerror = function() { reject(new Error('Could not read that image file.')); URL.revokeObjectURL(url); };
+                img.src = url;
+            });
+        }
+
+        // Fetches an image link and hands back a same-origin blob: Image, so the
+        // canvas is never tainted by the remote host's own CORS policy -- only
+        // the initial fetch needs the host to allow cross-origin reads.
+        function loadImageFromURL(url) {
+            return fetch(url, { mode: 'cors', referrerPolicy: 'no-referrer' }).then(function(resp) {
+                if (!resp.ok) throw new Error('Could not fetch that link (HTTP ' + resp.status + ').');
+                return resp.blob();
+            }).then(function(blob) {
+                if (!blob.type || blob.type.indexOf('image/') !== 0) {
+                    throw new Error('That link did not return an image.');
+                }
+                return loadImageFromFile(blob);
+            }).catch(function(err) {
+                if (err instanceof TypeError) {
+                    throw new Error("Could not load that link -- the host may block cross-origin access. Try saving the image and dropping the file instead.");
+                }
+                throw err;
+            });
+        }
+
+        function labelFromURL(url) {
+            try {
+                var u = new URL(url, window.location.href);
+                var parts = u.pathname.split('/');
+                return decodeURIComponent(parts[parts.length - 1] || u.hostname) || u.hostname;
+            } catch (e) {
+                return 'linked image';
+            }
+        }
+
+        // Wires a text input + button pair to fetch an image link, without also
+        // triggering the parent dropzone's click-to-browse or Enter/Space handlers.
+        function wireUrlLoader(input, btn, onLoad) {
+            function submit() {
+                var url = (input.value || '').trim();
+                if (!url) return;
+                btn.disabled = true;
+                onLoad(url).then(function() { btn.disabled = false; }, function() { btn.disabled = false; });
+            }
+            btn.addEventListener('click', function(e) { e.stopPropagation(); submit(); });
+            input.addEventListener('click', function(e) { e.stopPropagation(); });
+            input.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+            input.addEventListener('keydown', function(e) {
+                e.stopPropagation();
+                if (e.key === 'Enter') { e.preventDefault(); submit(); }
+            });
+        }
+
+        // ---------- Hald CLUT handling ----------
+        function applyLoadedClut(img, label) {
+            var level = Math.round(Math.cbrt(img.width));
+            var validSquare = img.width === img.height;
+            var validCube = validSquare && Math.pow(level, 3) === img.width;
+
+            if (!validSquare) {
+                setStatus("That image isn't square -- a Hald CLUT should be WxW (e.g. 512x512 or 1728x1728).", true);
+                return;
+            }
+            if (!validCube) {
+                setStatus("That doesn't look like a standard Hald CLUT (width should be a perfect cube, e.g. 8^3=512, 12^3=1728). Trying anyway.", true);
+                // fall through and attempt best-effort, using nearest level
+            }
+
+            state.haldImg = img;
+            state.haldLevel = level;
+            state.cubeSize = level * level;
+
+            clutDropzone.classList.add('has-file');
+            clutFilename.textContent = label + ' (' + img.width + 'x' + img.height + ', level ' + level + ')';
+
+            if (validCube) setStatus('CLUT loaded. Rendering...');
+            renderPreview(); // no-op until a source image is ready; the pending default-photo/chart load will trigger it
+        }
+
+        wireDropzone(clutDropzone, clutInput, function(file) {
+            setStatus('Loading CLUT...');
+            loadImageFromFile(file).then(function(img) {
+                applyLoadedClut(img, file.name);
+            }).catch(function(err) {
+                setStatus(err.message, true);
+            });
+        });
+
+        wireUrlLoader(clutUrlInput, clutUrlBtn, function(url) {
+            setStatus('Fetching CLUT from link...');
+            return loadImageFromURL(url).then(function(img) {
+                applyLoadedClut(img, labelFromURL(url));
+            }).catch(function(err) {
+                setStatus(err.message, true);
+            });
+        });
+
+        // ---------- Optional custom test photo ----------
+        function applyCustomPhoto(img, label) {
+            state.sourceMode = 'custom';
+            updateSourceToggleUI();
+            photoDropzone.classList.add('has-file');
+            var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+            photoFilename.textContent = label + ' (' + w + 'x' + h + ')';
+            setSourceFromImage(img);
+            if (state.haldImg) { setStatus('Rendering...'); renderPreview(); }
+            else { setStatus(''); }
+        }
+
+        wireDropzone(photoDropzone, photoInput, function(file) {
+            loadImageFromFile(file).then(function(img) {
+                applyCustomPhoto(img, file.name);
+            }).catch(function(err) {
+                setStatus(err.message, true);
+            });
+        });
+
+        wireUrlLoader(photoUrlInput, photoUrlBtn, function(url) {
+            setStatus('Fetching photo from link...');
+            return loadImageFromURL(url).then(function(img) {
+                applyCustomPhoto(img, labelFromURL(url));
+            }).catch(function(err) {
+                setStatus(err.message, true);
+            });
+        });
+
+        // ---------- Built-in default sources: sample photo / synthetic chart ----------
+        function updateSourceToggleUI() {
+            sourceBtns.forEach(function(b) {
+                b.classList.toggle('active', b.dataset.source === state.sourceMode);
+            });
+        }
+
+        sourceBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // don't also trigger the dropzone's "click to browse"
+                if (btn.dataset.source === 'photo') useSamplePhoto();
+                else useTestChart();
+            });
+        });
+
+        function useSamplePhoto() {
+            state.sourceMode = 'photo';
+            photoDropzone.classList.remove('has-file');
+            updateSourceToggleUI();
+            setStatus('Loading sample photo...');
+            return loadDefaultPhotoImage().then(function(img) {
+                setSourceFromImage(img);
+                photoFilename.textContent = 'Sample photo (' + img.naturalWidth + 'x' + img.naturalHeight + ')';
+                if (state.haldImg) { setStatus('Rendering...'); renderPreview(); }
+                else { setStatus(''); }
+            }).catch(function() {
+                photoFilename.textContent = 'Sample photo unavailable -- using test chart';
+                useTestChart();
+            });
+        }
+
+        function useTestChart() {
+            state.sourceMode = 'chart';
+            photoDropzone.classList.remove('has-file');
+            updateSourceToggleUI();
+            setSourceFromImage(generateTestChart());
+            photoFilename.textContent = 'Built-in test chart';
+            if (state.haldImg) { setStatus('Rendering...'); renderPreview(); }
+        }
+
+        function loadDefaultPhotoImage() {
+            if (state.defaultPhotoImg) return Promise.resolve(state.defaultPhotoImg);
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.onload = function() { state.defaultPhotoImg = img; resolve(img); };
+                img.onerror = function() { reject(new Error('Could not load sample photo.')); };
+                img.src = DEFAULT_PHOTO_URL;
+            });
+        }
+
+        function setSourceFromImage(img) {
+            var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+            var scale = Math.min(1, MAX_DIM / Math.max(w, h));
+            var cw = Math.max(1, Math.round(w * scale));
+            var ch = Math.max(1, Math.round(h * scale));
+            var c = document.createElement('canvas');
+            c.width = cw; c.height = ch;
+            c.getContext('2d').drawImage(img, 0, 0, cw, ch);
+            state.sourceCanvas = c;
+        }
+
+        // Built-in synthetic test chart: hue sweep, grayscale ramp, and swatches.
+        function generateTestChart() {
+            var w = 800, h = 500;
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            var ctx = c.getContext('2d');
+
+            // Hue sweep (top 45%)
+            var hueH = Math.round(h * 0.45);
+            var grad = ctx.createLinearGradient(0, 0, w, 0);
+            for (var i = 0; i <= 12; i++) {
+                grad.addColorStop(i / 12, 'hsl(' + (i * 30) + ',85%,55%)');
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, hueH);
+
+            // Grayscale ramp (next 20%)
+            var grayH = Math.round(h * 0.2);
+            var grayGrad = ctx.createLinearGradient(0, 0, w, 0);
+            grayGrad.addColorStop(0, '#000');
+            grayGrad.addColorStop(1, '#fff');
+            ctx.fillStyle = grayGrad;
+            ctx.fillRect(0, hueH, w, grayH);
+
+            // Swatches (remaining bottom)
+            var swatchY = hueH + grayH;
+            var swatchH = h - swatchY;
+            var colors = [
+                '#ff0000', '#00ff00', '#0000ff', '#ffff00',
+                '#00ffff', '#ff00ff', '#ffffff', '#000000',
+                '#e8b89b', '#c68863', '#8d5524', '#4a2c14'
+            ];
+            var cols = colors.length;
+            var cw = w / cols;
+            for (var j = 0; j < cols; j++) {
+                ctx.fillStyle = colors[j];
+                ctx.fillRect(Math.round(j * cw), swatchY, Math.ceil(cw) + 1, swatchH);
+            }
+
+            return c;
+        }
+
+        // ---------- Core Hald CLUT application ----------
+        function applyHald(sourceCanvas, haldImg, cubeSize) {
+            var w = sourceCanvas.width, h = sourceCanvas.height;
+            var srcCtx = sourceCanvas.getContext('2d');
+            var srcData = srcCtx.getImageData(0, 0, w, h);
+            var src = srcData.data;
+
+            var haldW = haldImg.width, haldH = haldImg.height;
+            var haldCanvas = document.createElement('canvas');
+            haldCanvas.width = haldW; haldCanvas.height = haldH;
+            var haldCtx = haldCanvas.getContext('2d');
+            haldCtx.drawImage(haldImg, 0, 0);
+            var hald = haldCtx.getImageData(0, 0, haldW, haldH).data;
+
+            var out = srcCtx.createImageData(w, h);
+            var dst = out.data;
+            var max = cubeSize - 1;
+            var cube2 = cubeSize * cubeSize;
+            var haldPixelCount = haldW * haldH;
+
+            for (var i = 0; i < src.length; i += 4) {
+                var r = src[i], g = src[i + 1], b = src[i + 2], a = src[i + 3];
+                var ri = Math.round((r / 255) * max);
+                var gi = Math.round((g / 255) * max);
+                var bi = Math.round((b / 255) * max);
+                var index = ri + gi * cubeSize + bi * cube2;
+                if (index >= haldPixelCount) index = haldPixelCount - 1;
+                var x = index % haldW;
+                var y = (index / haldW) | 0;
+                var hi = (y * haldW + x) * 4;
+                dst[i] = hald[hi];
+                dst[i + 1] = hald[hi + 1];
+                dst[i + 2] = hald[hi + 2];
+                dst[i + 3] = a;
+            }
+
+            var outCanvas = document.createElement('canvas');
+            outCanvas.width = w; outCanvas.height = h;
+            outCanvas.getContext('2d').putImageData(out, 0, 0);
+            return outCanvas;
+        }
+
+        function renderPreview() {
+            if (!state.haldImg || !state.sourceCanvas) return;
+
+            // Let the "Rendering..." status paint before the (possibly heavy) loop runs.
+            window.setTimeout(function() {
+                var src = state.sourceCanvas;
+                var w = src.width, h = src.height;
+
+                beforeCanvas.width = w; beforeCanvas.height = h;
+                beforeCanvas.getContext('2d').drawImage(src, 0, 0);
+
+                var resultCanvas = applyHald(src, state.haldImg, state.cubeSize);
+                afterCanvas.width = w; afterCanvas.height = h;
+                afterCanvas.getContext('2d').drawImage(resultCanvas, 0, 0);
+
+                canvasWrap.style.aspectRatio = w + ' / ' + h;
+
+                previewArea.classList.add('visible');
+                downloadBtn.disabled = false;
+                viewResultBtn.disabled = false;
+                setStatus('Done.');
+            }, 20);
+        }
+
+        // ---------- Before/After toggle ----------
+        toggleBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                toggleBtns.forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                previewArea.classList.remove('mode-after', 'mode-before', 'mode-split');
+                previewArea.classList.add('mode-' + btn.dataset.mode);
+            });
+        });
+
+        // ---------- Draggable divider ----------
+        var dragging = false;
+
+        function setDividerPercent(pct) {
+            pct = Math.max(0, Math.min(100, pct));
+            divider.style.left = pct + '%';
+            afterCanvas.style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+        }
+
+        function pctFromEvent(e) {
+            var rect = canvasWrap.getBoundingClientRect();
+            var clientX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+            return ((clientX - rect.left) / rect.width) * 100;
+        }
+
+        divider.addEventListener('pointerdown', function(e) {
+            dragging = true;
+            e.preventDefault();
+        });
+        window.addEventListener('pointermove', function(e) {
+            if (!dragging) return;
+            setDividerPercent(pctFromEvent(e));
+        });
+        window.addEventListener('pointerup', function() { dragging = false; });
+
+        // Also allow clicking anywhere on the split view to move the divider.
+        canvasWrap.addEventListener('click', function(e) {
+            if (!previewArea.classList.contains('mode-split') && !(!previewArea.classList.contains('mode-after') && !previewArea.classList.contains('mode-before'))) return;
+            setDividerPercent(pctFromEvent(e));
+        });
+
+        // ---------- Download ----------
+        downloadBtn.addEventListener('click', function() {
+            if (!afterCanvas.width) return;
+            var link = document.createElement('a');
+            link.download = 'hald-clut-result.png';
+            link.href = afterCanvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // ---------- View result as a link (no file save required) ----------
+        var lastResultUrl = null;
+        viewResultBtn.addEventListener('click', function() {
+            if (!afterCanvas.width) return;
+            afterCanvas.toBlob(function(blob) {
+                if (!blob) { setStatus('Could not prepare the result image.', true); return; }
+                if (lastResultUrl) URL.revokeObjectURL(lastResultUrl);
+                lastResultUrl = URL.createObjectURL(blob);
+                window.open(lastResultUrl, '_blank');
+            }, 'image/png');
+        });
+
+        downloadBtn.disabled = true;
+        viewResultBtn.disabled = true;
+
+        // Pre-load the default sample photo so a CLUT drop renders immediately,
+        // with no upload required. Falls back to the synthetic chart on failure.
+        useSamplePhoto();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

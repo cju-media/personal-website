@@ -1,0 +1,77 @@
+---
+layout: base.njk
+title: Audio/Video Engineering
+---
+<style>
+        .link {
+			text-decoration: underline;
+      color: #8c979a;/* add underline */
+		}
+    </style>
+    <!-- script type="text/javascript" src="https://apis.google.com/js/api.js"></script -->
+    <p id="resultText">With <span id="cellValuePlaceholder">hundreds of</span>
+        events and counting since 2017, Cameron has <span id="yearsPassedPlaceholder"></span> years of experience in live
+        sound, live video, live streaming and live event production. From twenty-piece bands to multi-stream video
+        installations, Cameron has done it all and everything inbetween.
+    </p>
+
+    <br>
+
+    <p> Check out all his recent events <a class="link"
+            href="https://www.cameronjohnston.xyz/audiovideo-events">here.</a></p>
+
+    <script>
+        function fetchCellValue() {
+            const sheetId = '1TCgJ_U-HAP4jFAjRWrBKs0_PfrIWj3oK3VnWBd1S0bs';
+            const sheetName = 'Offset';
+            const range = 'E2';
+            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}&range=${range}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    // The response text from gviz/tq csv export is usually quoted, e.g., "231"
+                    // We need to strip the quotes.
+                    let cellValue = text.trim();
+                    if (cellValue.startsWith('"') && cellValue.endsWith('"')) {
+                        cellValue = cellValue.slice(1, -1);
+                    }
+                    // Also strictly speaking CSV might have newlines if the cell has newlines, 
+                    // or if multiple rows are returned (though we asked for one cell).
+                    // Just take the first line if multiple.
+                    cellValue = cellValue.split('\n')[0]; 
+                    
+                    if (cellValue) {
+                        document.getElementById('cellValuePlaceholder').innerText = cellValue;
+                    } else {
+                        console.error('No data found or empty value.');
+                        document.getElementById('cellValuePlaceholder').innerText = 'N/A';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('cellValuePlaceholder').innerText = 'Error';
+                });
+        }
+
+        function calculateYearsPassed() {
+            const currentYear = new Date().getFullYear();
+            const baseYear = 2017;
+            const yearsPassed = currentYear - baseYear;
+            return yearsPassed;
+        }
+
+        function updateYearsPassed() {
+            const yearsPassed = calculateYearsPassed();
+            document.getElementById('yearsPassedPlaceholder').innerText = yearsPassed;
+        }
+
+        // Initial update on page load
+        updateYearsPassed();
+        fetchCellValue();
+    </script>

@@ -1,0 +1,202 @@
+---
+layout: base.njk
+title: Sound Artist
+---
+<div id="sound-artist-page-wrapper">
+    <style>
+        #sound-artist-page-wrapper {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            color: inherit;
+        }
+        #sound-artist-page-wrapper button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+        #sound-artist-page-wrapper button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        #sound-artist-page-wrapper button:hover:not(:disabled) {
+            background-color: #555;
+        }
+        #sound-artist-page-wrapper #status {
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+    <h1>Sound Artist</h1>
+    <p>RNBO Patch</p>
+    <button id="start-audio" disabled>Loading Library...</button>
+    <br>
+    <button id="play-sample" disabled>Play Random Sample</button>
+    <button id="play-oscillator" disabled>Play Oscillator</button>
+    <div id="status">Initializing...</div>
+
+    <script>
+    (function() {
+        const wrapper = document.getElementById('sound-artist-page-wrapper');
+        if (!wrapper) return;
+
+        const startBtn = wrapper.querySelector('#start-audio');
+        const playSampleBtn = wrapper.querySelector('#play-sample');
+        const playOscBtn = wrapper.querySelector('#play-oscillator');
+        const statusDiv = wrapper.querySelector('#status');
+
+        let audioContext;
+        let device;
+        let patcherData;
+
+        const EXPORT_URL = '/assets/sound-artist/sound-artist.export.json';
+        const ASSETS_URL = '/assets/sound-artist/samples/';
+
+        const SAMPLE_ASSETS = [
+            'epno.aiff',
+            'eroica.aiff',
+            'isthatyou.aiff',
+            'sacre.aiff',
+            'snare.aiff'
+        ];
+
+        // Exposed init function for onload callback
+        window.initSoundArtist = function() {
+            startBtn.textContent = 'Start Audio Engine';
+            startBtn.disabled = false;
+            statusDiv.textContent = 'Library loaded. Fetching patch...';
+            loadPatcher();
+        };
+
+        // Exposed error handler
+        window.rnboError = function() {
+            statusDiv.textContent = 'Error: Failed to load RNBO library.';
+            statusDiv.style.color = 'red';
+        };
+
+        async function loadPatcher() {
+            try {
+                const response = await fetch(EXPORT_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load patch: ${response.status} ${response.statusText}`);
+                }
+                patcherData = await response.json();
+                statusDiv.textContent = 'Patch fetched. Ready to start.';
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Fetch Error: ' + err.message;
+            }
+        }
+
+        async function loadBuffer(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to load audio file: ${response.statusText}`);
+                }
+                const arrayBuffer = await response.arrayBuffer();
+                return await audioContext.decodeAudioData(arrayBuffer);
+            } catch (err) {
+                console.error("Buffer load error:", err);
+                throw err;
+            }
+        }
+
+        async function startAudio() {
+            try {
+                if (typeof RNBO === 'undefined') {
+                    throw new Error('RNBO library not loaded.');
+                }
+
+                if (!audioContext) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                }
+
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                if (!patcherData) {
+                    await loadPatcher();
+                }
+
+                if (patcherData && !device) {
+                    statusDiv.textContent = 'Creating device...';
+                    device = await RNBO.createDevice({ context: audioContext, patcher: patcherData });
+                    
+                    // Connect device to output
+                    device.node.connect(audioContext.destination);
+                    
+                    if (patcherData.desc.externalDataRefs && patcherData.desc.externalDataRefs.length > 0) {
+                        console.log('External data refs:', patcherData.desc.externalDataRefs);
+                    }
+                    
+                    statusDiv.textContent = 'Audio Engine Running.';
+                    startBtn.textContent = 'Audio Engine Active';
+                    startBtn.disabled = true;
+
+                    // Enable controls
+                    playSampleBtn.disabled = false;
+                    playOscBtn.disabled = false;
+                    statusDiv.textContent = 'Audio running.';
+                    startBtn.textContent = 'Audio Active';
+                    startBtn.disabled = true; 
+                }
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Audio Error: ' + err.message;
+            }
+        }
+
+        async function playRandomSample() {
+            if (!device || !audioContext) return;
+
+            const randomFile = SAMPLE_ASSETS[Math.floor(Math.random() * SAMPLE_ASSETS.length)];
+            const url = ASSETS_URL + randomFile;
+
+            statusDiv.textContent = `Loading sample: ${randomFile}...`;
+
+            try {
+                const buffer = await loadBuffer(url);
+                // Set the buffer on the device with id "sound" (as defined in dependencies.json/export)
+                await device.setDataBuffer("sound", buffer);
+                statusDiv.textContent = `Playing: ${randomFile}`;
+                console.log(`Loaded and set buffer: ${randomFile}`);
+            } catch (err) {
+                statusDiv.textContent = `Error loading ${randomFile}`;
+            }
+        }
+
+        function playOscillator() {
+            if (!device) return;
+            console.log("Play Oscillator clicked. (Functionality depends on patch implementation)");
+            statusDiv.textContent = "Play Oscillator triggered (Check console/patch)";
+            // Placeholder: The current export JSON does not list parameters.
+            // If the patch had a parameter named 'osc_on', we would do:
+            // const param = device.parameters.find(p => p.id === 'osc_on');
+            // if (param) param.value = 1;
+        }
+
+        startBtn.addEventListener('click', startAudio);
+        playSampleBtn.addEventListener('click', playRandomSample);
+        playOscBtn.addEventListener('click', playOscillator);
+
+        // Check if RNBO is already loaded (if script ran before this one)
+        if (typeof RNBO !== 'undefined') {
+            window.initSoundArtist();
+        }
+    })();
+    </script>
+
+    <!-- Load RNBO Library -->
+    <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/1.4.2/rnbo.min.js" crossorigin="anonymous" onload="if(window.initSoundArtist) window.initSoundArtist();" onerror="if(window.rnboError) window.rnboError();"></script>
+</div>

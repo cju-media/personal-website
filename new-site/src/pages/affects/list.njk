@@ -1,0 +1,638 @@
+---
+layout: base.njk
+title: The List
+---
+<div id="the-list-page-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
+
+        /* Scoped Styles */
+        #the-list-page-wrapper {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: auto;
+            margin: 0;
+            background-color: transparent; /* Inherit from Squarespace */
+            padding: 0 20px 20px 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* Glitch font classes */
+        #the-list-page-wrapper .font1 { font-family: Arial, sans-serif !important; }
+        #the-list-page-wrapper .font2 { font-family: Times New Roman, serif !important; }
+        #the-list-page-wrapper .font3 { font-family: Courier New, monospace !important; }
+        #the-list-page-wrapper .font4 { font-family: essay-text, monospace !important; }
+        #the-list-page-wrapper .font5 { font-family: 'Playfair Display', serif !important; }
+        #the-list-page-wrapper .font6 { font-family: 'VT323', monospace !important; transform: scale(1.1); }
+
+        #the-list-page-wrapper h1.glitch-title {
+            font-size: min(5vw, 3rem);
+            text-align: left;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            margin-bottom: 40px;
+            margin-top: -8px;
+            color: inherit;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        #the-list-page-wrapper .span-class {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
+            vertical-align: bottom;
+            line-height: 1.2;
+        }
+
+        /* Content Styles */
+        #the-list-page-wrapper #list-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        #the-list-page-wrapper #list-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #the-list-page-wrapper #list-content li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        #the-list-page-wrapper #list-content li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #333;
+        }
+
+        /* Checkbox styling from markdown */
+        #the-list-page-wrapper input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        #the-list-page-wrapper .loading {
+            font-family: monospace;
+            color: #666;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Hyperlink styling */
+        #the-list-page-wrapper a {
+            color: blue !important;
+            text-decoration: underline;
+        }
+
+        /* Markdown Headings */
+        #the-list-page-wrapper #list-content h1,
+        #the-list-page-wrapper #list-content h2,
+        #the-list-page-wrapper #list-content h3,
+        #the-list-page-wrapper #list-content h4,
+        #the-list-page-wrapper #list-content h5,
+        #the-list-page-wrapper #list-content h6,
+        #the-list-page-wrapper #about-content h1,
+        #the-list-page-wrapper #about-content h2,
+        #the-list-page-wrapper #about-content h3,
+        #the-list-page-wrapper #about-content h4,
+        #the-list-page-wrapper #about-content h5,
+        #the-list-page-wrapper #about-content h6 {
+            font-family: 'VT323', monospace;
+            font-weight: normal; /* Pixel fonts often look cleaner without faux-bold */
+        }
+
+        #the-list-page-wrapper #list-content h2,
+        #the-list-page-wrapper #about-content h2 {
+            margin-top: 60px;
+        }
+
+        #the-list-page-wrapper #list-content h3,
+        #the-list-page-wrapper #about-content h3 {
+            margin-top: 40px;
+        }
+
+        /* Image scaling */
+        #the-list-page-wrapper #list-content img,
+        #the-list-page-wrapper #about-content img {
+            max-width: 600px;
+            max-height: 600px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #the-list-page-wrapper #list-content img:hover,
+        #the-list-page-wrapper #about-content img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 600px) {
+            #the-list-page-wrapper #list-content img,
+            #the-list-page-wrapper #about-content img {
+                max-width: 300px;
+                max-height: 300px;
+            }
+        }
+
+        /* Lightbox Styles */
+        #the-list-page-wrapper .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #the-list-page-wrapper .lightbox.active {
+            display: flex;
+        }
+
+        #the-list-page-wrapper .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        #the-list-page-wrapper .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid white;
+            box-sizing: border-box; /* Include border in dimensions */
+        }
+
+        /* Spinner */
+        #the-list-page-wrapper .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #the-list-page-wrapper .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        #the-list-page-wrapper .caption {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            width: calc(100% - 4px);
+            box-sizing: border-box;
+            color: #fff;
+            text-align: center;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            font-family: sans-serif;
+        }
+    </style>
+
+    <h1 class="glitch-title">
+        <span class="span-class">T</span>
+        <span class="span-class">H</span>
+        <span class="span-class">E</span>
+        <span class="span-class" style="width: 0.5em;">&nbsp;</span>
+        <span class="span-class">L</span>
+        <span class="span-class">I</span>
+        <span class="span-class">S</span>
+        <span class="span-class">T</span>
+    </h1>
+
+    <div id="list-nav" style="width: 100%; max-width: 800px; text-align: left; margin-bottom: 20px;">
+        | <a href="https://cju.media/thelistabout" target="_blank" id="about-link">about</a> | <a href="#" id="random-link">random</a> |
+    </div>
+
+    <div id="list-content">
+        <div class="loading">Loading list...</div>
+    </div>
+    <div id="about-content" style="display:none; width: 100%; max-width: 800px; text-align: left; line-height: 1.6; font-size: 1.1rem;"></div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <div class="lightbox-content">
+            <div id="lightbox-spinner" class="spinner"></div>
+            <img id="lightbox-img" src="" alt="Full view" style="display:none;">
+            <div id="lightbox-caption" class="caption"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function initTheList() {
+                const wrapper = document.getElementById('the-list-page-wrapper');
+                if (!wrapper) return;
+
+                // Prevent double initialization on the same element
+                if (wrapper.dataset.initialized) return;
+                wrapper.dataset.initialized = "true";
+
+                // Glitch Logic
+                const Glitch = {
+                    fontClasses: ['font1', 'font2', 'font3', 'font4', 'font5', 'font6'],
+                    colors: ['#2F4F4F', '#4B0082', '#8B0000', '#000080', '#556B2F', '#8B4513', '#2E0854', '#191970'],
+                    katakanaMap: {
+                        'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+                        'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+                        'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+                        'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+                        'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'ク', 'Y': 'ヤ', 'Z': 'ズ'
+                    },
+
+                    start(span) {
+                        if (!span.dataset.original) {
+                            span.dataset.original = span.innerText;
+                        }
+                        this.loopFont(span);
+                        this.loopColor(span);
+                    },
+
+                    loopFont(span) {
+                        const tick = () => {
+                            this.fontClasses.forEach(fontClass => span.classList.remove(fontClass));
+                            const randomIndex = Math.floor(Math.random() * this.fontClasses.length);
+                            span.classList.add(this.fontClasses[randomIndex]);
+
+                            if (Math.random() < 0.05) {
+                                const originalChar = span.dataset.original.toUpperCase();
+                                if (this.katakanaMap[originalChar]) {
+                                    span.innerText = this.katakanaMap[originalChar];
+                                }
+                            } else {
+                                span.innerText = span.dataset.original;
+                            }
+
+                            const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+                            setTimeout(tick, interval);
+                        };
+                        tick();
+                    },
+
+                    loopColor(span) {
+                        const tick = () => {
+                            const randomColorIndex = Math.floor(Math.random() * this.colors.length);
+                            span.style.color = this.colors[randomColorIndex];
+                            const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+                            setTimeout(tick, interval);
+                        };
+                        tick();
+                    }
+                };
+
+                // Initialize Title Glitch
+                const titleSpans = wrapper.querySelectorAll('.glitch-title .span-class');
+                titleSpans.forEach(span => {
+                    if (span.innerHTML === '&nbsp;') return;
+                    Glitch.start(span);
+                });
+
+                // Load Marked.js and Fetch Content
+                const contentContainer = wrapper.querySelector('#list-content');
+                const aboutContainer = wrapper.querySelector('#about-content');
+                const listUrl = 'https://raw.githubusercontent.com/cju-media/The-List/main/list.md';
+                const aboutUrl = 'https://raw.githubusercontent.com/cju-media/The-List/main/about.md';
+                const navContainer = wrapper.querySelector('#list-nav');
+                const randomLink = wrapper.querySelector('#random-link');
+                let aboutContentCached = null;
+
+                function loadMarked(callback) {
+                    if (window.marked) {
+                        callback();
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                    script.onload = callback;
+                    script.onerror = () => {
+                        contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading markdown parser.</div>';
+                    };
+                    document.head.appendChild(script);
+                }
+
+                function setupEntries() {
+                    const children = Array.from(contentContainer.children);
+                    contentContainer.innerHTML = ''; // Clear to rebuild with wrappers
+
+                    let currentEntry = null;
+                    const introDiv = document.createElement('div');
+                    introDiv.classList.add('intro-text');
+                    contentContainer.appendChild(introDiv);
+
+                    children.forEach(child => {
+                        if (child.tagName === 'H2') {
+                            currentEntry = document.createElement('div');
+                            currentEntry.classList.add('list-entry');
+                            // Initially visible
+                            contentContainer.appendChild(currentEntry);
+                            currentEntry.appendChild(child);
+                        } else {
+                            if (currentEntry) {
+                                currentEntry.appendChild(child);
+                            } else {
+                                introDiv.appendChild(child);
+                            }
+                        }
+                    });
+
+                    // Remove intro if empty
+                    if (introDiv.children.length === 0) {
+                        introDiv.remove();
+                    }
+                }
+
+                function handleHashChange() {
+                    const hash = window.location.hash;
+                    if (!hash || hash === '#') return;
+
+                    const dateStr = decodeURIComponent(hash.substring(1)); // Remove the '#' and decode
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+
+                    if (entries.length === 0) return;
+
+                    let found = false;
+                    for (let entry of entries) {
+                        const h2 = entry.querySelector('h2');
+                        if (h2 && h2.textContent.trim() === dateStr) {
+                            found = true;
+                            // Hide intro
+                            const intro = contentContainer.querySelector('.intro-text');
+                            if (intro) intro.style.display = 'none';
+
+                            // Hide all other entries
+                            entries.forEach(e => e.style.display = 'none');
+
+                            // Show matching entry
+                            entry.style.display = 'block';
+
+                            updateNavForRandom(); // Uses back link logic
+                            break;
+                        }
+                    }
+
+                    // If hash didn't match anything, maybe just show all entries?
+                    // Currently we do nothing and let it be, but showing all might be safer
+                }
+
+                function showRandomEntry(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    if (entries.length === 0) return;
+
+                    const intro = contentContainer.querySelector('.intro-text');
+                    if (intro) intro.style.display = 'none';
+
+                    entries.forEach(entry => entry.style.display = 'none');
+                    const randomIndex = Math.floor(Math.random() * entries.length);
+                    const randomEntry = entries[randomIndex];
+                    randomEntry.style.display = 'block';
+
+                    const h2 = randomEntry.querySelector('h2');
+                    if (h2) {
+                        const dateStr = h2.textContent.trim();
+                        // Use pushState so they can use the browser back button to go to previous randoms or main list
+                        history.pushState(null, null, `#${encodeURIComponent(dateStr)}`);
+                    } else if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
+
+                    updateNavForRandom();
+                }
+
+                function showAllEntries(e) {
+                    if (e) e.preventDefault();
+
+                    const entries = contentContainer.querySelectorAll('.list-entry');
+                    const intro = contentContainer.querySelector('.intro-text');
+
+                    if (intro) intro.style.display = 'block';
+                    entries.forEach(entry => entry.style.display = 'block');
+
+                    if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }
+
+                    updateNavForMain();
+                }
+
+                function showAbout(e) {
+                    if (e) e.preventDefault();
+                    
+                    contentContainer.style.display = 'none';
+                    aboutContainer.style.display = 'block';
+
+                    if (aboutContentCached) {
+                        aboutContainer.innerHTML = aboutContentCached;
+                        setLinksTargetBlank(aboutContainer);
+                        updateNavForAbout();
+                    } else {
+                        aboutContainer.innerHTML = '<div class="loading">Loading about...</div>';
+                        updateNavForAbout();
+                        fetch(aboutUrl)
+                            .then(response => {
+                                if (!response.ok) throw new Error("Network response was not ok");
+                                return response.text();
+                            })
+                            .then(markdown => {
+                                aboutContentCached = marked.parse(markdown);
+                                aboutContainer.innerHTML = aboutContentCached;
+                                setLinksTargetBlank(aboutContainer);
+                            })
+                            .catch(error => {
+                                console.error('Error loading about:', error);
+                                aboutContainer.innerHTML = '<div class="loading" style="color: red;">Error loading about content.</div>';
+                            });
+                    }
+                }
+
+                function hideAbout(e) {
+                    if (e) e.preventDefault();
+                    aboutContainer.style.display = 'none';
+                    contentContainer.style.display = 'block';
+                    // Return to main list view
+                    showAllEntries(e);
+                }
+
+                function updateNavForRandom() {
+                    // Check if back link already exists
+                    if (!navContainer.querySelector('#back-link')) {
+                        navContainer.innerHTML = `| <a href="#" id="back-link">back</a> | <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+                        bindNavEvents();
+                    }
+                }
+
+                function updateNavForMain() {
+                    navContainer.innerHTML = `| <a href="#" id="about-link">about</a> | <a href="#" id="random-link">random</a> |`;
+                    bindNavEvents();
+                }
+
+                function updateNavForAbout() {
+                    navContainer.innerHTML = `| <a href="#" id="back-link">back</a> |`;
+                    bindNavEvents(true);
+                }
+
+                function bindNavEvents(isAboutPage = false) {
+                    const randomBtn = navContainer.querySelector('#random-link');
+                    if (randomBtn) randomBtn.onclick = showRandomEntry;
+
+                    const backBtn = navContainer.querySelector('#back-link');
+                    if (backBtn) {
+                        if (isAboutPage) {
+                            backBtn.onclick = hideAbout;
+                        } else {
+                            backBtn.onclick = showAllEntries;
+                        }
+                    }
+
+                    const aboutBtn = navContainer.querySelector('#about-link');
+                    if (aboutBtn) {
+                        aboutBtn.onclick = showAbout;
+                        aboutBtn.removeAttribute('target');
+                    }
+                }
+
+                function setLinksTargetBlank(container) {
+                    const links = container.querySelectorAll('a');
+                    links.forEach(link => {
+                        link.setAttribute('target', '_blank');
+                    });
+                }
+
+                function fetchAndRenderList() {
+                    fetch(listUrl)
+                        .then(response => {
+                            if (!response.ok) throw new Error("Network response was not ok");
+                            return response.text();
+                        })
+                        .then(markdown => {
+                            let md = markdown;
+                            // Remove title
+                            md = md.replace(/^#\s*THE LIST\s*/i, '');
+                            // Downgrade H1 to H2
+                            md = md.replace(/^#\s/gm, '## ');
+                            contentContainer.innerHTML = marked.parse(md);
+                            setLinksTargetBlank(contentContainer);
+                            setupEntries();
+                            bindNavEvents();
+
+                            if (window.location.hash) {
+                                handleHashChange();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading list:', error);
+                            contentContainer.innerHTML = '<div class="loading" style="color: red;">Error loading list content.</div>';
+                        });
+                }
+
+                // --- Lightbox Logic ---
+                const lightbox = wrapper.querySelector('#lightbox-modal');
+                const lightboxImg = wrapper.querySelector('#lightbox-img');
+                const lightboxSpinner = wrapper.querySelector('#lightbox-spinner');
+                const lightboxCaption = wrapper.querySelector('#lightbox-caption');
+                const closeBtn = wrapper.querySelector('.close-btn');
+
+                function openLightbox(src, altText) {
+                    lightboxImg.style.display = 'none';
+                    lightboxSpinner.style.display = 'block';
+                    lightboxCaption.style.display = 'none'; // hide until loaded
+
+                    lightboxImg.src = ''; // reset
+                    lightboxImg.src = src;
+
+                    lightboxImg.onload = () => {
+                        lightboxSpinner.style.display = 'none';
+                        lightboxImg.style.display = 'block';
+
+                        if (altText) {
+                            lightboxCaption.textContent = altText;
+                            lightboxCaption.style.display = 'block';
+                        }
+                    };
+
+                    lightbox.classList.add('active');
+                }
+
+                // Event delegation for dynamically loaded images
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'IMG' && (contentContainer.contains(e.target) || aboutContainer.contains(e.target))) {
+                        openLightbox(e.target.src, e.target.alt);
+                    }
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                });
+
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+
+                window.addEventListener('hashchange', () => {
+                    if (window.location.hash) {
+                        handleHashChange();
+                    } else {
+                        showAllEntries();
+                    }
+                });
+
+                loadMarked(fetchAndRenderList);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTheList);
+            } else {
+                initTheList();
+            }
+        })();
+    </script>
+</div>
