@@ -39,7 +39,14 @@
         if (!container1) return;
         container1.style.height = '';
         container1.style.minHeight = '';
-        const top = container1.getBoundingClientRect().top;
+        // getBoundingClientRect().top is relative to the current scroll
+        // position, not the page — this runs again on every window resize
+        // (needed, so it adapts), and if the page is scrolled down at that
+        // moment, rect.top comes back deeply negative, ballooning `h` below
+        // and shoving the current scroll position back up into the
+        // (suddenly much taller) hero. Add scrollY to get the hero's actual
+        // distance from the top of the page, independent of current scroll.
+        const top = container1.getBoundingClientRect().top + window.scrollY;
         const h = Math.max(window.innerHeight - top, 320);
         container1.style.height = h + 'px';
         container1.style.minHeight = h + 'px';
