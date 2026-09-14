@@ -816,6 +816,59 @@
 
                 document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => observer.observe(el));
 
+                // 4a. PLAY/PAUSE BACKGROUND VIDEO BY VISIBILITY
+                // There are 9 tiles, each with its own identical looping
+                // background clip (plus whatever's been swapped into the
+                // media-holder above it) — all set to autoplay regardless
+                // of scroll position. That's 9+ videos decoding at once on
+                // load, and browsers throttle/pause excess concurrent
+                // offscreen video for performance — which looked like the
+                // videos "only showing one frame" (they played briefly,
+                // then got paused by the browser, all around the same
+                // moment). Only play each one while its tile is actually
+                // near the viewport.
+                const noiseObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        // .media-holder's own video is swapped out over time by
+                        // injectMedia() below, so it's queried fresh here each
+                        // time rather than captured once at setup.
+                        const videos = entry.target.querySelectorAll('.noise-bg, .media-holder video');
+                        videos.forEach((video) => {
+                            if (entry.isIntersecting) {
+                                video.play().catch(() => {});
+                            } else {
+                                video.pause();
+                            }
+                        });
+                    });
+                }, { threshold: 0, rootMargin: "200px 0px 200px 0px" });
+
+                document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(el => {
+                    noiseObserver.observe(el);
+                    // Same reasoning as the hero's immediate check above: an
+                    // IntersectionObserver's first callback isn't guaranteed
+                    // to fire right away, and the first tile in particular
+                    // sits right at the fold (see sizeHero) — don't leave it
+                    // waiting on that timing for something as basic as
+                    // starting its own background video.
+                    //
+                    // This whole script block runs synchronously while the
+                    // document is still being parsed — before sizeHero (which
+                    // waits for DOMContentLoaded) has resized the hero and
+                    // settled everything below it into its final position. A
+                    // geometry check right here would measure stale,
+                    // pre-resize layout, so it's deferred one frame — by
+                    // then sizeHero has run and layout has caught up with it.
+                    requestAnimationFrame(() => {
+                        const r = el.getBoundingClientRect();
+                        if (r.bottom > -200 && r.top < window.innerHeight + 200) {
+                            el.querySelectorAll('.noise-bg, .media-holder video').forEach((video) => {
+                                video.play().catch(() => {});
+                            });
+                        }
+                    });
+                });
+
                 // 5. APPLY GLITCH EFFECT
                 applyGlitchToElements('.hp-mid-wrapper .text-overlay, .hp-mid-wrapper .text-overlay1');
 
