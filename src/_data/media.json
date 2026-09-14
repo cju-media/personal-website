@@ -1,0 +1,53 @@
+{
+  "headshots": [
+    "https://media.cju.media/homepage/CameronJohnston_0284.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0336.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0204.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0253.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0412.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0041.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0204.JPG",
+    "https://media.cju.media/homepage/CameronJohnston_0217.JPG",
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/headshots/E50342D5-FF93-4719-BC70-33ADFFF00A00.jpg",
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/headshots/2E1D6D4B-2910-42DA-AB7E-C38E6A6120A4.jpg"
+  ],
+  "perfVids": [
+    "https://media.cju.media/homepage/performer1.mov",
+    "https://media.cju.media/homepage/performer2.mov",
+    "https://media.cju.media/homepage/performer3.mov",
+    "https://media.cju.media/homepage/performer4.mov",
+    "https://media.cju.media/homepage/performer5.mov"
+  ],
+  "artVids": [
+    "https://media.cju.media/homepage/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
+    "https://media.cju.media/homepage/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
+    "https://media.cju.media/homepage/Screen-Recording-2023-01-30-at-13338-PM.mov",
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/artVids/B36F6EAA-DF9A-4ED3-9EA2-937947E5167D.mp4"
+  ],
+  "avPics": [
+    "https://media.cju.media/homepage/IMG_2197.jpg",
+    "https://media.cju.media/homepage/IMG_0660.jpg"
+  ],
+  "compPics": [
+    "https://media.cju.media/homepage/composer1.png",
+    "https://media.cju.media/homepage/composer2.png"
+  ],
+  "prodPics": [
+    "https://media.cju.media/homepage/producer.png"
+  ],
+  "progPics": [
+    "https://media.cju.media/homepage/programmer.png"
+  ],
+  "soundPics": [
+    "https://media.cju.media/homepage/sound1.png",
+    "https://media.cju.media/homepage/sound2.png"
+  ],
+  "condPics": [
+    "https://media.cju.media/homepage/conductor.png"
+  ],
+  "lightPics": [
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/lightPics/B0BEF027-D049-4D8F-AFFE-867705977C89.mp4",
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/lightPics/27AA3106-6CEE-4FC1-97BA-F5B2A2A8C282.mp4",
+    "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content/lightPics/19094FA5-8DAC-427D-BE56-183BDB5FF74D.mp4"
+  ]
+}

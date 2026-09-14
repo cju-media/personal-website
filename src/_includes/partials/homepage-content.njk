@@ -1,7 +1,22 @@
 <script>
-    // Squarespace stub for standalone testing if needed
+    // Squarespace stub — this page no longer runs inside Squarespace, so this
+    // is purely our own init hook now, not a real compatibility shim. It
+    // used to fire on window 'load', which waits for every image/video on
+    // the page (including several autoplay background clips) to finish
+    // downloading before the hero name even starts animating in — a
+    // multi-second delay on a real connection. Fire on DOMContentLoaded
+    // instead: everything hooked through this only touches the DOM/layout,
+    // never waits on media, so there's no reason to hold it back.
     if (typeof Squarespace === 'undefined') {
-        var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
+        var Squarespace = {
+            onInitialize: (Y, init) => {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                } else {
+                    init();
+                }
+            }
+        };
         var Y = null;
     }
     // Media pool — baked in at build time from src/_data/media.json, no
@@ -111,20 +126,42 @@
         });
 
         // 3. Setup Intersection Observer
+        function revealHero(target) {
+            const letters = target.querySelectorAll('.span-class');
+            letters.forEach((letter) => {
+                letter.classList.add('landed');
+            });
+            target.classList.add('show1');
+        }
+
+        // Browsers don't guarantee an IntersectionObserver's first callback
+        // fires immediately after observe() — especially right after a page
+        // load, when there's a lot of layout work queued up, it can lag
+        // noticeably (this is what made the hero feel like it needed a
+        // scroll to "activate"). The hero is deliberately sized to always
+        // be in the viewport at load (see sizeHero above), so check for
+        // that directly and reveal right away instead of waiting on the
+        // observer's own timing for this one case — the observer still
+        // covers everything else (and the hero too, on viewports too short
+        // for the immediate check to apply).
+        function isInViewport(el) {
+            const r = el.getBoundingClientRect();
+            return r.bottom > 0 && r.top < window.innerHeight;
+        }
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    const letters = entry.target.querySelectorAll('.span-class');
-                    letters.forEach((letter) => {
-                        letter.classList.add('landed');
-                    });
-                    entry.target.classList.add('show1');
+                    revealHero(entry.target);
                 }
             });
         }, { threshold: 0.1 });
 
         const textBlock = document.querySelector('.text-block1');
-        if(textBlock) observer.observe(textBlock);
+        if (textBlock) {
+            observer.observe(textBlock);
+            if (isInViewport(textBlock)) revealHero(textBlock);
+        }
 
         const hiddenElements = document.querySelectorAll('.hidden1');
         hiddenElements.forEach((el) => observer.observe(el));
@@ -501,15 +538,15 @@
 </style>
 
     <section class="hidden-slide"><a href="/av-engineering/production/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/sound-artist/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
         <a href="/conductor/laptop-ensemble/" class="video-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
             <div id='mid-laptop' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
@@ -517,20 +554,20 @@
 
     <section class="hidden-slide">
         <a href="/video-art/highlights/" class="video-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
             <div id='mid-video' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
     <section class="hidden-slide"><a href="/max-programming/programming/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/originals/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
     <section class="hidden-slide"><a href="/conductor/new-music-ensemble/" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
     <section class="hidden-slide"><a href="#" class="image-container">
-            <video src="https://www.cameronjohnston.xyz/s/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
+            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {

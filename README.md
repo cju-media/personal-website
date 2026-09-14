@@ -153,7 +153,7 @@ resilience, with a rebuild trigger on those repos changing — not done yet.)
   `videoArt/`, `personal/`, `resume/`) are **untouched** — they're still what
   the *live* Squarespace site fetches via its Code Blocks. Don't delete or
   move them until Squarespace is actually decommissioned; at that point they're
-  fully superseded by `new-site/src` and can be retired.
+  fully superseded by `src/` (this build) and can be retired.
 - **Media**: still pointing at Squarespace-hosted images/video and at
   `cameronjohnston.xyz/s/...` (also Squarespace). Needs downloading and
   rehosting before Squarespace can actually be canceled.
