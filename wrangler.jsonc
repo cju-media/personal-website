@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Matches the existing Worker (cju-media.bnygs5qkws.workers.dev / cju.media)
+  // exactly, so deploys update it rather than creating a second Worker.
+  "name": "cju-media",
+  "compatibility_date": "2025-01-01",
+  // Pure static site — no Worker script, just serve the Eleventy build
+  // output. This was previously only configured in the dashboard (not
+  // committed anywhere), which is why `npx wrangler deploy` had no
+  // reliable instructions for what to actually deploy.
+  "assets": {
+    "directory": "_site"
+  }
+}
