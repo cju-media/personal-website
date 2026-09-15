@@ -2,7 +2,8 @@
 layout: base.njk
 title: Video Art Highlights
 ---
-<div class="text-block1">
+<div id="video-art-highlights-page-wrapper">
+        <div class="text-block1">
             <h1>
                 <span class="span-class">V</span>
                 <span class="span-class">I</span>
@@ -18,12 +19,11 @@ title: Video Art Highlights
         <div class="text-block2">
             <span></span>
             <p>
-               The following compilation shows a number of projects where I was involved in developing the video art and projections. I work primarily in Max to combine video, audio, and lighting. 
+               The following compilation shows a number of projects where I was involved in developing the video art and projections. I work primarily in Max to combine video, audio, and lighting.
             </p>
             <hr>
         </div>
         <span></span><span></span><span></span><span></span>
-        <!-- <p>Test </p> -->
   <script>
     if (typeof Squarespace === 'undefined') {
         var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
@@ -79,15 +79,15 @@ title: Video Art Highlights
         });
 
      var videos = [
-        "https://www.cameronjohnston.xyz/s/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
-        "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
-        "https://www.cameronjohnston.xyz/s/Screen-Recording-2023-01-30-at-13338-PM.mov",
-        "https://cameron-johnston-6skl.squarespace.com/s/visuals2-H264-Proxy-half-size.mov",
-             "https://cameron-johnston-6skl.squarespace.com/s/Demon-Visuals-copy-H264-Proxy-half-size.mov",
-             "https://cameron-johnston-6skl.squarespace.com/s/rainbow-H264-Proxy-half-size.mov", 
-       'https://www.cameronjohnston.xyz/s/Reel-1.mov', 
-       'https://www.cameronjohnston.xyz/s/Reel-3.mov', 
-         'https://www.cameronjohnston.xyz/s/Reel-2.mov'
+        "https://media.cju.media/video-art/yt5sio-args-piece-for-processed-algorthmic-piano-and-video-1080p.mp4",
+        "https://media.cju.media/video-art/Screen-Recording-2023-01-26-at-11152-PM-HD-1080p-H264-Proxy-half-size.mov",
+        "https://media.cju.media/video-art/Screen-Recording-2023-01-30-at-13338-PM.mov",
+        "https://media.cju.media/video-art/visuals2-H264-Proxy-half-size.mov",
+        "https://media.cju.media/video-art/Demon-Visuals-copy-H264-Proxy-half-size.mov",
+        "https://media.cju.media/video-art/rainbow-H264-Proxy-half-size.mov",
+        "https://media.cju.media/video-art/Reel-1.mov",
+        "https://media.cju.media/video-art/Reel-3.mov",
+        "https://media.cju.media/video-art/Reel-2.mov"
 
       ]
 
@@ -161,7 +161,7 @@ title: Video Art Highlights
           console.log(v.duration)
           v.muted = true
           if (v.autoplay) {
-            v.play()
+            v.play().catch(() => {})
             v.controls = false
           } else {
             v.controls = true
@@ -196,7 +196,19 @@ title: Video Art Highlights
 
     .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
 
-    h1 {
+    /* Wrapper: this page never had one, unlike the other ported
+       Squarespace-block pages (#arrangements-page-wrapper etc.) — it relied
+       on Squarespace's own page-content padding, which doesn't exist here,
+       so content was bleeding edge-to-edge. Same padding convention as the
+       other ported pages. */
+    #video-art-highlights-page-wrapper {
+      padding: 60px 20px 60px 20px;
+      box-sizing: border-box;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    #video-art-highlights-page-wrapper h1 {
         font-size: calc(2.5vw + 10px);
         text-align: center;
 
@@ -204,15 +216,15 @@ title: Video Art Highlights
         /* Set your desired maximum font size */
     }
 
-    .text-block1 {
+    #video-art-highlights-page-wrapper .text-block1 {
       padding-bottom: 25px; /* Space under the HR */
     }
 
-     .text-block2 {
+    #video-art-highlights-page-wrapper .text-block2 {
       padding-bottom: 50px; /* Space under the HR */
     }
 
-    .span-class {
+    #video-art-highlights-page-wrapper .span-class {
         display: inline-block;
         width: 1.2em; /* Fixed width to prevent layout shift */
         text-align: center;
@@ -220,16 +232,10 @@ title: Video Art Highlights
         line-height: 1.2;
     }
 
-    section {
-      display: grid;
-      place-items: top;
-      align-content: left;
+    #video-art-highlights-page-wrapper section {
+      display: block;
       text-align: left;
       min-height: 5vh;
-      display: block;
-      
-
-
     }
 
     .image-container1 {
@@ -325,3 +331,4 @@ title: Video Art Highlights
       <video autoplay playsinline id="myVideo4"></video>
     </div>
   </section>
+</div>
