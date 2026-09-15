@@ -57,12 +57,31 @@
         // header's height. Override with the exact pixel offset (within
         // container1) whose center lands at innerHeight/2.
         if (textBlock) {
-            const centerPx = Math.max(window.innerHeight / 2 - top, 60);
+            // The floor here has to be at least half the text block's own
+            // height, or its top edge goes above container1's top — which
+            // gets clipped by container1's overflow:hidden. A fixed floor
+            // (e.g. 60px) doesn't account for this: on mobile the header
+            // wraps to 2-3 rows depending on exact width, eating more of
+            // the viewport, and the name itself is tall (3 words stacked
+            // vertically) — that combination was cutting the top of the
+            // name off. Use the text block's real height instead of a
+            // guessed constant, so it's never wrong regardless of how much
+            // space the header ends up taking.
+            const half = textBlock.offsetHeight / 2 + 8; // small safety margin
+            const centerPx = Math.max(window.innerHeight / 2 - top, half);
             textBlock.style.top = centerPx + 'px';
         }
     }
     Squarespace.onInitialize(Y, sizeHero);
     window.addEventListener('resize', sizeHero);
+    // The web font can still be loading at DOMContentLoaded time, and its
+    // arrival can shift the letters' box metrics slightly — sizeHero only
+    // ran once at that point, so it measured the name's height a little
+    // short and never got a chance to correct it. Re-run once fonts are
+    // confirmed settled, so the centering uses the real, final size.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(sizeHero);
+    }
 
     Squarespace.onInitialize(Y, init1)
 
