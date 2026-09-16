@@ -30,6 +30,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Reads .nvmrc so CI and local stay on one version. That file must
+      # stay at 22 or higher -- wrangler refuses to run below Node 22.
       - name: Set up Node
         uses: actions/setup-node@v4
         with:

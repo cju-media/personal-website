@@ -5,12 +5,13 @@
   "private": true,
   "type": "commonjs",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "start": "eleventy --serve",
     "build": "eleventy",
-    "deploy": "eleventy && wrangler deploy"
+    "clean": "rm -rf _site",
+    "deploy": "npm run clean && eleventy && wrangler deploy"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
