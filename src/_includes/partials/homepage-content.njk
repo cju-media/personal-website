@@ -1,24 +1,18 @@
 <script>
-    // Squarespace stub — this page no longer runs inside Squarespace, so this
-    // is purely our own init hook now, not a real compatibility shim. It
-    // used to fire on window 'load', which waits for every image/video on
-    // the page (including several autoplay background clips) to finish
-    // downloading before the hero name even starts animating in — a
-    // multi-second delay on a real connection. Fire on DOMContentLoaded
-    // instead: everything hooked through this only touches the DOM/layout,
-    // never waits on media, so there's no reason to hold it back.
-    if (typeof Squarespace === 'undefined') {
-        var Squarespace = {
-            onInitialize: (Y, init) => {
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', init);
-                } else {
-                    init();
-                }
-            }
-        };
-        var Y = null;
-    }
+    // Run init once the DOM is parsed. Deliberately NOT window 'load',
+    // which waits for every image/video on the page (including several
+    // autoplay background clips) to finish downloading before the hero
+    // name even starts animating in — a multi-second delay on a real
+    // connection. Everything hooked through here only touches the
+    // DOM/layout and never waits on media, so there is no reason to
+    // hold it back.
+    const onReady = (init) => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    };
     // Media pool — baked in at build time from src/_data/media.json, no
     // network fetch. Kept as a function returning a Promise so every
     // existing `loadMedia().then(mediaData => ...)` call site below is
@@ -72,7 +66,7 @@
             textBlock.style.top = centerPx + 'px';
         }
     }
-    Squarespace.onInitialize(Y, sizeHero);
+    onReady(sizeHero);
     window.addEventListener('resize', sizeHero);
     // The web font can still be loading at DOMContentLoaded time, and its
     // arrival can shift the letters' box metrics slightly — sizeHero only
@@ -83,7 +77,7 @@
         document.fonts.ready.then(sizeHero);
     }
 
-    Squarespace.onInitialize(Y, init1)
+    onReady(init1)
 
     function init1() {
         loadMedia().then(mediaData => {
@@ -288,7 +282,7 @@
         /* FIXED HEIGHT SECTION: Prevents vertical shaking */
         position: relative;
 
-        /* FULL WIDTH HACK FOR SQUARESPACE */
+        /* FULL WIDTH BREAKOUT */
         /* This ensures the container spans the full screen width */
         width: 100vw;
         left: 50%;
@@ -938,7 +932,7 @@
 </div>
 
     <script>
-        Squarespace.onInitialize(Y, initBio)
+        onReady(initBio)
 
         function initBio() {
             loadMedia().then(mediaData => {

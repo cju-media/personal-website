@@ -1,7 +1,7 @@
 {
   "name": "cju-media-site",
   "version": "1.0.0",
-  "description": "cju.media — static rebuild off Squarespace",
+  "description": "cju.media — static Eleventy site deployed to Cloudflare",
   "private": true,
   "type": "commonjs",
   "engines": {

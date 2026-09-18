@@ -5,7 +5,7 @@ title: Programming
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=VT323&display=swap');
 
-    /* Scoped to avoid breaking parent page, removed isolation styles to integrate with Squarespace */
+    /* Scoped to avoid breaking the parent page; isolation styles removed so it inherits site styling */
     #programming-page-content {
         /* font-family: sans-serif;  <- Removed to inherit site font */
         /* background-color: #f0f0f0; <- Removed to be transparent */
@@ -22,7 +22,7 @@ title: Programming
     #programming-page-content h1.glitch-header {
         font-size: calc(2.5vw + 10px);
         text-align: center;
-        /* Ensure it overrides Squarespace defaults for this specific header if needed */
+        /* Ensure it overrides inherited defaults for this specific header if needed */
         margin-bottom: 0.5em;
     }
 
@@ -247,21 +247,16 @@ title: Programming
             getLatestCommitRepo();
         }
 
-        // Squarespace stub for standalone testing or if loaded asynchronously
-        if (typeof Squarespace === 'undefined') {
-            var Squarespace = {
-                onInitialize: (Y, init) => {
-                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                        init();
-                    } else {
-                        window.addEventListener('load', init);
-                    }
-                }
-            };
-            var Y = null;
-        }
+        // Run init as soon as the document is usable, otherwise wait for load.
+        const onReady = (init) => {
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                init();
+            } else {
+                window.addEventListener('load', init);
+            }
+        };
 
-        Squarespace.onInitialize(Y, init1);
+        onReady(init1);
     })();
 </script>
 

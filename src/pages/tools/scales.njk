@@ -181,7 +181,7 @@ title: Scale Visualizer
         }
     }
 
-    // Try multiple hooks to catch Squarespace's initialization
+    // Belt-and-braces: init on DOM ready, and again on load
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initScales);
     } else {

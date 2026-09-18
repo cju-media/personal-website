@@ -25,12 +25,9 @@ title: Video Art Highlights
         </div>
         <span></span><span></span><span></span><span></span>
   <script>
-    if (typeof Squarespace === 'undefined') {
-        var Squarespace = { onInitialize: (Y, init) => { window.addEventListener('load', init); } };
-        var Y = null;
-    }
-
-    Squarespace.onInitialize(Y, init1)
+    // Wait for full load: the video elements below need their metadata
+    // before the reel logic can size and sequence them.
+    window.addEventListener('load', init1);
 
     function init1() {
         // --- TITLE ANIMATION LOGIC ---
@@ -196,11 +193,11 @@ title: Video Art Highlights
 
     .font6 { font-family: 'VT323', monospace; transform: scale(1.1); }
 
-    /* Wrapper: this page never had one, unlike the other ported
-       Squarespace-block pages (#arrangements-page-wrapper etc.) — it relied
-       on Squarespace's own page-content padding, which doesn't exist here,
-       so content was bleeding edge-to-edge. Same padding convention as the
-       other ported pages. */
+    /* Wrapper: this page never had one, unlike the other ported pages
+       (#arrangements-page-wrapper etc.) — it relied on the old host's
+       page-content padding, which doesn't exist here, so content was
+       bleeding edge-to-edge. Same padding convention as the other
+       ported pages. */
     #video-art-highlights-page-wrapper {
       padding: 60px 20px 60px 20px;
       box-sizing: border-box;

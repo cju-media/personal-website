@@ -1,4 +1,4 @@
-# Old Squarespace URLs → new nested URLs. Cloudflare Pages reads this file
+# Old flat URLs → new nested URLs. Cloudflare Pages reads this file
 # from the output root and serves each as a real 301, so old bookmarks and
 # search results land on the right page instead of 404ing.
 

@@ -1,20 +1,35 @@
-# Squarespace Deployment Guidelines
+# Build Guidelines
 
-This repository contains HTML fragments and scripts intended to be injected into Squarespace sites via Code Blocks. To ensure compatibility and prevent side effects, all future builds must adhere to the following guidelines.
+This repository is an [Eleventy](https://11ty.dev) static site. `src/pages/`
+is the sitemap — a page's path there becomes its URL — and the build output
+in `_site/` is served by a Cloudflare Worker (see `wrangler.jsonc`).
 
-## 1. HTML Fragments vs. Full Documents
-* **Do NOT** use `<html>`, `<head>`, or `<body>` tags in the main content file (e.g., `arrangements.html`, `scales.html`).
-* The file should be a standalone HTML fragment.
-* **Loader Pattern:** Create a separate "Block" file (e.g., `arrangementsBlock.html`) that acts as a loader. This file should contain a script to fetch the raw content of the fragment from the GitHub repository (usually the `main` branch) and inject it into the DOM.
+Pages under `src/pages/` were ported from a previous hosted site, so many of
+them still carry that origin's conventions: a single wrapper element per page
+with all styling scoped to it. Those conventions are worth keeping, because
+every page shares one stylesheet and one layout.
+
+## 1. Page structure
+* Pages are `.njk` templates with front matter (`layout: base.njk`, `title`).
+* `base.njk` supplies `<html>`, `<head>`, and `<body>` — a page template must
+  never include them itself.
+* Shared markup belongs in `src/_includes/partials/`; shared data in
+  `src/_data/`.
 
 ## 2. Scoped CSS
-* **Strict Scoping:** All CSS styles must be scoped to a unique container ID specific to that page component (e.g., `#arrangements-page-wrapper`).
-* **No Global Styles:** Never write `body {}`, `h1 {}`, or other global selectors. Always prefix them (e.g., `#arrangements-page-wrapper h1 {}`).
-* This prevents your styles from bleeding into and breaking the parent Squarespace site's theme.
+* **Strict Scoping:** styles for a ported page must stay scoped to that page's
+  unique container ID (e.g. `#arrangements-page-wrapper`).
+* **No Global Styles:** never write bare `body {}`, `h1 {}`, or similar in a
+  page template — they leak into every other page through the shared layout.
+  Prefix them (e.g. `#arrangements-page-wrapper h1 {}`).
+* Site-wide styling lives in `src/css/site.css`, not in page templates.
 
 ## 3. Robust JavaScript Initialization
-* **Encapsulation:** Wrap all scripts in an Immediately Invoked Function Expression (IIFE) to avoid polluting the global namespace.
-* **Initialization Check:** Scripts injected via AJAX (common in Squarespace) might run at unpredictable times. Always check `document.readyState` or use a guard clause to prevent double initialization.
+* **Encapsulation:** wrap page scripts in an IIFE to avoid polluting the
+  global namespace.
+* **Initialization Check:** check `document.readyState` rather than assuming
+  a script runs before or after parsing, and guard against double
+  initialization.
   ```javascript
   (function() {
       function init() {
@@ -30,12 +45,24 @@ This repository contains HTML fragments and scripts intended to be injected into
       }
   })();
   ```
+* Prefer `DOMContentLoaded` over window `load` for anything that only touches
+  layout. Waiting on `load` also waits on every image and autoplay video on
+  the page, which visibly delays hero animations.
 
 ## 4. Responsive Layout Patterns
-* For sections combining descriptive text and interactive elements (like buttons), prefer a **2-column responsive layout**:
+* For sections combining descriptive text and interactive elements (like
+  buttons), prefer a **2-column responsive layout**:
   * **Desktop:** Flex row (Text Left | Content Right)
   * **Mobile (<768px):** Flex column (Text Top | Content Bottom)
-* Use a wrapper class (e.g., `.content-wrapper`) to manage this layout switch via media queries.
+* Use a wrapper class (e.g., `.content-wrapper`) to manage this layout switch
+  via media queries.
 
 ## 5. File Restrictions
 * **Never edit files containing the title "export.json".**
+
+## 6. Deploys
+* Pushing to `main` builds and deploys the live site via
+  `.github/workflows/cloudflare_deploy.yml`. A manual deploy is
+  `npm run deploy`, which cleans `_site` first — Eleventy does not remove
+  stale output on its own.
+* `.nvmrc` must stay at Node 22 or higher; wrangler refuses to run below it.

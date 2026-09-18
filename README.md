@@ -1,7 +1,7 @@
 # cju.media — static rebuild
 
-An [Eleventy](https://11ty.dev) scaffold that rebuilds the Squarespace site as a
-plain static site, organized to mirror the site's nav/sitemap, with the
+An [Eleventy](https://11ty.dev) scaffold that rebuilds the previous hosted site
+as a plain static site, organized to mirror the site's nav/sitemap, with the
 header/nav and footer defined **once** and shared across every page at build
 time.
 
@@ -52,7 +52,7 @@ as `../` relative to the `pages/` input root) — they're build machinery and
 shared resources, not routes, so they deliberately don't live inside the
 folder that mirrors the sitemap.
 
-URLs are cleaner than the live Squarespace site's (e.g. `/music/arrangements/`
+URLs are cleaner than the previous site's (e.g. `/music/arrangements/`
 instead of `/arrangements` with a top-level `/music-2` folder link) — a
 deliberate improvement made during the reorg, not a constraint carried over.
 
@@ -70,7 +70,7 @@ See the original explanation below — unchanged from the first prototype:
 
 ## Migration status — what moved where
 
-**Ported from this repo's existing Squarespace-block files** (content
+**Ported from this repo's existing page-fragment files** (content
 unchanged, just re-homed and given front matter):
 
 | New page | Ported from |
@@ -99,7 +99,7 @@ by direct URL) but are real, working pages, so they were added to `nav.json`
 during this pass — Sound Artist under Music, Hald CLUT under Tools.
 
 **New — didn't exist in this repo at all, only as live pages inside the
-Squarespace page builder.** These were scraped from the live site's text and
+previous site's page builder.** These were scraped from the live site's text and
 rebuilt as plain content pages (`.content-page` styling in `site.css`), since
 there was no source to port from:
 
@@ -123,18 +123,18 @@ page listing that section's children instead, via `section-index.njk`.
 
 ## No runtime fetches for this repo's own content
 
-The old Squarespace Code Block pattern loaded a page's own HTML from GitHub
+The old code-block pattern loaded a page's own HTML from GitHub
 at runtime (fetch → inject into DOM). Every page here already avoids that —
 content is compiled in at build time, one file per page.
 
 A few pages went further and fetched *their own repo's assets* over the
-network too (leftover from the Squarespace-era code, where that was the only
-way to keep a Code Block under Squarespace's size limits). Those are now
+network too (leftover from the old code-block era, where that was the only
+way to keep a block under the host's size limits). Those are now
 committed directly alongside the page instead:
 
 | Page | Used to fetch | Now |
 |---|---|---|
-| Homepage | `assets/media.json` from GitHub raw | `src/_data/media.json`, inlined into the page at build time |
+| Homepage | `assets/media.json` from GitHub raw | `src/_data/media.json`, inlined into the page at build time (the iCloud sync writes this file directly) |
 | `/tools/hald-clut/` | sample photo from `raw.githack.com` | `src/assets/hald-clut-sample-photo.jpg` |
 | `/music/sound-artist/` | RNBO patch + audio samples from GitHub raw | `src/assets/sound-artist/` |
 
@@ -150,20 +150,25 @@ resilience, with a rebuild trigger on those repos changing — not done yet.)
 
 - **The legacy top-level folders in the repo root** (`Scores/`, `avengineering/`,
   `programming/`, `max/`, `stream-setup/`, `scales/`, `harvard-sentences/`,
-  `videoArt/`, `personal/`, `resume/`) are **untouched** — they're still what
-  the *live* Squarespace site fetches via its Code Blocks. Don't delete or
-  move them until Squarespace is actually decommissioned; at that point they're
-  fully superseded by `src/` (this build) and can be retired.
-- **Media**: still pointing at Squarespace-hosted images/video and at
-  `cameronjohnston.xyz/s/...` (also Squarespace). Needs downloading and
-  rehosting before Squarespace can actually be canceled.
+  `videoArt/`, `personal/`, `resume/`) hold the pre-rebuild page fragments.
+  The old host no longer renders them — `cameronjohnston.xyz` now 301s every
+  path to `cju.media`, so none of its code blocks run — and the page HTML is
+  fully superseded by `src/`. **But some of these folders are still load-
+  bearing**, because live pages fetch their media over `raw.githack.com`:
+  `personal/photos/` (Photos), `resume/resume.pdf` (Resume) and
+  `stream-setup/streamSetup.pdf` (Stream Setup). Retire the HTML, keep the
+  media, or move the media into `src/assets/` first.
+- **Outbound links to the old domain**: `bio-content.njk` and `press.njk`
+  still link to `cameronjohnston.xyz/music/<work>` pages. Those redirect to
+  `cju.media/music/<work>`, which does not exist here — they 404. Needs either
+  per-work pages or redirect rules.
 - **Fonts**: free Google Font substitutes (`Cormorant SC`, `Barlow Condensed`)
-  stand in for the real site's paid Adobe fonts, served through Squarespace's
-  own Typekit account.
+  stand in for the real site's paid Adobe fonts, which were served through the
+  previous host's own Typekit account.
 - **Forms**: the "Contact" / "Subscribe" footer links are placeholders —
-  need a real form backend (e.g. Formspree) once off Squarespace.
+  they still need a real form backend (e.g. Formspree).
 - **Content gaps** noted with `stub-note` above.
-- **`Utilities/`** is dev scaffolding (a Block-loader template, a glitch-text
+- **`Utilities/`** is dev scaffolding (a loader template, a glitch-text
   design reference), never a live page — intentionally left out of the new
   sitemap.
 - **`av-events/`** is its own app (phone upload form → GitHub Actions
