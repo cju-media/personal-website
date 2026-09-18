@@ -136,22 +136,25 @@
     // Pin `el` to its own resting size and clip overflow instead — a
     // wide font variant gets clipped inside its own box rather than
     // pushing neighbors around.
-    el.style.display = 'inline-block';
-    el.style.overflow = 'hidden';
-    el.style.verticalAlign = 'top';
+    //
+    // The lock is applied lazily, on the first start() rather than right
+    // here at setup: at setup time (page load) the webfonts (Cormorant SC /
+    // Barlow Condensed) can still be loading, and measuring against their
+    // fallback would freeze in a too-narrow box that clips the real text
+    // even at rest, forever. By the time a person actually hovers, the
+    // fonts have long since settled.
+    let sizeLocked = false;
     function lockSize() {
+      el.style.display = 'inline-block';
+      el.style.verticalAlign = 'top';
       el.style.width = '';
       el.style.height = '';
       const rect = el.getBoundingClientRect();
       el.style.width = Math.ceil(rect.width) + 'px';
       el.style.height = Math.ceil(rect.height) + 'px';
+      el.style.overflow = 'hidden';
+      sizeLocked = true;
     }
-    lockSize();
-    // Webfonts (Cormorant SC / Barlow Condensed) can still be loading at
-    // this point, which would lock in a size measured against the fallback
-    // font. Re-measure once they've settled, same pattern homepage-content
-    // .njk uses for sizeHero.
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockSize);
 
     let active = false;
 
@@ -213,6 +216,7 @@
 
     return {
       start() {
+        if (!sizeLocked) lockSize();
         active = true;
         const now = Date.now();
         chars.forEach((span) => {
