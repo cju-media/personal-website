@@ -122,10 +122,36 @@
       const span = document.createElement('span');
       span.className = 'logo-char';
       span.textContent = ch;
+      // Without this, a lone space between words (e.g. "AV ENGINEERING")
+      // collapses to nothing once it's the sole content of an inline-block.
+      if (ch === ' ') span.style.whiteSpace = 'pre';
       span.setAttribute('aria-hidden', 'true');
       el.appendChild(span);
       chars.push(span);
     }
+
+    // Different glitch fonts render the same text at different widths
+    // (and font6 bumps font-size too), so left unchecked, glitching one
+    // nav item resizes its box and reflows/rewraps every item after it.
+    // Pin `el` to its own resting size and clip overflow instead — a
+    // wide font variant gets clipped inside its own box rather than
+    // pushing neighbors around.
+    el.style.display = 'inline-block';
+    el.style.overflow = 'hidden';
+    el.style.verticalAlign = 'top';
+    function lockSize() {
+      el.style.width = '';
+      el.style.height = '';
+      const rect = el.getBoundingClientRect();
+      el.style.width = Math.ceil(rect.width) + 'px';
+      el.style.height = Math.ceil(rect.height) + 'px';
+    }
+    lockSize();
+    // Webfonts (Cormorant SC / Barlow Condensed) can still be loading at
+    // this point, which would lock in a size measured against the fallback
+    // font. Re-measure once they've settled, same pattern homepage-content
+    // .njk uses for sizeHero.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockSize);
 
     let active = false;
 
