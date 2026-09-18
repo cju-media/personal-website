@@ -4,7 +4,7 @@
     <nav class="primary-nav">
       {% for item in nav %}
       <div class="nav-item">
-        <a href="{{ item.href }}">{{ item.label }}{% if item.children %}<span class="nav-caret">▾</span>{% endif %}</a>
+        <a href="{{ item.href }}"><span class="nav-label">{{ item.label }}</span>{% if item.children %}<span class="nav-caret">▾</span>{% endif %}</a>
         {% if item.children %}
         <div class="nav-folder">
           {% for child in item.children %}

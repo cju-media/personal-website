@@ -6,6 +6,11 @@
   const hasHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (hasHover) return;
 
+  function closeItem(item) {
+    item.classList.remove('open');
+    if (item._closeGlitch) item._closeGlitch();
+  }
+
   document.querySelectorAll('.nav-item').forEach((item) => {
     const link = item.querySelector(':scope > a');
     const folder = item.querySelector('.nav-folder');
@@ -14,9 +19,10 @@
       if (!item.classList.contains('open')) {
         e.preventDefault();
         document.querySelectorAll('.nav-item.open').forEach((o) => {
-          if (o !== item) o.classList.remove('open');
+          if (o !== item) closeItem(o);
         });
         item.classList.add('open');
+        if (item._openGlitch) item._openGlitch();
       }
       // already open: let this tap follow the link normally
     });
@@ -24,13 +30,13 @@
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.nav-item')) {
-      document.querySelectorAll('.nav-item.open').forEach((o) => o.classList.remove('open'));
+      document.querySelectorAll('.nav-item.open').forEach(closeItem);
     }
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.nav-item.open').forEach((o) => o.classList.remove('open'));
+      document.querySelectorAll('.nav-item.open').forEach(closeItem);
     }
   });
 })();
@@ -82,29 +88,11 @@
   window.addEventListener('load', scheduleClamp);
 })();
 
-// Logo glitch: the same random-font/random-color flicker as the hero name
-// on the homepage (see homepage-content.njk), reimplemented small and
-// site-wide since the logo lives in the header on every page, not just one
-// script-loaded template. Unlike the hero (which glitches continuously),
-// this only runs while the pointer is over the logo — same on/off pattern
-// as the hover-triggered tile glitch further down in homepage-content.njk.
+// Letter glitch: the same random-font/random-color flicker as the hero name
+// on the homepage (see homepage-content.njk), reimplemented small so it can
+// run site-wide in the header — once on the "cju.media" logo, and once per
+// nav item's label, active only while that item's dropdown is open.
 (function () {
-  const logo = document.querySelector('.logo');
-  if (!logo) return;
-
-  const text = logo.textContent;
-  logo.textContent = '';
-  logo.setAttribute('aria-label', text);
-  const chars = [];
-  for (const ch of text) {
-    const span = document.createElement('span');
-    span.className = 'logo-char';
-    span.textContent = ch;
-    span.setAttribute('aria-hidden', 'true');
-    logo.appendChild(span);
-    chars.push(span);
-  }
-
   const fontClasses = ['logo-glitch-font1', 'logo-glitch-font2', 'logo-glitch-font3', 'logo-glitch-font4', 'logo-glitch-font5', 'logo-glitch-font6'];
   // Warm/cool tones tuned for the dark header bar, in place of the hero's
   // jewel tones (those were picked for the light homepage background and
@@ -117,78 +105,121 @@
     'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
     'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
   };
-
-  // Builds up over rampDuration ms after the hover starts, rather than
+  // Builds up over rampDuration ms after the trigger starts, rather than
   // jumping straight to full glitch — the same slow-build trick the
   // hover-triggered tile glitch uses further down in homepage-content.njk.
   const rampDuration = 600;
-  function rampFactor(span) {
-    const start = parseInt(span.dataset.hoverStart || 0);
-    return Math.min((Date.now() - start) / rampDuration, 1);
-  }
 
-  function changeFontRandomly(span) {
-    if (logo.dataset.hovering !== 'true') {
-      span.dataset.looping = 'false';
+  // Wraps `el`'s text into per-character spans and returns start()/stop()
+  // to drive the glitch loop — start() (re)begins the ramp-up, stop() lets
+  // each character finish its current step and settle back to plain text.
+  function createLetterGlitch(el) {
+    const text = el.textContent;
+    el.textContent = '';
+    el.setAttribute('aria-label', text);
+    const chars = [];
+    for (const ch of text) {
+      const span = document.createElement('span');
+      span.className = 'logo-char';
+      span.textContent = ch;
+      span.setAttribute('aria-hidden', 'true');
+      el.appendChild(span);
+      chars.push(span);
+    }
+
+    let active = false;
+
+    function rampFactor(span) {
+      const start = parseInt(span.dataset.hoverStart || 0);
+      return Math.min((Date.now() - start) / rampDuration, 1);
+    }
+
+    function changeFontRandomly(span) {
+      if (!active) {
+        span.dataset.looping = 'false';
+        fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
+        span.textContent = span.dataset.original;
+        return;
+      }
+      span.dataset.looping = 'true';
+
+      if (!span.dataset.original) span.dataset.original = span.textContent;
+
+      if (Math.random() > rampFactor(span)) {
+        fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
+        span.textContent = span.dataset.original;
+        setTimeout(() => changeFontRandomly(span), 50);
+        return;
+      }
+
       fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
-      span.textContent = span.dataset.original;
-      return;
-    }
-    span.dataset.looping = 'true';
+      span.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
 
-    if (!span.dataset.original) span.dataset.original = span.textContent;
+      if (Math.random() < 0.05) {
+        const originalChar = span.dataset.original.toUpperCase();
+        span.textContent = katakanaMap[originalChar] || span.dataset.original;
+      } else {
+        span.textContent = span.dataset.original;
+      }
 
-    if (Math.random() > rampFactor(span)) {
-      fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
-      span.textContent = span.dataset.original;
-      setTimeout(() => changeFontRandomly(span), 50);
-      return;
-    }
-
-    fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
-    span.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
-
-    if (Math.random() < 0.05) {
-      const originalChar = span.dataset.original.toUpperCase();
-      span.textContent = katakanaMap[originalChar] || span.dataset.original;
-    } else {
-      span.textContent = span.dataset.original;
+      const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+      setTimeout(() => changeFontRandomly(span), interval);
     }
 
-    const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
-    setTimeout(() => changeFontRandomly(span), interval);
+    function changeColorRandomly(span) {
+      if (!active) {
+        span.dataset.coloring = 'false';
+        span.style.color = '';
+        return;
+      }
+      span.dataset.coloring = 'true';
+
+      if (Math.random() > rampFactor(span)) {
+        span.style.color = '';
+        setTimeout(() => changeColorRandomly(span), 50);
+        return;
+      }
+
+      span.style.color = colors[Math.floor(Math.random() * colors.length)];
+      const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+      setTimeout(() => changeColorRandomly(span), interval);
+    }
+
+    return {
+      start() {
+        active = true;
+        const now = Date.now();
+        chars.forEach((span) => {
+          span.dataset.hoverStart = now;
+          if (span.dataset.looping !== 'true') changeFontRandomly(span);
+          if (span.dataset.coloring !== 'true') changeColorRandomly(span);
+        });
+      },
+      stop() {
+        active = false;
+      }
+    };
   }
 
-  function changeColorRandomly(span) {
-    if (logo.dataset.hovering !== 'true') {
-      span.dataset.coloring = 'false';
-      span.style.color = '';
-      return;
-    }
-    span.dataset.coloring = 'true';
-
-    if (Math.random() > rampFactor(span)) {
-      span.style.color = '';
-      setTimeout(() => changeColorRandomly(span), 50);
-      return;
-    }
-
-    span.style.color = colors[Math.floor(Math.random() * colors.length)];
-    const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
-    setTimeout(() => changeColorRandomly(span), interval);
+  const logo = document.querySelector('.logo');
+  if (logo) {
+    const logoGlitch = createLetterGlitch(logo);
+    logo.addEventListener('mouseenter', logoGlitch.start);
+    logo.addEventListener('mouseleave', logoGlitch.stop);
   }
 
-  logo.dataset.hovering = 'false';
-  logo.addEventListener('mouseenter', () => {
-    logo.dataset.hovering = 'true';
-    const now = Date.now();
-    chars.forEach((span) => {
-      span.dataset.hoverStart = now;
-      if (span.dataset.looping !== 'true') changeFontRandomly(span);
-      if (span.dataset.coloring !== 'true') changeColorRandomly(span);
-    });
-  });
-  logo.addEventListener('mouseleave', () => {
-    logo.dataset.hovering = 'false';
+  document.querySelectorAll('.nav-item').forEach((item) => {
+    const label = item.querySelector(':scope > a > .nav-label');
+    if (!label) return;
+    const labelGlitch = createLetterGlitch(label);
+    // Desktop: the dropdown opens on CSS :hover/:focus-within of the item
+    // itself, so tying start/stop to the item's own mouseenter/mouseleave
+    // matches exactly when the menu is showing.
+    item.addEventListener('mouseenter', labelGlitch.start);
+    item.addEventListener('mouseleave', labelGlitch.stop);
+    // Touch: the tap-to-open handling above toggles .open and calls these
+    // directly, since there's no hover to key off of.
+    item._openGlitch = labelGlitch.start;
+    item._closeGlitch = labelGlitch.stop;
   });
 })();
