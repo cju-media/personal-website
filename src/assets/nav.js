@@ -81,3 +81,92 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(clamp);
   window.addEventListener('load', scheduleClamp);
 })();
+
+// Logo glitch: the same random-font/random-color flicker as the hero name
+// on the homepage (see homepage-content.njk), reimplemented small and
+// site-wide since the logo lives in the header on every page, not just one
+// script-loaded template.
+(function () {
+  const logo = document.querySelector('.logo');
+  if (!logo) return;
+
+  const text = logo.textContent;
+  logo.textContent = '';
+  logo.setAttribute('aria-label', text);
+  const chars = [];
+  for (const ch of text) {
+    const span = document.createElement('span');
+    span.className = 'logo-char';
+    span.textContent = ch;
+    span.setAttribute('aria-hidden', 'true');
+    logo.appendChild(span);
+    chars.push(span);
+  }
+
+  const fontClasses = ['logo-glitch-font1', 'logo-glitch-font2', 'logo-glitch-font3', 'logo-glitch-font4', 'logo-glitch-font5', 'logo-glitch-font6'];
+  // Warm/cool tones tuned for the dark header bar, in place of the hero's
+  // jewel tones (those were picked for the light homepage background and
+  // would be nearly invisible here).
+  const colors = ['#b98a5a', '#d9a869', '#e0b980', '#c2c9cc', '#8fa3a8', '#c97b4a'];
+  const katakanaMap = {
+    'A': 'ア', 'B': 'ブ', 'C': 'ク', 'D': 'デ', 'E': 'エ',
+    'F': 'フ', 'G': 'グ', 'H': 'ハ', 'I': 'イ', 'J': 'ジ',
+    'K': 'ケ', 'L': 'ル', 'M': 'ム', 'N': 'ン', 'O': 'オ',
+    'P': 'プ', 'Q': 'キュ', 'R': 'ラ', 'S': 'ス', 'T': 'ト',
+    'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
+  };
+
+  let isVisible = true;
+  const visibilityObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const wasVisible = isVisible;
+      isVisible = entry.isIntersecting;
+      if (isVisible && !wasVisible) {
+        chars.forEach((span) => {
+          if (span.dataset.looping !== 'true') changeFontRandomly(span);
+          if (span.dataset.coloring !== 'true') changeColorRandomly(span);
+        });
+      }
+    });
+  });
+  visibilityObserver.observe(logo);
+
+  function changeFontRandomly(span) {
+    span.dataset.looping = 'true';
+    if (!isVisible) {
+      span.dataset.looping = 'false';
+      return;
+    }
+
+    if (!span.dataset.original) span.dataset.original = span.textContent;
+    fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
+    span.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
+
+    if (Math.random() < 0.05) {
+      const originalChar = span.dataset.original.toUpperCase();
+      span.textContent = katakanaMap[originalChar] || span.dataset.original;
+    } else {
+      span.textContent = span.dataset.original;
+    }
+
+    const interval = Math.floor(Math.random() * (700 - 300 + 1)) + 300;
+    setTimeout(() => changeFontRandomly(span), interval);
+  }
+
+  function changeColorRandomly(span) {
+    span.dataset.coloring = 'true';
+    if (!isVisible) {
+      span.dataset.coloring = 'false';
+      return;
+    }
+
+    span.style.color = colors[Math.floor(Math.random() * colors.length)];
+    const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
+    setTimeout(() => changeColorRandomly(span), interval);
+  }
+
+  chars.forEach((span) => {
+    changeFontRandomly(span);
+    changeColorRandomly(span);
+  });
+})();

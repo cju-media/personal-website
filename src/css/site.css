@@ -44,15 +44,25 @@ header.site-header{
   padding:22px 40px;
 }
 .logo{
-  display:flex;
-  align-items:center;
+  font-family:'Cormorant SC', 'Cormorant', serif;
+  font-weight:500;
+  font-size:19px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--logo-ink);
   white-space:nowrap;
 }
-.logo-img{
-  height:40px;
-  width:auto;
-  display:block;
-}
+/* Glitch effect on the logo wordmark — same idea as the hero name on the
+   homepage (random font swaps + color flicker, occasional katakana), just
+   scoped to a handful of small classes so it can run site-wide without
+   pulling in the homepage's script. See /assets/nav.js for the loop. */
+.logo-char{display:inline-block;}
+.logo-glitch-font1{font-family:Arial, sans-serif;}
+.logo-glitch-font2{font-family:"Times New Roman", serif;}
+.logo-glitch-font3{font-family:"Courier New", monospace;}
+.logo-glitch-font4{font-family:essay-text, monospace;}
+.logo-glitch-font5{font-family:'Playfair Display', serif;}
+.logo-glitch-font6{font-family:'VT323', monospace; font-size:1.15em;}
 nav.primary-nav{
   display:flex;
   flex-wrap:wrap;
