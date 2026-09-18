@@ -118,6 +118,15 @@
     'U': '牛', 'V': 'ヴ', 'W': 'ワ', 'X': 'クス', 'Y': 'ヤ', 'Z': 'ズ'
   };
 
+  // Builds up over rampDuration ms after the hover starts, rather than
+  // jumping straight to full glitch — the same slow-build trick the
+  // hover-triggered tile glitch uses further down in homepage-content.njk.
+  const rampDuration = 600;
+  function rampFactor(span) {
+    const start = parseInt(span.dataset.hoverStart || 0);
+    return Math.min((Date.now() - start) / rampDuration, 1);
+  }
+
   function changeFontRandomly(span) {
     if (logo.dataset.hovering !== 'true') {
       span.dataset.looping = 'false';
@@ -128,6 +137,14 @@
     span.dataset.looping = 'true';
 
     if (!span.dataset.original) span.dataset.original = span.textContent;
+
+    if (Math.random() > rampFactor(span)) {
+      fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
+      span.textContent = span.dataset.original;
+      setTimeout(() => changeFontRandomly(span), 50);
+      return;
+    }
+
     fontClasses.forEach((fontClass) => span.classList.remove(fontClass));
     span.classList.add(fontClasses[Math.floor(Math.random() * fontClasses.length)]);
 
@@ -150,6 +167,12 @@
     }
     span.dataset.coloring = 'true';
 
+    if (Math.random() > rampFactor(span)) {
+      span.style.color = '';
+      setTimeout(() => changeColorRandomly(span), 50);
+      return;
+    }
+
     span.style.color = colors[Math.floor(Math.random() * colors.length)];
     const interval = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
     setTimeout(() => changeColorRandomly(span), interval);
@@ -158,7 +181,9 @@
   logo.dataset.hovering = 'false';
   logo.addEventListener('mouseenter', () => {
     logo.dataset.hovering = 'true';
+    const now = Date.now();
     chars.forEach((span) => {
+      span.dataset.hoverStart = now;
       if (span.dataset.looping !== 'true') changeFontRandomly(span);
       if (span.dataset.coloring !== 'true') changeColorRandomly(span);
     });
