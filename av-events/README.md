@@ -1,8 +1,13 @@
 # AV Events
 
-This directory contains the code for the "AV Events" page (`/av-events` on the
-Squarespace site) — a running log of events with a description and photos for
-each, uploadable from a phone.
+This directory contains the code for the "AV Events" page — a running log of
+events with a description and photos for each, uploadable from a phone.
+
+> **Note:** the upload and processing pipeline below is live and working, but
+> the public gallery currently has no home. It was only ever published on the
+> old hosted site, which now redirects everything to `cju.media`, and no
+> equivalent page has been built under `src/pages/` yet — `cju.media/av-events`
+> 404s. `av-events.html` is the ready-made fragment to port when that happens.
 
 ## Architecture
 
@@ -28,16 +33,15 @@ each, uploadable from a phone.
      forever.
    - The workflow commits and pushes the result back to `main`.
 
-3. **Publishing (Squarespace):**
+3. **Publishing (not currently wired up):**
    - `av-events.html` is the static HTML fragment — scoped styles, a glitch
      title matching the rest of the site, and JS that fetches `events.json`
      and renders each event as a card with its description and a photo grid
      (click to open a lightbox).
-   - `av-eventsBlock.html` is the loader: paste its contents into a Squarespace
-     Code Block on the `/av-events` page. It fetches `av-events.html` from
-     GitHub (via raw.githack) at page-load time and injects it, so the page
-     always shows the latest published content without touching Squarespace
-     again.
+   - To publish it, port this fragment into a page under `src/pages/` like the
+     other migrated pages. Its JS already fetches `events.json` at page load,
+     so the gallery keeps updating itself as the pipeline publishes events —
+     no rebuild needed for new content.
 
 ```
 Phone (dashboard/index.html)
@@ -49,7 +53,7 @@ uploads_queue/<timestamp>/{meta.json, photos/*}
 process_events_queue.py  →  images/<slug>/*, events.json
    │  git commit + push
    ▼
-av-events.html fetches events.json  ←  av-eventsBlock.html (Squarespace Code Block)
+av-events.html fetches events.json  (not yet published — see note above)
 ```
 
 ## Files
@@ -59,8 +63,7 @@ av-events.html fetches events.json  ←  av-eventsBlock.html (Squarespace Code B
 - `events.json` — the published manifest (generated).
 - `images/` — the published photos, one subfolder per event (generated).
 - `uploads_queue/` — in-flight submissions (generated/consumed; normally empty).
-- `av-events.html` — the gallery fragment injected on Squarespace.
-- `av-eventsBlock.html` — the Squarespace Code Block loader.
+- `av-events.html` — the gallery fragment, awaiting a port into `src/pages/`.
 
 ## One-time setup
 
@@ -72,8 +75,8 @@ av-events.html fetches events.json  ←  av-eventsBlock.html (Squarespace Code B
    `personal-website` repository, with **Contents: Read and write**
    permission and nothing else. Open the dashboard, tap the ⚙ icon, and
    paste it in — it's saved on that device only.
-3. **Add the Squarespace page:** create a page at `/av-events`, add a Code
-   Block, and paste in the contents of `av-eventsBlock.html`.
+3. **Publish the gallery:** port `av-events.html` into a page under
+   `src/pages/` so it builds and deploys with the rest of the site.
 
 ## Manual re-run
 

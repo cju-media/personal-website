@@ -8,12 +8,12 @@ it does, applied live in the browser — no upload, no server round-trip.
 
 - `hald-clut.html` is the static HTML fragment — scoped styles, a glitch
   title matching the rest of the site, and a self-contained Hald CLUT engine.
-- `hald-clutBlock.html` is the loader: paste its contents into a Squarespace
-  Code Block. It fetches `hald-clut.html` from GitHub (via raw.githack) at
-  page-load time and injects it, so the page always shows the latest
-  published content without touching Squarespace again.
-- `sample-photo.jpg` is the bundled default test photo (1200px, ~130KB),
-  fetched from GitHub via raw.githack the same way the fragment itself is.
+  This fragment is superseded: the live page is `src/pages/tools/hald-clut.njk`,
+  built and deployed with the rest of the site. This copy is kept as the
+  pre-rebuild reference.
+- `sample-photo.jpg` is the bundled default test photo (1200px, ~130KB).
+  The live page no longer fetches it over the network — it serves its own
+  copy from `src/assets/hald-clut-sample-photo.jpg`.
   It's a real, previously-published photo of Cameron already used elsewhere
   on the site, chosen for its mixed colored stage lighting and skin tones —
   good for judging what a LUT does to both.

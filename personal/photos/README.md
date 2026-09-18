@@ -15,9 +15,14 @@ Due to security restrictions (CORS) that prevent reliable browser-based access t
     -   It commits and pushes these changes back to the repository.
 
 2.  **Frontend (Client-Side):**
-    -   `photos.html` is a static HTML fragment injected into the website (e.g., Squarespace).
+    -   The live page is `src/pages/affects/photos.njk`, built and deployed
+        with the rest of the site. (`photos.html` here is the pre-rebuild
+        fragment, kept for reference.)
     -   It fetches `photos.json` from the raw GitHub content (via `raw.githack.com` or similar CDN).
     -   It displays the images directly from the repository.
+
+> **Do not delete `images/` or `photos.json`** — the live Photos page fetches
+> them straight from `main` over `raw.githack.com`.
 
 ## Advantages
 
@@ -27,9 +32,9 @@ Due to security restrictions (CORS) that prevent reliable browser-based access t
 
 ## Files
 
--   `photos.html`: The gallery interface.
+-   `photos.html`: The pre-rebuild gallery fragment (superseded by
+    `src/pages/affects/photos.njk`).
 -   `fetch_icloud_photos.py`: The Python scraper.
--   `photosBlock.html`: Loader for Squarespace.
 -   `photos.json`: The manifest of photos (generated).
 -   `images/`: The downloaded photos (generated).
 
