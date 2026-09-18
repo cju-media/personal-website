@@ -44,13 +44,14 @@ header.site-header{
   padding:22px 40px;
 }
 .logo{
-  font-family:'Cormorant SC', 'Cormorant', serif;
-  font-weight:500;
-  font-size:19px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--logo-ink);
+  display:flex;
+  align-items:center;
   white-space:nowrap;
+}
+.logo-img{
+  height:26px;
+  width:auto;
+  display:block;
 }
 nav.primary-nav{
   display:flex;
