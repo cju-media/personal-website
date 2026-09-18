@@ -6,7 +6,7 @@ import sys
 import shutil
 
 # Add new iCloud shared album tokens here.
-# The key should match the object array in assets/media.json
+# The key should match the object array in src/_data/media.json
 ALBUMS = {
     "headshots": "B2N5yeZFhGgD1sx",
     "lightPics": "B2NJEsNWnGt7OnR",
@@ -16,7 +16,10 @@ ALBUMS = {
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 CONTENT_DIR = os.path.join(ASSETS_DIR, "content")
-MEDIA_JSON_PATH = os.path.join(ASSETS_DIR, "media.json")
+# Write straight into the Eleventy data file. This used to target
+# assets/media.json, which nothing in the build ever read, so synced
+# albums never reached the site.
+MEDIA_JSON_PATH = os.path.join(BASE_DIR, "src", "_data", "media.json")
 
 GITHUB_RAW_PREFIX = "https://raw.githubusercontent.com/cju-media/personal-website/main/assets/content"
 

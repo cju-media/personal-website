@@ -13,6 +13,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+  # Lets sync-icloud-media.yml deploy the media it just committed. Its push
+  # uses GITHUB_TOKEN, which by design does not trigger workflows, so it has
+  # to call this one rather than rely on the push trigger above.
+  workflow_call:
 
 # Never run two deploys at once, and never cancel one midway -- a
 # half-finished asset upload would leave the Worker in a mixed state.

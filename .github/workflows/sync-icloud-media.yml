@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to push changes
+    outputs:
+      changes_detected: ${{ steps.commit.outputs.changes_detected }}
 
     steps:
       - name: Checkout repository
@@ -30,7 +32,18 @@ jobs:
           python3 sync_media_icloud.py
 
       - name: Commit and Push Changes
+        id: commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated: Sync media from iCloud Shared Albums"
-          file_pattern: "assets/content/* assets/media.json"
+          file_pattern: "assets/content/* src/_data/media.json"
+
+  # A push made with GITHUB_TOKEN does not trigger other workflows, so the
+  # sync commit above would never set off cloudflare_deploy.yml on its own
+  # and synced media would sit in the repo unpublished. Call the deploy
+  # directly, and only when the sync actually committed something.
+  deploy:
+    needs: sync-media
+    if: needs.sync-media.outputs.changes_detected == 'true'
+    uses: ./.github/workflows/cloudflare_deploy.yml
+    secrets: inherit
