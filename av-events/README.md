@@ -3,11 +3,9 @@
 This directory contains the code for the "AV Events" page — a running log of
 events with a description and photos for each, uploadable from a phone.
 
-> **Note:** the upload and processing pipeline below is live and working, but
-> the public gallery currently has no home. It was only ever published on the
-> old hosted site, which now redirects everything to `cju.media`, and no
-> equivalent page has been built under `src/pages/` yet — `cju.media/av-events`
-> 404s. `av-events.html` is the ready-made fragment to port when that happens.
+The public gallery is at **`/av-engineering/events/`**, built from
+`src/pages/av-engineering/events.njk`. `/av-events` and `/audiovideo-events`
+301 to it for old links.
 
 ## Architecture
 
@@ -33,15 +31,16 @@ events with a description and photos for each, uploadable from a phone.
      forever.
    - The workflow commits and pushes the result back to `main`.
 
-3. **Publishing (not currently wired up):**
-   - `av-events.html` is the static HTML fragment — scoped styles, a glitch
-     title matching the rest of the site, and JS that fetches `events.json`
-     and renders each event as a card with its description and a photo grid
-     (click to open a lightbox).
-   - To publish it, port this fragment into a page under `src/pages/` like the
-     other migrated pages. Its JS already fetches `events.json` at page load,
-     so the gallery keeps updating itself as the pipeline publishes events —
-     no rebuild needed for new content.
+3. **Publishing:**
+   - `src/pages/av-engineering/events.njk` is the live page — scoped styles, a
+     glitch title matching the rest of the site, and JS that fetches
+     `events.json` and renders each event as a card with its description and a
+     photo grid (click to open a lightbox).
+   - It fetches `events.json` over raw.githack at page load rather than baking
+     it in at build time, so **new events appear without rebuilding the site**.
+     The pipeline's commit is enough; no deploy is needed.
+   - `av-events.html` is the pre-rebuild fragment this was ported from, kept
+     for reference.
 
 ```
 Phone (dashboard/index.html)
@@ -53,7 +52,7 @@ uploads_queue/<timestamp>/{meta.json, photos/*}
 process_events_queue.py  →  images/<slug>/*, events.json
    │  git commit + push
    ▼
-av-events.html fetches events.json  (not yet published — see note above)
+events.njk fetches events.json  →  /av-engineering/events/
 ```
 
 ## Files
@@ -63,7 +62,8 @@ av-events.html fetches events.json  (not yet published — see note above)
 - `events.json` — the published manifest (generated).
 - `images/` — the published photos, one subfolder per event (generated).
 - `uploads_queue/` — in-flight submissions (generated/consumed; normally empty).
-- `av-events.html` — the gallery fragment, awaiting a port into `src/pages/`.
+- `av-events.html` — the pre-rebuild fragment (superseded by
+  `src/pages/av-engineering/events.njk`).
 
 ## One-time setup
 
@@ -75,8 +75,8 @@ av-events.html fetches events.json  (not yet published — see note above)
    `personal-website` repository, with **Contents: Read and write**
    permission and nothing else. Open the dashboard, tap the ⚙ icon, and
    paste it in — it's saved on that device only.
-3. **Publish the gallery:** port `av-events.html` into a page under
-   `src/pages/` so it builds and deploys with the rest of the site.
+3. **Nothing else** — the gallery page is already built and deployed with the
+   rest of the site.
 
 ## Manual re-run
 

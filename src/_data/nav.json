@@ -3,80 +3,181 @@
     "label": "About",
     "href": "/about/",
     "children": [
-      { "label": "Bio", "href": "/about/bio/" },
-      { "label": "Resume", "href": "/about/resume/" },
-      { "label": "Education", "href": "/about/education/" },
-      { "label": "Ensembles", "href": "/about/ensembles/" },
-      { "label": "Press", "href": "/about/press/" },
-      { "label": "Awards", "href": "/about/awards/" }
+      {
+        "label": "Bio",
+        "href": "/about/bio/"
+      },
+      {
+        "label": "Resume",
+        "href": "/about/resume/"
+      },
+      {
+        "label": "Education",
+        "href": "/about/education/"
+      },
+      {
+        "label": "Ensembles",
+        "href": "/about/ensembles/"
+      },
+      {
+        "label": "Press",
+        "href": "/about/press/"
+      },
+      {
+        "label": "Awards",
+        "href": "/about/awards/"
+      }
     ]
   },
   {
     "label": "Music",
     "href": "/music/",
     "children": [
-      { "label": "Arrangements", "href": "/music/arrangements/" },
-      { "label": "Originals", "href": "/music/originals/" },
-      { "label": "Media Scores", "href": "/music/media-scores/" },
-      { "label": "Sound Artist", "href": "/music/sound-artist/" }
+      {
+        "label": "Arrangements",
+        "href": "/music/arrangements/"
+      },
+      {
+        "label": "Originals",
+        "href": "/music/originals/"
+      },
+      {
+        "label": "Media Scores",
+        "href": "/music/media-scores/"
+      },
+      {
+        "label": "Sound Artist",
+        "href": "/music/sound-artist/"
+      }
     ]
   },
   {
     "label": "Video Art",
     "href": "/video-art/",
     "children": [
-      { "label": "Video Art Highlights", "href": "/video-art/highlights/" }
+      {
+        "label": "Video Art Highlights",
+        "href": "/video-art/highlights/"
+      }
     ]
   },
   {
     "label": "Director/Conductor",
     "href": "/conductor/",
     "children": [
-      { "label": "New Music Ensemble", "href": "/conductor/new-music-ensemble/" },
-      { "label": "Laptop Ensemble", "href": "/conductor/laptop-ensemble/" },
-      { "label": "Pile of Wires", "href": "/conductor/pile-of-wires/" }
+      {
+        "label": "New Music Ensemble",
+        "href": "/conductor/new-music-ensemble/"
+      },
+      {
+        "label": "Laptop Ensemble",
+        "href": "/conductor/laptop-ensemble/"
+      },
+      {
+        "label": "Pile of Wires",
+        "href": "/conductor/pile-of-wires/"
+      }
     ]
   },
   {
     "label": "Max/Programming",
     "href": "/max-programming/",
     "children": [
-      { "label": "max", "href": "/max-programming/max/" },
-      { "label": "programming", "href": "/max-programming/programming/" },
-      { "label": "vst", "href": "/max-programming/vst/" },
-      { "label": "webdev", "href": "/max-programming/webdev/" },
-      { "label": "externals", "href": "/max-programming/externals/" }
+      {
+        "label": "max",
+        "href": "/max-programming/max/"
+      },
+      {
+        "label": "programming",
+        "href": "/max-programming/programming/"
+      },
+      {
+        "label": "vst",
+        "href": "/max-programming/vst/"
+      },
+      {
+        "label": "webdev",
+        "href": "/max-programming/webdev/"
+      },
+      {
+        "label": "externals",
+        "href": "/max-programming/externals/"
+      }
     ]
   },
   {
     "label": "AV Engineering",
     "href": "/av-engineering/",
     "children": [
-      { "label": "Audio/Video Engineering", "href": "/av-engineering/production/" },
-      { "label": "Media Highlights", "href": "/av-engineering/highlights/" },
-      { "label": "Podcast Editing", "href": "/av-engineering/podcasts/" },
-      { "label": "Video Editing", "href": "/av-engineering/video-editing/" },
-      { "label": "Gear", "href": "/av-engineering/gear/" }
+      {
+        "label": "Audio/Video Engineering",
+        "href": "/av-engineering/production/"
+      },
+      {
+        "label": "Media Highlights",
+        "href": "/av-engineering/highlights/"
+      },
+      {
+        "label": "AV Events",
+        "href": "/av-engineering/events/"
+      },
+      {
+        "label": "Podcast Editing",
+        "href": "/av-engineering/podcasts/"
+      },
+      {
+        "label": "Video Editing",
+        "href": "/av-engineering/video-editing/"
+      },
+      {
+        "label": "Gear",
+        "href": "/av-engineering/gear/"
+      }
     ]
   },
   {
     "label": "Affects",
     "href": "/affects/",
     "children": [
-      { "label": "The List", "href": "/affects/list/" },
-      { "label": "Photos", "href": "/affects/photos/" },
-      { "label": "Substack", "href": "https://cjumedia.substack.com", "external": true },
-      { "label": "The Way", "href": "/affects/way/" }
+      {
+        "label": "The List",
+        "href": "/affects/list/"
+      },
+      {
+        "label": "Photos",
+        "href": "/affects/photos/"
+      },
+      {
+        "label": "Substack",
+        "href": "https://cjumedia.substack.com",
+        "external": true
+      },
+      {
+        "label": "The Way",
+        "href": "/affects/way/"
+      }
     ]
   },
   {
     "label": "Tools",
     "href": "/tools/",
     "children": [
-      { "label": "Stream Setup", "href": "/tools/stream-setup/" },
-      { "label": "Scales", "href": "/tools/scales/" },
-      { "label": "Harvard Sentences", "href": "/tools/harvard-sentences/" },
-      { "label": "Hald CLUT", "href": "/tools/hald-clut/" }
+      {
+        "label": "Stream Setup",
+        "href": "/tools/stream-setup/"
+      },
+      {
+        "label": "Scales",
+        "href": "/tools/scales/"
+      },
+      {
+        "label": "Harvard Sentences",
+        "href": "/tools/harvard-sentences/"
+      },
+      {
+        "label": "Hald CLUT",
+        "href": "/tools/hald-clut/"
+      }
     ]
   }
 ]

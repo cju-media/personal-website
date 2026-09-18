@@ -172,6 +172,7 @@ resilience, with a rebuild trigger on those repos changing — not done yet.)
   design reference), never a live page — intentionally left out of the new
   sitemap.
 - **`av-events/`** is its own app (phone upload form → GitHub Actions
-  pipeline → `events.json` → gallery), not a content page — intentionally
+  pipeline → `events.json` → gallery at `/av-engineering/events/`), not a
+  content page — intentionally
   left out of the new sitemap. The AV Engineering page keeps linking to it
   by URL, same as the live site does today.
