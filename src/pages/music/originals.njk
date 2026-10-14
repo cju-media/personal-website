@@ -344,6 +344,29 @@ title: Originals
             color: #fff;
         }
 
+        #parts-download-all {
+            align-self: center;
+            margin-bottom: 20px;
+            padding: 8px 18px;
+            background: #444;
+            color: #fff;
+            border: 1px solid #666;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #parts-download-all:hover:not(:disabled) {
+            background: #666;
+        }
+
+        #parts-download-all:disabled {
+            cursor: progress;
+            opacity: 0.7;
+        }
+
         #parts-list-container {
             display: flex;
             flex-direction: column;
@@ -404,6 +427,7 @@ title: Originals
                 <button type="button" data-sort="score" class="active">Score order</button>
                 <button type="button" data-sort="alpha">A-Z</button>
             </div>
+            <button type="button" id="parts-download-all">Download all</button>
             <div id="parts-list-container"></div>
         </div>
     </div>
@@ -781,6 +805,7 @@ title: Originals
                 }
 
                 let currentPartsFiles = [];
+                let currentPartsTitle = '';
                 let currentPartsSort = 'score'; // 'score' = orchestral order, 'alpha' = A-Z
 
                 function renderPartsList() {
@@ -811,6 +836,68 @@ title: Originals
                     });
                 }
 
+                let jszipPromise = null;
+                function loadJSZip() {
+                    if (window.JSZip) return Promise.resolve(window.JSZip);
+                    if (!jszipPromise) {
+                        jszipPromise = new Promise((resolve, reject) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                            script.onload = () => resolve(window.JSZip);
+                            script.onerror = () => { jszipPromise = null; reject(new Error('Failed to load JSZip')); };
+                            document.head.appendChild(script);
+                        });
+                    }
+                    return jszipPromise;
+                }
+
+                // Download every part as a single zip containing one folder
+                function downloadAllParts() {
+                    const btn = document.getElementById('parts-download-all');
+                    if (!btn || btn.disabled || !currentPartsFiles.length) return;
+
+                    const files = currentPartsFiles.slice();
+                    const folderName = (currentPartsTitle + ' - Parts').replace(/[\\/:*?"<>|]/g, '-');
+                    btn.disabled = true;
+                    btn.textContent = 'Preparing...';
+
+                    loadJSZip()
+                        .then(JSZip => {
+                            const zip = new JSZip();
+                            const folder = zip.folder(folderName);
+                            let done = 0;
+                            return Promise.all(files.map(part =>
+                                fetch(part.url)
+                                    .then(r => {
+                                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                                        return r.blob();
+                                    })
+                                    .then(blob => {
+                                        folder.file(part.filename, blob);
+                                        btn.textContent = 'Preparing... ' + (++done) + '/' + files.length;
+                                    })
+                            )).then(() => zip.generateAsync({ type: 'blob', compression: 'STORE' }));
+                        })
+                        .then(blob => {
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = folderName + '.zip';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                            btn.textContent = 'Download all';
+                        })
+                        .catch(err => {
+                            console.error('Download all failed:', err);
+                            btn.textContent = 'Download failed - retry';
+                        })
+                        .finally(() => { btn.disabled = false; });
+                }
+
+                const downloadAllBtn = document.getElementById('parts-download-all');
+                if (downloadAllBtn) downloadAllBtn.addEventListener('click', downloadAllParts);
+
                 // Function to open the Parts modal with one item per part
                 function openPartsModal(titleText, partsFiles) {
                     const modal = document.getElementById('parts-modal-overlay');
@@ -820,7 +907,10 @@ title: Originals
                     if (title) title.textContent = titleText + ' \u2014 Parts'; // em dash via escape so it renders regardless of page charset
 
                     currentPartsFiles = partsFiles;
+                    currentPartsTitle = titleText;
                     currentPartsSort = 'score';
+                    const dlBtn = document.getElementById('parts-download-all');
+                    if (dlBtn && !dlBtn.disabled) dlBtn.textContent = 'Download all';
                     updatePartsSortUI();
                     renderPartsList();
 
@@ -986,6 +1076,7 @@ title: Originals
                                     const label = baseName.split(' - ').pop().trim() || baseName;
                                     return {
                                         label: label,
+                                        filename: subPath,
                                         url: `https://cdn.jsdelivr.net/gh/cju-media/Scores@main/Originals/${encodeURIComponent(dir.path)}/Parts/${encodeURIComponent(subPath)}`
                                     };
                                 });
