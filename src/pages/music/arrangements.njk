@@ -499,6 +499,20 @@ title: Arrangements
                     return jszipPromise;
                 }
 
+                // Fetch a part, retrying transient CDN/network failures
+                function fetchPartBlob(url, attemptsLeft = 3) {
+                    return fetch(url)
+                        .then(r => {
+                            if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
+                            return r.blob();
+                        })
+                        .catch(err => {
+                            if (attemptsLeft <= 1) throw err;
+                            return new Promise(resolve => setTimeout(resolve, 800))
+                                .then(() => fetchPartBlob(url, attemptsLeft - 1));
+                        });
+                }
+
                 // Download every part as a single zip containing one folder
                 function downloadAllParts() {
                     const btn = document.getElementById('parts-download-all');
@@ -515,11 +529,7 @@ title: Arrangements
                             const folder = zip.folder(folderName);
                             let done = 0;
                             return Promise.all(files.map(part =>
-                                fetch(part.url)
-                                    .then(r => {
-                                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                                        return r.blob();
-                                    })
+                                fetchPartBlob(part.url)
                                     .then(blob => {
                                         folder.file(part.filename, blob);
                                         btn.textContent = 'Preparing... ' + (++done) + '/' + files.length;
