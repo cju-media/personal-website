@@ -10,7 +10,9 @@ import shutil
 ALBUMS = {
     "headshots": "B2N5yeZFhGgD1sx",
     "lightPics": "B2NJEsNWnGt7OnR",
-    "artVids": "B2NGqkRUitcdZS"
+    "artVids": "B2NGqkRUitcdZS",
+    "perfVids": "B2N59UlCqGWjNws",
+    "avPics": "D2Nv3czZGJCDWAktmnXmYyPLGPQCAEQARogxygOF9KvJxE5efbk_qT_irdytLXpbj9tnOhHbv2eGd4"
 }
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
