@@ -569,15 +569,15 @@
 </style>
 
     <section class="hidden-slide"><a href="/av-engineering/production/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-av' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">AUDIO/VIDEO ENGINEER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-composer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">COMPOSER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/sound-artist/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='sound' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay">SOUND ARTIST</h2></div></a></section>
 
     <section class="hidden-slide">
         <a href="/conductor/laptop-ensemble/" class="video-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video autoplay loop muted playsinline class="noise-bg"></video>
             <div id='mid-laptop' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">LAPTOP PERFORMER</h2></div>
         </a>
@@ -585,20 +585,20 @@
 
     <section class="hidden-slide">
         <a href="/video-art/highlights/" class="video-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video>
+            <video autoplay loop muted playsinline class="noise-bg"></video>
             <div id='mid-video' class='media-holder'></div>
             <div class="text-wrapper"><h2 class="text-overlay1">VIDEO ARTIST</h2></div>
         </a>
     </section>
 
     <section class="hidden-slide"><a href="/max-programming/programming/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-programmer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PROGRAMMER</h2></div></a></section>
     <section class="hidden-slide"><a href="/music/originals/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-producer' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">PRODUCER</h2></div></a></section>
     <section class="hidden-slide"><a href="/conductor/new-music-ensemble/" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-conductor' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">CONDUCTOR</h2></div></a></section>
     <section class="hidden-slide"><a href="#" class="image-container">
-            <video src="https://media.cju.media/homepage/noise4.mov" autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
+            <video autoplay loop muted playsinline class="noise-bg"></video><div id='mid-lighting' class='media-holder'></div><div class="text-wrapper"><h2 class="text-overlay1">LIGHTING DESIGNER</h2></div></a></section>
 
     <script>
         (function() {
@@ -858,6 +858,33 @@
                 // then got paused by the browser, all around the same
                 // moment). Only play each one while its tile is actually
                 // near the viewport.
+                //
+                // The nine tiles also all used to point at the same remote
+                // clip, so the browser opened nine separate downloads of it
+                // at once (uncached, competing with the big photo/video
+                // pool for bandwidth) — some tiles' static arrived seconds
+                // late or got re-requested after being evicted. Fetch it
+                // once from our own origin and hand every tile the same
+                // blob URL instead.
+                const noiseVideos = document.querySelectorAll('.hp-mid-wrapper .noise-bg');
+                const NOISE_URL = '/assets/noise4.mov';
+                const playIfNear = (slide) => {
+                    const r = slide.getBoundingClientRect();
+                    if (r.bottom > -200 && r.top < window.innerHeight + 200) {
+                        slide.querySelectorAll('.noise-bg').forEach((video) => {
+                            video.play().catch(() => {});
+                        });
+                    }
+                };
+                const useNoiseSrc = (src) => {
+                    noiseVideos.forEach((video) => { video.src = src; });
+                    document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(playIfNear);
+                };
+                fetch(NOISE_URL)
+                    .then((res) => { if (!res.ok) throw new Error(res.status); return res.blob(); })
+                    .then((blob) => useNoiseSrc(URL.createObjectURL(blob)))
+                    .catch(() => useNoiseSrc(NOISE_URL));
+
                 const noiseObserver = new IntersectionObserver((entries) => {
                     entries.forEach((entry) => {
                         // .media-holder's own video is swapped out over time by
@@ -898,6 +925,17 @@
                             });
                         }
                     });
+                });
+
+                // Retry on the user's first touch/click/scroll — iOS Low
+                // Power Mode and some autoplay policies reject play() until
+                // a gesture, and the observer only retries when a tile
+                // re-enters the viewport.
+                const retryOnGesture = () => {
+                    document.querySelectorAll('.hp-mid-wrapper .hidden-slide').forEach(playIfNear);
+                };
+                ['touchstart', 'pointerdown', 'keydown'].forEach((evt) => {
+                    window.addEventListener(evt, retryOnGesture, { once: true, passive: true });
                 });
 
                 // 5. APPLY GLITCH EFFECT
